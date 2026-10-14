@@ -1,0 +1,22 @@
+# Plantilla del server block de la app principal. Renombrar a .conf y fusionar
+# con la configuración actual de iagrocorr.com.ar antes de activarla: el
+# honeypot no depende de este archivo.
+server {
+    listen 80;
+    listen 443 ssl;
+    http2 on;
+    server_name iagrocorr.com.ar www.iagrocorr.com.ar;
+
+    ssl_certificate     /etc/nginx/certs/iagrocorr.pem;
+    ssl_certificate_key /etc/nginx/certs/iagrocorr.key;
+
+    access_log /var/log/nginx/iagrocorr_access.log main;
+
+    location / {
+        proxy_pass http://iagrocorr-app:8000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}

@@ -1,0 +1,128 @@
+# Topología según deployment.md, ampliada con la telemetría de specs.md
+# (capas 4 y 5) y el batch de ASN (§5).
+#
+#   Internet -> Cloudflare -> nginx-proxy -+-> honeypot-app   (honeypot_net)
+#                                          +-> iagrocorr-app  (iagrocorr_net)
+#   nginx-logs (volumen) -> promtail -> loki -> grafana        (telemetry_net)
+#                           analytics (batch diario ASN) -> loki + ./data
+
+services:
+  nginx-proxy:
+    image: nginx:1.29-alpine
+    restart: unless-stopped
+    ports: ["80:80", "443:443"]
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./nginx/snippets:/etc/nginx/snippets:ro
+      - ./nginx/certs:/etc/nginx/certs:ro
+      - nginx-logs:/var/log/nginx
+    depends_on: [honeypot-app]
+    networks:
+      - iagrocorr_net
+      - honeypot_net
+
+  # App principal existente. Si ya corre con su propio compose, quitar este
+  # servicio y conectar ese contenedor a la red iagrocorr_net.
+  iagrocorr-app:
+    image: my-django-app:latest
+    restart: unless-stopped
+    profiles: ["iagrocorr"]
+    networks:
+      - iagrocorr_net
+
+  honeypot-app:
+    build: ./honeypot/
+    restart: unless-stopped
+    environment:
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:?definir en .env}
+      HONEYPOT_TOKEN_SECRET: ${HONEYPOT_TOKEN_SECRET:?definir en .env}
+      DJANGO_ALLOWED_HOSTS: ${HONEYPOT_DOMAIN:?definir en .env},www.${HONEYPOT_DOMAIN}
+      HONEYPOT_DOMAIN: ${HONEYPOT_DOMAIN}
+    read_only: true
+    tmpfs: [/tmp]
+    networks:
+      - honeypot_net
+
+  loki:
+    image: grafana/loki:3.5.0
+    restart: unless-stopped
+    command: -config.file=/etc/loki/loki-config.yml
+    volumes:
+      - ./loki/loki-config.yml:/etc/loki/loki-config.yml:ro
+      - loki-data:/loki
+    networks: [telemetry_net]
+
+  promtail:
+    image: grafana/promtail:3.5.0
+    restart: unless-stopped
+    command: -config.file=/etc/promtail/promtail-config.yml
+    volumes:
+      - ./promtail/promtail-config.yml:/etc/promtail/promtail-config.yml:ro
+      - nginx-logs:/var/log/nginx:ro
+      - promtail-positions:/promtail
+    depends_on: [loki]
+    networks: [telemetry_net]
+
+  grafana:
+    image: grafana/grafana:12.0.0
+    restart: unless-stopped
+    # Solo en localhost: acceder por túnel SSH (ver DEPLOY.md).
+    ports: ["127.0.0.1:3000:3000"]
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:?definir en .env}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_ANALYTICS_REPORTING_ENABLED: "false"
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana-data:/var/lib/grafana
+    depends_on: [loki]
+    networks: [telemetry_net]
+
+  # Descarga y actualiza GeoLite2-ASN (requiere cuenta gratuita de MaxMind).
+  geoipupdate:
+    image: ghcr.io/maxmind/geoipupdate:v7.1.0
+    restart: unless-stopped
+    environment:
+      GEOIPUPDATE_ACCOUNT_ID: ${MAXMIND_ACCOUNT_ID:-}
+      GEOIPUPDATE_LICENSE_KEY: ${MAXMIND_LICENSE_KEY:-}
+      GEOIPUPDATE_EDITION_IDS: GeoLite2-ASN
+      GEOIPUPDATE_FREQUENCY: "72"
+    volumes:
+      - geoip-data:/usr/share/GeoIP
+    profiles: ["maxmind"]
+    networks: [telemetry_net]
+
+  # Batch diario: Loki -> ASN + clasificación -> ./data y Loki (honeypot_enriched).
+  analytics:
+    build: ./analytics/
+    restart: unless-stopped
+    user: "${HOST_UID:-1000}:${HOST_GID:-1000}"
+    environment:
+      LOKI_URL: http://loki:3100
+      DATA_DIR: /data
+      RUN_AT_UTC: ${ANALYTICS_RUN_AT_UTC:-00:30}
+      ROBOTS_LOOKBACK_DAYS: ${ROBOTS_LOOKBACK_DAYS:-30}
+    volumes:
+      - nginx-logs:/var/log/nginx:ro
+      - geoip-data:/usr/share/GeoIP:ro
+      - ./data:/data
+    depends_on: [loki]
+    networks: [telemetry_net]
+
+networks:
+  iagrocorr_net:
+    driver: bridge
+  honeypot_net:
+    driver: bridge
+  telemetry_net:
+    driver: bridge
+
+volumes:
+  nginx-logs:
+  loki-data:
+  promtail-positions:
+  grafana-data:
+  geoip-data:

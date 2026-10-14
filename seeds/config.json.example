@@ -1,0 +1,10 @@
+{
+  "_comment": "Ejemplo de archivo semilla para un repositorio público (experiment.md §3). Reemplazar las URLs por las que genera `manage.py seed_urls github`.",
+  "project": "regional-open-data-sync",
+  "version": "0.4.2",
+  "mirrors": [
+    {"name": "primary", "url": "https://__HONEYPOT_DOMAIN__/public/__TOKEN_GITHUB__"}
+  ],
+  "datasets": ["rendimiento-cultivos", "precipitaciones-mensuales", "precios-mayoristas"],
+  "sync": {"interval_hours": 24, "format": "parquet"}
+}

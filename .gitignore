@@ -1,0 +1,6 @@
+.env
+nginx/certs/*.pem
+nginx/certs/*.key
+data/
+__pycache__/
+*.mmdb
