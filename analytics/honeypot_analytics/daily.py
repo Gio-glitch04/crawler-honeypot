@@ -52,9 +52,15 @@ def run(day: date, source: str = "loki", push: bool = True, asn_db: str | None =
     return result
 
 
+def _day(value: str) -> date:
+    if value == "today":
+        return datetime.now(timezone.utc).date()
+    return date.fromisoformat(value)
+
+
 def main():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("--date", type=date.fromisoformat, default=None, help="día UTC (por defecto: ayer)")
+    p.add_argument("--date", type=_day, default=None, help="día UTC AAAA-MM-DD o 'today' (por defecto: ayer)")
     p.add_argument("--source", choices=["loki", "files"], default="loki")
     p.add_argument("--no-push", action="store_true", help="no reinyectar en Loki")
     p.add_argument("--asn-db", default=None, help="ruta a GeoLite2-ASN.mmdb")

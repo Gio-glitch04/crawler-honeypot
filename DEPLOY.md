@@ -2,6 +2,8 @@
 
 Pasos para poner el honeypot en el VPS compartido con `iagrocorr.com.ar`. Nada de esto se ejecutó contra infraestructura real: los pasos marcados como **acción externa** publican o cambian algo fuera del VPS y conviene hacerlos a conciencia.
 
+Antes de desplegar, conviene probar todo en tu PC con [LOCAL.md](LOCAL.md).
+
 ## 0. Requisitos
 
 - VPS con Docker Engine y el plugin `docker compose`.
@@ -30,6 +32,14 @@ mkdir -p data
 ```
 
 Secretos: `python3 -c "import secrets; print(secrets.token_urlsafe(50))"` para `DJANGO_SECRET_KEY` y `HONEYPOT_TOKEN_SECRET`. No cambiar `HONEYPOT_TOKEN_SECRET` durante el experimento: los enlaces ya emitidos pasarían a clasificarse como `invalid`.
+
+**Certificado obligatorio antes de `docker compose up`.** Nginx no arranca sin `nginx/certs/honeypot.pem` y `nginx/certs/honeypot.key` (error `cannot load certificate "/etc/nginx/certs/honeypot.pem"`). En producción son el Origin Certificate de Cloudflare (paso 3.2). Para probar en tu PC, generar uno autofirmado desde la carpeta del proyecto (funciona en Windows, macOS y Linux, solo requiere Docker):
+
+```bash
+docker run --rm -v "${PWD}/nginx/certs:/certs" python:3.12-slim openssl req -x509 -nodes -newkey rsa:2048 -days 30 -keyout /certs/honeypot.key -out /certs/honeypot.pem -subj "/CN=localhost"
+```
+
+En CMD de Windows reemplazar `${PWD}` por `%cd%`. Con bash y openssl instalados, `bash scripts/selfsigned.sh` hace lo mismo.
 
 ## 3. Cloudflare
 
