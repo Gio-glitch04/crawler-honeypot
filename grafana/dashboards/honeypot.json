@@ -7,7 +7,7 @@
   ],
   "timezone": "browser",
   "schemaVersion": 39,
-  "version": 1,
+  "version": 3,
   "refresh": "1m",
   "time": {
     "from": "now-7d",
@@ -55,7 +55,7 @@
       "gridPos": {
         "x": 0,
         "y": 0,
-        "w": 6,
+        "w": 4,
         "h": 4
       }
     },
@@ -98,9 +98,9 @@
         "uid": "loki"
       },
       "gridPos": {
-        "x": 6,
+        "x": 4,
         "y": 0,
-        "w": 6,
+        "w": 5,
         "h": 4
       }
     },
@@ -143,9 +143,9 @@
         "uid": "loki"
       },
       "gridPos": {
-        "x": 12,
+        "x": 9,
         "y": 0,
-        "w": 6,
+        "w": 5,
         "h": 4
       }
     },
@@ -188,11 +188,57 @@
         "uid": "loki"
       },
       "gridPos": {
+        "x": 14,
+        "y": 0,
+        "w": 4,
+        "h": 4
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Leyeron robots.txt y entraron a /trap/",
+      "description": "Clientes (misma IP y mismo User-Agent) que descargaron robots.txt y también accedieron a /trap/ en el rango elegido. Es una vista en tiempo real y no verifica el orden; la clasificación exacta (Nivel 1, por familia de bot + ASN, aunque roten IPs) está en el panel de datos enriquecidos.",
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "loki",
+            "uid": "loki"
+          },
+          "queryType": "instant",
+          "expr": "count(sum by (remote_ip, http_user_agent) (count_over_time({job=\"honeypot\", route=\"robots\"} | json remote_ip, http_user_agent [$__range])) and sum by (remote_ip, http_user_agent) (count_over_time({job=\"honeypot\", route=\"trap\"} | json remote_ip, http_user_agent [$__range]))) or vector(0)"
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "colorMode": "value",
+        "graphMode": "none"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "purple"
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
         "x": 18,
         "y": 0,
         "w": 6,
         "h": 4
-      }
+      },
+      "id": 5
     },
     {
       "type": "timeseries",
@@ -228,7 +274,7 @@
           "placement": "bottom"
         }
       },
-      "id": 5,
+      "id": 6,
       "datasource": {
         "type": "loki",
         "uid": "loki"
@@ -260,7 +306,9 @@
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
-          ]
+          ],
+          "values": false,
+          "fields": ""
         },
         "legend": {
           "displayMode": "table",
@@ -275,7 +323,7 @@
         "defaults": {},
         "overrides": []
       },
-      "id": 6,
+      "id": 7,
       "datasource": {
         "type": "loki",
         "uid": "loki"
@@ -285,7 +333,32 @@
         "y": 4,
         "w": 8,
         "h": 8
-      }
+      },
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true
+            }
+          }
+        },
+        {
+          "id": "rowsToFields",
+          "options": {
+            "mappings": [
+              {
+                "fieldName": "technique",
+                "handlerKey": "field.name"
+              },
+              {
+                "fieldName": "Value #A",
+                "handlerKey": "field.value"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "type": "table",
@@ -316,8 +389,8 @@
               "Time": true
             },
             "renameByName": {
-              "Value": "Peticiones",
-              "http_user_agent": "http_user_agent"
+              "http_user_agent": "http_user_agent",
+              "Value #A": "Peticiones"
             }
           }
         },
@@ -340,7 +413,7 @@
         "defaults": {},
         "overrides": []
       },
-      "id": 7,
+      "id": 8,
       "datasource": {
         "type": "loki",
         "uid": "loki"
@@ -381,8 +454,8 @@
               "Time": true
             },
             "renameByName": {
-              "Value": "Peticiones",
-              "http_user_agent": "http_user_agent"
+              "http_user_agent": "http_user_agent",
+              "Value #A": "Peticiones"
             }
           }
         },
@@ -405,7 +478,7 @@
         "defaults": {},
         "overrides": []
       },
-      "id": 8,
+      "id": 9,
       "datasource": {
         "type": "loki",
         "uid": "loki"
@@ -419,8 +492,8 @@
     },
     {
       "type": "barchart",
-      "title": "Violaciones por categoría de bot y nivel (datos enriquecidos, batch diario)",
-      "description": "Fuente: job=honeypot_enriched, generado por el servicio analytics cada 24 h.",
+      "title": "Accesos a /trap/ por categoría de bot y nivel (datos enriquecidos, batch diario)",
+      "description": "Fuente: job=honeypot_enriched, generado por el servicio analytics cada 24 h. Nivel 1 = leyó robots.txt y entró igual; 2 = entró sin leerlo; +3 = siguió un enlace oculto por CSS.",
       "targets": [
         {
           "refId": "A",
@@ -429,36 +502,57 @@
             "uid": "loki"
           },
           "expr": "sum by (category, violation) (count_over_time({job=\"honeypot_enriched\", route=\"trap\"}[$__range]))",
-          "queryType": "instant",
-          "legendFormat": "{{category}} · nivel {{violation}}"
+          "queryType": "instant"
         }
       ],
       "transformations": [
         {
-          "id": "reduce",
+          "id": "groupingToMatrix",
           "options": {
-            "reducers": [
-              "lastNotNull"
-            ]
+            "columnField": "violation",
+            "rowField": "category",
+            "valueField": "Value #A",
+            "emptyValue": "zero"
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "renameByName": {
+              "category\\violation": "Categoría"
+            }
           }
         }
       ],
       "options": {
         "orientation": "horizontal",
-        "showValue": "auto",
+        "showValue": "never",
+        "stacking": "normal",
+        "xField": "Categoría",
         "legend": {
-          "showLegend": false
+          "showLegend": true,
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "xTickLabelRotation": 0,
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
         }
       },
       "fieldConfig": {
         "defaults": {
           "color": {
             "mode": "palette-classic"
-          }
+          },
+          "custom": {
+            "fillOpacity": 80
+          },
+          "decimals": 0
         },
         "overrides": []
       },
-      "id": 9,
+      "id": 10,
       "datasource": {
         "type": "loki",
         "uid": "loki"
@@ -499,8 +593,8 @@
               "Time": true
             },
             "renameByName": {
-              "Value": "Peticiones",
-              "asn_org": "asn_org"
+              "asn_org": "asn_org",
+              "Value #A": "Peticiones"
             }
           }
         },
@@ -523,7 +617,7 @@
         "defaults": {},
         "overrides": []
       },
-      "id": 10,
+      "id": 11,
       "datasource": {
         "type": "loki",
         "uid": "loki"
@@ -554,7 +648,7 @@
         "wrapLogMessage": true,
         "sortOrder": "Descending"
       },
-      "id": 11,
+      "id": 12,
       "datasource": {
         "type": "loki",
         "uid": "loki"
