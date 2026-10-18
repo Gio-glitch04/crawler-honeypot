@@ -40,12 +40,18 @@ def get(path, ip, ua, ref=None):
     return r
 
 
+# La ruta prohibida se lee del propio robots.txt (HONEYPOT_TRAP_PATH).
+_robots = requests.get(BASE + "/robots.txt", headers={"Host": HOST, "User-Agent": "simulator-setup", "CF-Connecting-IP": "10.99.255.1"}, timeout=10).text
+TRAP = re.search(r"Disallow:\s*/([^/\s]+)/", _robots).group(1)
+print(f"Ruta prohibida según robots.txt: /{TRAP}/\n")
+
+
 def links(html):
-    return re.findall(r'href="(/(?:public|trap)/[0-9a-f]+)"', html)
+    return re.findall(rf'href="(/(?:public|{re.escape(TRAP)})/[0-9a-f]+)"', html)
 
 
 def visible_traps(html):
-    return re.findall(r'<p>Archivo histórico: <a href="(/trap/[0-9a-f]+)"', html)
+    return re.findall(rf'<p>Archivo histórico: <a href="(/{re.escape(TRAP)}/[0-9a-f]+)"', html)
 
 
 for ip, ua, reads_robots, policy in BOTS:
@@ -61,6 +67,6 @@ for ip, ua, reads_robots, policy in BOTS:
     for t in targets:
         get(t, ip, ua, ref=f"http://{HOST}/")
 
-get("/trap/", "45.1.1.1", "python-requests/2.32.3")
-get("/trap/deadbeef", "45.1.1.1", "python-requests/2.32.3")
+get(f"/{TRAP}/", "45.1.1.1", "python-requests/2.32.3")
+get(f"/{TRAP}/deadbeef", "45.1.1.1", "python-requests/2.32.3")
 print("\nSimulación terminada. Siguiente paso: correr el batch (ver LOCAL.md).")

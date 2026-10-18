@@ -39,6 +39,7 @@ services:
       HONEYPOT_TOKEN_SECRET: ${HONEYPOT_TOKEN_SECRET:?definir en .env}
       DJANGO_ALLOWED_HOSTS: ${HONEYPOT_DOMAIN:?definir en .env},www.${HONEYPOT_DOMAIN}
       HONEYPOT_DOMAIN: ${HONEYPOT_DOMAIN}
+      HONEYPOT_TRAP_PATH: ${HONEYPOT_TRAP_PATH:-trap}
     read_only: true
     tmpfs: [/tmp]
     networks:
@@ -103,6 +104,7 @@ services:
     environment:
       LOKI_URL: http://loki:3100
       DATA_DIR: /data
+      HONEYPOT_TRAP_PATH: ${HONEYPOT_TRAP_PATH:-trap}
       RUN_AT_UTC: ${ANALYTICS_RUN_AT_UTC:-00:30}
       ROBOTS_LOOKBACK_DAYS: ${ROBOTS_LOOKBACK_DAYS:-30}
     volumes:

@@ -10,6 +10,10 @@ SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "dev-only-insecure-key")
 # Clave HMAC de los tokens de enlace. Si cambia, los tokens viejos pasan a "invalid".
 TOKEN_SECRET = os.environ.get("HONEYPOT_TOKEN_SECRET", SECRET_KEY)
 
+# Ruta prohibida en robots.txt. Por defecto "trap" (specs.md), pero conviene
+# un nombre neutro en producción: un scraper atento evitaría "/trap/".
+TRAP_PATH = os.environ.get("HONEYPOT_TRAP_PATH", "trap").strip("/") or "trap"
+
 ALLOWED_HOSTS = [h.strip() for h in os.environ.get("DJANGO_ALLOWED_HOSTS", "*").split(",") if h.strip()]
 
 INSTALLED_APPS = ["trap"]

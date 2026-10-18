@@ -9,6 +9,7 @@ import pandas as pd
 import requests
 
 LOKI_URL = os.environ.get("LOKI_URL", "http://loki:3100")
+TRAP_PATH = os.environ.get("HONEYPOT_TRAP_PATH", "trap").strip("/") or "trap"
 LOG_GLOB = os.environ.get("LOG_GLOB", "/var/log/nginx/honeypot_access.json*")
 
 COLUMNS = [
@@ -43,8 +44,8 @@ def _route_from_uri(uri: str) -> str:
         return "robots"
     if path == "/":
         return "home"
-    for r in ("trap", "public"):
-        if path == f"/{r}" or path.startswith(f"/{r}/"):
+    for prefix, r in ((TRAP_PATH, "trap"), ("public", "public")):
+        if path == f"/{prefix}" or path.startswith(f"/{prefix}/"):
             return r
     return "other"
 

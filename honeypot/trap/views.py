@@ -1,13 +1,14 @@
 import random
 import secrets
 
+from django.conf import settings
 from django.http import HttpResponse
 from django.shortcuts import render
 
 from . import content, tokens
 
-ROBOTS_TXT = """User-agent: *
-Disallow: /trap/
+ROBOTS_TXT = f"""User-agent: *
+Disallow: /{settings.TRAP_PATH}/
 """
 
 # Cabeceras internas que Nginx registra ($upstream_http_x_honeypot_*) y
@@ -50,7 +51,7 @@ def _links(depth):
     traps = []
     for technique in tokens.TRAP_TECHNIQUES:
         tid = tokens.issue(technique, depth)
-        traps.append({"href": f"/trap/{tid}", "label": content.link_label(tid), "technique": technique})
+        traps.append({"href": f"/{settings.TRAP_PATH}/{tid}", "label": content.link_label(tid), "technique": technique})
     random.shuffle(traps)
     return public, traps
 

@@ -2,7 +2,7 @@
 
 Honeypot HTTP/HTTPS para medir el cumplimiento de `robots.txt` (RFC 9309) por parte de crawlers, con foco en bots de IA. Implementa `specs.md`, respeta las decisiones de `memory.md`, instrumenta los criterios de `experiment.md` y sigue la topología de `deployment.md`.
 
-Prueba local sin exponer nada: [LOCAL.md](LOCAL.md). Despliegue en el VPS: [DEPLOY.md](DEPLOY.md).
+Prueba local sin exponer nada: [LOCAL.md](LOCAL.md). Puesta en línea paso a paso: [PUESTA-EN-LINEA.md](PUESTA-EN-LINEA.md). Referencia de despliegue: [DEPLOY.md](DEPLOY.md).
 
 ## Estructura
 

@@ -2,7 +2,7 @@
 
 Pasos para poner el honeypot en el VPS compartido con `iagrocorr.com.ar`. Nada de esto se ejecutó contra infraestructura real: los pasos marcados como **acción externa** publican o cambian algo fuera del VPS y conviene hacerlos a conciencia.
 
-Antes de desplegar, conviene probar todo en tu PC con [LOCAL.md](LOCAL.md).
+Antes de desplegar, conviene probar todo en tu PC con [LOCAL.md](LOCAL.md). Para la puesta en línea en orden y con los controles previos a sembrar, seguir [PUESTA-EN-LINEA.md](PUESTA-EN-LINEA.md); este documento es la referencia de cada pieza.
 
 ## 0. Requisitos
 
@@ -70,7 +70,7 @@ Comprobaciones:
 
 ```bash
 curl -s https://DOMINIO/robots.txt
-curl -s https://DOMINIO/ | grep -c '/trap/'          # debe dar 5
+curl -s https://DOMINIO/ | grep -c "/$HONEYPOT_TRAP_PATH/"   # debe dar 5
 docker compose exec nginx-proxy tail -n 3 /var/log/nginx/honeypot_access.json
 ```
 
