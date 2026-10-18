@@ -3,7 +3,7 @@
   "project": "regional-open-data-sync",
   "version": "0.4.2",
   "mirrors": [
-    {"name": "primary", "url": "https://__HONEYPOT_DOMAIN__/public/__TOKEN_GITHUB__"}
+    {"name": "primary", "url": "https://definitivamente-no-hay-trabas.com.ar/public/1f5d2bbd5c3e4f3996083ff27059b2016ad53ff5009fb7180e5c"}
   ],
   "datasets": ["rendimiento-cultivos", "precipitaciones-mensuales", "precios-mayoristas"],
   "sync": {"interval_hours": 24, "format": "parquet"}
