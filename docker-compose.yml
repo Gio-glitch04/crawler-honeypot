@@ -40,6 +40,7 @@ services:
       DJANGO_ALLOWED_HOSTS: ${HONEYPOT_DOMAIN:?definir en .env},www.${HONEYPOT_DOMAIN}
       HONEYPOT_DOMAIN: ${HONEYPOT_DOMAIN}
       HONEYPOT_TRAP_PATH: ${HONEYPOT_TRAP_PATH:-trap}
+      HONEYPOT_MAX_DEPTH: ${HONEYPOT_MAX_DEPTH:-0}
     read_only: true
     tmpfs: [/tmp]
     networks:

@@ -1,0 +1,69 @@
+# Override para alojar el honeypot en una PC (Windows 10 + Docker Desktop)
+# detrás de Cloudflare Tunnel. No abre ningún puerto en el router ni expone
+# la IP de tu casa: cloudflared sale hacia Cloudflare y el tráfico entra por
+# ese túnel.
+#
+#   docker compose -f docker-compose.yml -f docker-compose.home.yml --profile maxmind up -d --build
+#
+# Diferencias con el despliegue en VPS:
+#   - Nginx no publica 80/443; solo 127.0.0.1:8080 para controles desde la PC.
+#   - CF-Connecting-IP se acepta solo si viene del contenedor cloudflared.
+#   - No hace falta Origin Certificate: el túnel llega a Nginx por HTTP interno
+#     (se genera un autofirmado solo para que arranque el bloque 443).
+#   - server_name se toma de HONEYPOT_DOMAIN al arrancar (no hace falta configure.sh).
+
+services:
+  home-certs:
+    image: python:3.12-slim
+    command:
+      - sh
+      - -c
+      - >-
+        test -s /certs/honeypot.pem ||
+        openssl req -x509 -nodes -newkey rsa:2048 -days 3650
+        -keyout /certs/honeypot.key -out /certs/honeypot.pem -subj /CN=localhost
+    volumes:
+      - home-certs:/certs
+    network_mode: none
+
+  nginx-proxy:
+    ports: !override
+      - "127.0.0.1:8080:80"
+    environment:
+      HONEYPOT_DOMAIN: ${HONEYPOT_DOMAIN:?definir en .env}
+      NGINX_ENVSUBST_FILTER: "^HONEYPOT_"
+    volumes:
+      - type: tmpfs
+        target: /etc/nginx/conf.d
+      - ./home/templates:/etc/nginx/templates:ro
+      - home-certs:/etc/nginx/certs:ro
+      - ./home/cloudflare_realip.conf:/etc/nginx/snippets/cloudflare_realip.conf:ro
+      - ./home/cloudflare_geo.conf:/etc/nginx/snippets/cloudflare_geo.conf:ro
+    depends_on:
+      home-certs:
+        condition: service_completed_successfully
+      honeypot-app:
+        condition: service_started
+    networks:
+      - honeypot_net
+      - tunnel_net
+
+  cloudflared:
+    image: cloudflare/cloudflared:2025.9.1
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run
+    environment:
+      TUNNEL_TOKEN: ${CLOUDFLARE_TUNNEL_TOKEN:?definir en .env}
+    depends_on: [nginx-proxy]
+    networks:
+      - tunnel_net
+
+networks:
+  tunnel_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.98.0.0/24
+
+volumes:
+  home-certs:

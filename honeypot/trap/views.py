@@ -57,7 +57,10 @@ def _links(depth):
 
 
 def _page(request, template, route, depth, seed, token=None, status=200):
-    public, traps = _links(depth)
+    if settings.MAX_DEPTH and depth > settings.MAX_DEPTH:
+        public, traps = [], []
+    else:
+        public, traps = _links(depth)
     ctx = {
         "css": _css_classes(),
         "public_links": public,

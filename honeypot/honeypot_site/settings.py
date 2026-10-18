@@ -14,6 +14,11 @@ TOKEN_SECRET = os.environ.get("HONEYPOT_TOKEN_SECRET", SECRET_KEY)
 # un nombre neutro en producción: un scraper atento evitaría "/trap/".
 TRAP_PATH = os.environ.get("HONEYPOT_TRAP_PATH", "trap").strip("/") or "trap"
 
+# Profundidad máxima del laberinto: a partir de ahí las páginas no generan
+# enlaces nuevos. 0 = sin límite. Útil en hardware modesto (p. ej. una PC
+# hogareña) para que un crawler agresivo no genere carga ilimitada.
+MAX_DEPTH = int(os.environ.get("HONEYPOT_MAX_DEPTH", "0"))
+
 ALLOWED_HOSTS = [h.strip() for h in os.environ.get("DJANGO_ALLOWED_HOSTS", "*").split(",") if h.strip()]
 
 INSTALLED_APPS = ["trap"]

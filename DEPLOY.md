@@ -2,7 +2,7 @@
 
 Pasos para poner el honeypot en el VPS compartido con `iagrocorr.com.ar`. Nada de esto se ejecutó contra infraestructura real: los pasos marcados como **acción externa** publican o cambian algo fuera del VPS y conviene hacerlos a conciencia.
 
-Antes de desplegar, conviene probar todo en tu PC con [LOCAL.md](LOCAL.md). Para la puesta en línea en orden y con los controles previos a sembrar, seguir [PUESTA-EN-LINEA.md](PUESTA-EN-LINEA.md); este documento es la referencia de cada pieza.
+Antes de desplegar, conviene probar todo en tu PC con [LOCAL.md](LOCAL.md). Para la puesta en línea en orden y con los controles previos a sembrar, seguir [PUESTA-EN-LINEA-VPS.md](PUESTA-EN-LINEA-VPS.md) (o [PUESTA-EN-LINEA.md](PUESTA-EN-LINEA.md) para alojarlo en una PC con Cloudflare Tunnel); este documento es la referencia de cada pieza.
 
 ## 0. Requisitos
 

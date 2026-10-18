@@ -1,0 +1,10 @@
+# Peticiones con Host desconocido (escaneos a la IP del VPS): se registran
+# aparte y se corta la conexión sin respuesta.
+server {
+    listen 80 default_server;
+    listen 443 ssl default_server;
+    ssl_reject_handshake on;
+
+    access_log /var/log/nginx/default_access.json honeypot_json;
+    return 444;
+}
