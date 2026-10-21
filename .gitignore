@@ -4,3 +4,4 @@ nginx/certs/*.key
 data/
 __pycache__/
 *.mmdb
+selftest_crawl.py
