@@ -1,0 +1,14 @@
+operador,familia,cidr,peticiones,verificable,nota,metodo,verificado,prefijo_oficial,bgp_prefix,asn
+Anthropic,ClaudeBot,216.73.217.0/24,1590538,si,,ARIN /22,si,216.73.216.0/22,216.73.216.0/22,AS16509
+Anthropic,ClaudeBot,216.73.216.0/24,399324,si,,ARIN /22,si,216.73.216.0/22,216.73.216.0/22,AS16509
+Anthropic,ClaudeBot,34.162.0.0/16,4,si,Google Cloud (AS396982),ARIN /22,no,,34.162.0.0/18,AS396982
+OpenAI,GPTBot,74.7.242.0/24,1557329,si,,JSON oficial,si,74.7.242.0/25,74.7.0.0/16,AS8075
+OpenAI,GPTBot,132.196.86.0/24,751,si,,JSON oficial,si,132.196.86.0/24,132.196.0.0/16,AS8075
+OpenAI,GPTBot,172.182.207.0/24,410,si,,JSON oficial,si,172.182.207.0/25,172.160.0.0/11,AS8075
+OpenAI,GPTBot,172.182.202.0/24,385,si,,JSON oficial,si,172.182.202.0/25,172.160.0.0/11,AS8075
+OpenAI,OAI-SearchBot,74.7.175.0/24,38,si,,JSON oficial,si,74.7.175.128/25,74.7.0.0/16,AS8075
+OpenAI,OAI-SearchBot,74.7.230.0/24,9,si,,JSON oficial,si,74.7.230.0/25,74.7.0.0/16,AS8075
+OpenAI,OAI-SearchBot,51.8.102.0/24,2,si,,JSON oficial,si,51.8.102.0/24,51.8.0.0/16,AS8075
+Google,Googlebot+GoogleOther,66.249.73.0/24,12119,si,Googlebot 1423 + GoogleOther 10696 (informe-tecnico-honeypot.md 5.3),JSON oficial,si,66.249.73.0/27,66.249.64.0/20,AS15169
+Google,Googlebot+GoogleOther,192.178.6.0/24,94,si,,JSON oficial,si,192.178.6.0/27,192.178.0.0/15,AS15169
+Google,Googlebot+GoogleOther,otros /24 de 66.249.x (sin desglose),21,no,por diferencia: 12234 - 12119 - 94,,no,,,

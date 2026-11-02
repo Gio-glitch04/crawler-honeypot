@@ -1,0 +1,1492 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Teleprompter & Consola de Control · Honeypot RFC 9309</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- KaTeX para renderizado de fórmulas matemáticas en prompter -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <style>
+    /* =========================================================================
+       CONSOLA DE CONTROL & TELEPROMPTER CAD (17 DIAPOSITIVAS · 20 MINUTOS)
+       ========================================================================= */
+    :root {
+      --cad-bg: #090f1d;
+      --cad-panel: #0e172a;
+      --cad-card: #142038;
+      --cad-border: #22355c;
+      --cad-border-focus: #38bdf8;
+      
+      --ink-blueprint: #38bdf8;
+      --ink-steel: #94a3b8;
+      --ink-amber: #f59e0b;
+      --ink-emerald: #10b981;
+      --ink-coral: #f43f5e;
+      --ink-pure: #f8fafc;
+      --ink-dim: #64748b;
+
+      --font-mono: 'JetBrains Mono', monospace;
+      --font-sans: 'Space Grotesk', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--cad-bg);
+      color: var(--ink-pure);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      user-select: none;
+    }
+
+    /* BARRA SUPERIOR FIJA */
+    header.prompter-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(14, 23, 42, 0.98);
+      border-bottom: 1px solid var(--cad-border);
+      padding: 10px 20px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .brand-section {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 2px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      background: #112520;
+      border: 1px solid var(--ink-emerald);
+      color: var(--ink-emerald);
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 1px;
+      background: var(--ink-emerald);
+    }
+
+    .title-area h1 {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: #fff;
+    }
+
+    .title-area p {
+      font-size: 11px;
+      color: var(--ink-dim);
+      font-family: var(--font-mono);
+    }
+
+    /* CRONÓMETRO */
+    .timer-console {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: var(--cad-card);
+      border: 1px solid var(--cad-border);
+      padding: 5px 14px;
+      border-radius: 3px;
+    }
+
+    .timer-display {
+      font-family: var(--font-mono);
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: var(--ink-blueprint);
+      min-width: 95px;
+      text-align: center;
+    }
+    .timer-display.warning { color: var(--ink-amber); }
+    .timer-display.danger { color: var(--ink-coral); }
+
+    .timer-meta {
+      display: flex;
+      flex-direction: column;
+      font-size: 10px;
+      font-family: var(--font-mono);
+      color: var(--ink-dim);
+    }
+
+    .timer-meta .pace-label {
+      font-weight: 700;
+      color: var(--ink-blueprint);
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 6px;
+    }
+
+    button.ctrl-btn {
+      background: #090f1d;
+      border: 1px solid var(--cad-border);
+      color: var(--ink-steel);
+      padding: 5px 10px;
+      border-radius: 2px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s;
+    }
+
+    button.ctrl-btn:hover {
+      border-color: var(--ink-blueprint);
+      color: #fff;
+      background: var(--cad-card);
+    }
+
+    button.ctrl-btn.btn-action {
+      border-color: var(--ink-blueprint);
+      color: var(--ink-blueprint);
+      background: rgba(56, 189, 248, 0.1);
+    }
+
+    button.ctrl-btn.btn-action:hover {
+      background: var(--ink-blueprint);
+      color: #090f1d;
+    }
+
+    /* NAVEGACIÓN */
+    .deck-nav-console {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .slide-indicator {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 700;
+      color: #fff;
+      background: var(--cad-card);
+      padding: 5px 10px;
+      border-radius: 2px;
+      border: 1px solid var(--cad-border);
+    }
+
+    select.slide-selector {
+      background: var(--cad-card);
+      border: 1px solid var(--cad-border);
+      color: var(--ink-pure);
+      padding: 5px 8px;
+      border-radius: 2px;
+      font-family: var(--font-sans);
+      font-size: 12px;
+      max-width: 200px;
+      cursor: pointer;
+    }
+
+    /* AJUSTES */
+    .prompter-settings {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 11px;
+      font-family: var(--font-mono);
+    }
+
+    .scroll-controls {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--cad-card);
+      padding: 4px 8px;
+      border-radius: 2px;
+      border: 1px solid var(--cad-border);
+    }
+
+    .scroll-controls input[type="range"] {
+      width: 60px;
+      cursor: pointer;
+      accent-color: var(--ink-blueprint);
+    }
+
+    /* LAYOUT PRINCIPAL */
+    main.prompter-main {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 310px 1fr;
+      min-height: 0;
+      height: calc(100vh - 65px);
+    }
+
+    /* PANEL LATERAL */
+    aside.slide-sidebar {
+      background: var(--cad-panel);
+      border-right: 1px solid var(--cad-border);
+      padding: 16px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .card-box {
+      background: var(--cad-card);
+      border: 1px solid var(--cad-border);
+      border-radius: 3px;
+      padding: 12px;
+    }
+
+    .card-box h3 {
+      font-size: 11px;
+      font-family: var(--font-mono);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--ink-blueprint);
+      margin-bottom: 8px;
+      border-bottom: 1px dashed var(--cad-border);
+      padding-bottom: 4px;
+    }
+
+    .bullet-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      font-size: 12px;
+      line-height: 1.4;
+      color: var(--ink-steel);
+    }
+
+    .bullet-list li {
+      position: relative;
+      padding-left: 14px;
+    }
+
+    .bullet-list li::before {
+      content: '⊳';
+      position: absolute;
+      left: 0;
+      color: var(--ink-blueprint);
+    }
+
+    .bullet-list li strong {
+      color: #fff;
+    }
+
+    .key-metrics {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .metric-badge {
+      background: #090f1d;
+      padding: 6px;
+      border-radius: 2px;
+      border: 1px solid var(--cad-border);
+      text-align: center;
+    }
+
+    .metric-val {
+      font-family: var(--font-mono);
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--ink-amber);
+    }
+
+    .metric-lbl {
+      font-size: 9px;
+      color: var(--ink-dim);
+      text-transform: uppercase;
+      font-family: var(--font-mono);
+    }
+
+    /* ÁREA DEL GUIÓN TELEPROMPTER */
+    section.speech-area {
+      overflow-y: auto;
+      scroll-behavior: smooth;
+      padding: 26px 40px 100px 40px;
+      background: #060a14;
+      user-select: text;
+    }
+
+    .speech-slide-container {
+      display: none;
+    }
+
+    .speech-slide-container.active {
+      display: block;
+    }
+
+    .slide-cue-header {
+      border-bottom: 1px dashed var(--cad-border);
+      padding-bottom: 12px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .slide-number-tag {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--ink-blueprint);
+      background: rgba(56, 189, 248, 0.1);
+      padding: 3px 8px;
+      border: 1px solid var(--cad-border);
+      border-radius: 2px;
+    }
+
+    .slide-target-time {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--ink-amber);
+      font-weight: 600;
+    }
+
+    .speech-text {
+      font-size: 22px;
+      line-height: 1.65;
+      color: #e2e8f0;
+      font-weight: 400;
+    }
+
+    .speech-text p {
+      margin-bottom: 20px;
+    }
+
+    .cue-action {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      color: #090f1d;
+      background: var(--ink-amber);
+      padding: 2px 6px;
+      border-radius: 2px;
+      margin: 0 4px;
+      vertical-align: middle;
+      text-transform: uppercase;
+    }
+
+    .cue-tone {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--ink-blueprint);
+      background: rgba(56, 189, 248, 0.1);
+      border: 1px solid var(--cad-border);
+      padding: 2px 6px;
+      border-radius: 2px;
+      margin: 0 4px;
+      text-transform: uppercase;
+    }
+
+    .cue-data {
+      color: var(--ink-blueprint);
+      font-weight: 700;
+      font-family: var(--font-mono);
+      background: rgba(56, 189, 248, 0.08);
+      padding: 1px 5px;
+      border-radius: 2px;
+    }
+
+    .cue-emphasis {
+      color: #ffffff;
+      font-weight: 600;
+      border-bottom: 2px solid var(--ink-blueprint);
+    }
+
+    .cue-warning {
+      color: var(--ink-coral);
+      font-weight: 700;
+      background: rgba(244, 63, 94, 0.1);
+      padding: 1px 5px;
+      border-radius: 2px;
+    }
+
+    footer.prompter-footer {
+      background: var(--cad-panel);
+      border-top: 1px solid var(--cad-border);
+      padding: 6px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--ink-dim);
+    }
+
+    .shortcut-hints {
+      display: flex;
+      gap: 12px;
+    }
+
+    .kbd-tag {
+      background: var(--cad-card);
+      border: 1px solid var(--cad-border);
+      padding: 1px 5px;
+      border-radius: 2px;
+      color: var(--ink-blueprint);
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- BARRA DE CONTROL SUPERIOR -->
+  <header class="prompter-header">
+    <div class="brand-section">
+      <div class="status-badge" id="syncStatus">
+        <span class="status-dot"></span>
+        <span id="syncText">SINCRONIZADO</span>
+      </div>
+      <div class="title-area">
+        <h1>CONSOLA DE TELEPROMPTER // CÁTEDRA INTERNETWORKING</h1>
+        <p>Investigación Honeypot RFC 9309 · 17 Diapositivas · Meta: 20:00</p>
+      </div>
+    </div>
+
+    <!-- CRONÓMETRO -->
+    <div class="timer-console">
+      <div class="timer-display" id="timerDisplay">20:00</div>
+      <div class="timer-meta">
+        <span>RESTANTE</span>
+        <span class="pace-label" id="paceLabel">A TIEMPO</span>
+      </div>
+      <div class="btn-group">
+        <button class="ctrl-btn btn-action" id="btnToggleTimer" title="Espacio">▶ INICIAR</button>
+        <button class="ctrl-btn" id="btnResetTimer" title="Resetear">↺ RESET</button>
+      </div>
+    </div>
+
+    <!-- CONTROL DE DIAPOSITIVAS -->
+    <div class="deck-nav-console">
+      <button class="ctrl-btn" id="btnPrevSlide" title="Flecha Izquierda">◀ ANT</button>
+      <div class="slide-indicator" id="slideIndicator">01 / 17</div>
+      <button class="ctrl-btn btn-action" id="btnNextSlide" title="Flecha Derecha">SIG ▶</button>
+      <select class="slide-selector" id="slideSelect">
+        <option value="0">01. Portada y Ficha Técnica</option>
+        <option value="1">02. El Auge del Scraping y la IA</option>
+        <option value="2">03. Taxonomía de Rastreadores Web</option>
+        <option value="3">04. Marco Conceptual: Honeypots & RFC 9309</option>
+        <option value="4">05. Mapeo en el Modelo OSI (L1 a L7)</option>
+        <option value="5">06. Arquitectura del Sistema (Docker & Túnel)</option>
+        <option value="6">07. Restitución de Identidad L7</option>
+        <option value="7">08. Motor Sin Estado (HMAC-SHA256)</option>
+        <option value="8">09. Mecanismo de Trampa: CSS vs. Léxico</option>
+        <option value="9">10. Evolución Cronológica (Serie Diaria)</option>
+        <option value="10">11. Dinámica del Laberinto & Grafos</option>
+        <option value="11">12. Caracterización de Bots de IA</option>
+        <option value="12">13. Detección en la Trampa & Chi-Cuadrado</option>
+        <option value="13">14. Análisis Forense: Las 6 IPs Infractoras</option>
+        <option value="14">15. Observabilidad: Pipeline Grafana Loki</option>
+        <option value="15">16. Hallazgos Clave de Internetworking</option>
+        <option value="16">17. Recomendaciones & Conclusión</option>
+      </select>
+    </div>
+
+    <!-- AJUSTES -->
+    <div class="prompter-settings">
+      <div class="scroll-controls">
+        <button class="ctrl-btn" id="btnToggleAutoScroll">📜 AUTO-SCROLL: OFF</button>
+        <input type="range" id="scrollSpeed" min="1" max="5" value="2" title="Velocidad">
+      </div>
+      <div style="display:flex; gap:4px;">
+        <button class="ctrl-btn" id="btnFontDec">A-</button>
+        <button class="ctrl-btn" id="btnFontInc">A+</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <main class="prompter-main">
+    
+    <!-- PANEL LATERAL CON METADATOS -->
+    <aside class="slide-sidebar">
+      <div class="card-box">
+        <h3>OBJETIVO DE LA DIAPOSITIVA</h3>
+        <p id="slideMetaGoal" style="font-size: 12px; color: #cbd5e1; margin-bottom: 6px; line-height: 1.4;">
+          Presentar formalmente el trabajo, el contexto de Internetworking y el alcance experimental.
+        </p>
+        <div style="font-family:var(--font-mono); font-size:11px; color:var(--ink-blueprint); margin-top:6px;">
+          VENTANA: <strong id="slideMetaTime">00:00 - 01:10</strong>
+        </div>
+      </div>
+
+      <div class="card-box">
+        <h3>PUNTOS CLAVE A CITAR</h3>
+        <ul class="bullet-list" id="slideMetaBullets">
+          <li>Experimento real en producción: <strong>18 al 30 de octubre de 2026</strong>.</li>
+          <li>Dominio público: <code>definitivamente-no-hay-trabas.com.ar</code>.</li>
+          <li><strong>3.568.349</strong> peticiones válidas analizadas.</li>
+          <li>Aislamiento de red sin puertos abiertos mediante <strong>Cloudflare Argo Tunnel</strong>.</li>
+        </ul>
+      </div>
+
+      <div class="card-box">
+        <h3>DATOS VERIFICADOS</h3>
+        <div class="key-metrics">
+          <div class="metric-badge">
+            <div class="metric-val" id="metricVal1">3,56 M</div>
+            <div class="metric-lbl" id="metricLbl1">Peticiones Nginx</div>
+          </div>
+          <div class="metric-badge">
+            <div class="metric-val" id="metricVal2">207</div>
+            <div class="metric-lbl" id="metricLbl2">Accesos Trampa</div>
+          </div>
+          <div class="metric-badge">
+            <div class="metric-val" id="metricVal3">6 IPs</div>
+            <div class="metric-lbl" id="metricLbl3">Orígenes Reales</div>
+          </div>
+          <div class="metric-badge">
+            <div class="metric-val" id="metricVal4">100%</div>
+            <div class="metric-lbl" id="metricLbl4">Cumplimiento IA/Buscadores</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-box">
+        <h3 style="color: var(--ink-amber);">CONSEJO AL DISERTANTE</h3>
+        <p id="slideMetaTip" style="font-size: 11px; color: #94a3b8; line-height: 1.4;">
+          Mantén un ritmo pausado al inicio. Usa las palabras destacadas en azul y ámbar para guiar tu mirada mientras miras a la cámara o al tribunal.
+        </p>
+      </div>
+    </aside>
+
+    <!-- ÁREA DEL GUIÓN TELEPROMPTER (17 DIAPOSITIVAS) -->
+    <section class="speech-area" id="speechArea">
+
+      <!-- SLIDE 1 -->
+      <div class="speech-slide-container active" data-slide="0">
+        <div class="slide-cue-header">
+          <span class="slide-number-tag">DIAPOSITIVA 01 // PORTADA E INTRODUCCIÓN</span>
+          <span class="slide-target-time">⏱ TIEMPO: 00:00 - 01:10</span>
+        </div>
+        <div class="speech-text">
+          <p><span class="cue-tone">Tono: Seguro y formal</span> Buenos días profesores y compañeros. Presentamos hoy nuestra defensa del trabajo de investigación para la cátedra de Internetworking titulado: <span class="cue-emphasis">«Diseño, Despliegue y Telemetría de un Honeypot Web para la Caracterización de Rastreadores Automatizados frente a RFC 9309 y Ofuscación CSS»</span>.</p>
+
+          <p>El estándar fundamental de convivencia en la web es la <span class="cue-data">RFC 9309</span>, históricamente conocido como <code>robots.txt</code>. Sin embargo, en el contexto actual surge una interrogante crítica de ingeniería: <span class="cue-emphasis">¿Realmente respetan los crawlers modernos estas directivas en el tráfico real? ¿Y cómo reaccionan los scrapers encubiertos frente a técnicas de ocultamiento visual?</span></p>
+
+          <p>Para responderlo con rigor científico, <span class="cue-action">ENFATIZAR</span> desplegamos un honeypot y tarpit web en el tráfico público durante <span class="cue-data">12 días ininterrumpidos en octubre de 2026</span> bajo el dominio <code>definitivamente-no-hay-trabas.com.ar</code>, capturando y analizando más de <span class="cue-data">3,56 millones de peticiones HTTP</span>.</p>
+
+          <p><span class="cue-action">AVANZAR SLIDE AHORA</span></p>
+        </div>
+      </div>
+
+      <!-- SLIDE 2 -->
+      <div class="speech-slide-container" data-slide="1">
+        <div class="slide-cue-header">
+          <span class="slide-number-tag">DIAPOSITIVA 02 // EL AUGE DEL SCRAPING Y LA IA</span>
+          <span class="slide-target-time">⏱ TIEMPO: 01:10 - 02:20</span>
+        </div>
+        <div class="speech-text">
+          <p><span class="cue-tone">Tono: Contextual y reflexivo</span> Para comprender la relevancia de este experimento, debemos analizar el contexto actual del tráfico web. El preentrenamiento de los grandes modelos de lenguaje ha desatado una demanda voraz por ingestar texto público.</p>
+
+          <p>Esto quebró el pacto histórico de la web: tradicionalmente, un motor de búsqueda como Google rastreaba contenido a cambio de indexarlo y retribuir tráfico humano al servidor. Los crawlers de IA actuales, en cambio, <span class="cue-emphasis">extraen terabytes de datos sin enviar visitantes de vuelta</span>.</p>
+
+          <p>Las consecuencias operativas para los administradores de sistemas son severas: picos descontrolados de consumo de CPU, costos elevados de transferencia de datos y, en muchos casos, situaciones de denegación de servicio involuntarias. En este escenario de presión extrema, verificar si las empresas de IA respetan <code>robots.txt</code> se convierte en un problema prioritario de infraestructura de red.</p>
+
+          <p><span class="cue-action">AVANZAR SLIDE AHORA</span></p>
+        </div>
+      </div>
+
+      <!-- SLIDE 3 -->
+      <div class="speech-slide-container" data-slide="2">
+        <div class="slide-cue-header">
+          <span class="slide-number-tag">DIAPOSITIVA 03 // TAXONOMÍA DE RASTREADORES WEB</span>
+          <span class="slide-target-time">⏱ TIEMPO: 02:20 - 03:30</span>
+        </div>
+        <div class="speech-text">
+          <p><span class="cue-tone">Tono: Analítico y clasificatorio</span> Durante los 12 días del experimento pudimos caracterizar tres familias bien diferenciadas de clientes automatizados:</p>
+
+          <p>1. <span class="cue-emphasis">Buscadores tradicionales</span>, como Googlebot o Bingbot. Verifican periódicamente <code>robots.txt</code> y son atribuibles mediante DNS inverso (PTR).</p>
+
+          <p>2. <span class="cue-emphasis">Crawlers masivos de entrenamiento de IA</span>, principalmente ClaudeBot (Anthropic) y GPTBot (OpenAI). Dominaron abrumadoramente el dataset, concentrando el <span class="cue-data">99,6 % de todas las peticiones válidas</span>.</p>
+
+          <p>3. Y en tercer lugar, <span class="cue-warning">Scrapers no declarados y escáneres hostiles</span>. Agentes que falsean deliberadamente cabeceras User-Agent simulando ser navegadores Google Chrome en Windows o macOS. Como veremos, este tercer grupo fue el único responsable de todas las intrusiones en la trampa.</p>
+
+          <p><span class="cue-action">AVANZAR SLIDE AHORA</span></p>
+        </div>
+      </div>
+
+      <!-- SLIDE 4 -->
+      <div class="speech-slide-container" data-slide="3">
+        <div class="slide-cue-header">
+          <span class="slide-number-tag">DIAPOSITIVA 04 // MARCO CONCEPTUAL: HONEYPOT & RFC 9309</span>
+          <span class="slide-target-time">⏱ TIEMPO: 03:30 - 04:40</span>
+        </div>
+        <div class="speech-text">
+          <p><span class="cue-tone">Tono: Didáctico y técnico</span> Pasemos a los conceptos nucleares. Un <span class="cue-emphasis">Honeypot de Capa 7</span> es un sensor en la capa de aplicación diseñado para atraer y registrar tráfico sin comprometer activos reales. En nuestro caso, lo acoplamos a un <strong>Tarpit</strong>.</p>
+
+          <p>El estándar <span class="cue-data">RFC 9309</span> estipula que una directiva <code>Disallow: /archivo-interno/</code> prohíbe el rastreo de esa URI. Pero a nivel de transporte TCP no hay ningún freno: cualquier cliente que decida ignorar el texto plano de <code>robots.txt</code> puede solicitar la URL.</p>
+
+          <p>Para atrapar a estos infractores, explotamos una divergencia fundamental en cómo procesan la web: un navegador con un usuario humano descarga el HTML, interpreta el CSS, construye el <strong>CSSOM y el Render Tree</strong>, y omite cualquier elemento invisible. En contraste, un scraper básico utiliza analizadores léxicos planos que extraen cadenas <code>href</code> sin evaluar estilos.</p>
+
+          <p><span class="cue-action">AVANZAR SLIDE AHORA</span></p>
+        </div>
+      </div>
+
+      <!-- SLIDE 5: MAPEO EN EL MODELO OSI (NUEVA) -->
+      <div class="speech-slide-container" data-slide="4">
+        <div class="slide-cue-header">
+          <span class="slide-number-tag">DIAPOSITIVA 05 // MAPEO EN EL MODELO OSI (L1 A L7)</span>
+          <span class="slide-target-time">⏱ TIEMPO: 04:40 - 05:50</span>
+        </div>
+        <div class="speech-text">
+          <p><span class="cue-tone">Tono: Riguroso en Internetworking</span> En esta diapositiva pueden observar cómo cada pieza de nuestro sistema se ubica con precisión en las <span class="cue-emphasis">siete capas del modelo de referencia OSI</span>.</p>
+
+          <p>Comenzando por la base:
+          <br>• En <span class="cue-data">L1 (Física)</span> y <span class="cue-data">L2 (Enlace)</span> tenemos el host físico Windows 10, la fibra óptica y los conmutadores virtuales bridge de Docker en el kernel Linux de WSL2.
+          <br>• En <span class="cue-data">L3 (Red)</span> opera el direccionamiento Anycast y las subredes privadas RFC 1918 (10.98.0.0/24, etc.).
+          <br>• En <span class="cue-data">L4 (Transporte)</span> y <span class="cue-data">L5 (Sesión)</span> destaca el túnel QUIC saliente por UDP: al no abrir puertos TCP entrantes, protegemos la IP residencial de ataques L4.
+          <br>• En <span class="cue-data">L6 (Presentación)</span> ocurre la terminación TLS 1.3 en Cloudflare y la codificación JSON y Base64URL.
+          <br>• Y finalmente en <span class="cue-data">L7 (Aplicación)</span> es donde reside toda la lógica del experimento: la negociación HTTP, las exclusiones de <code>robots.txt</code>, la restitución de <code>CF-Connecting-IP</code> y el cálculo del árbol CSSOM.</p>
+
+          <p><span class="cue-action">AVANZAR SLIDE AHORA</span></p>
+        </div>
+      </div>
+
+      <!-- SLIDE 6 -->
+      <div class="speech-slide-container" data-slide="5">
+        <div class="slide-cue-header">
+          <span class="slide-number-tag">DIAPOSITIVA 06 // ARQUITECTURA DEL SISTEMA</span>
+          <span class="slide-target-time">⏱ TIEMPO: 05:50 - 07:00</span>
+        </div>
+        <div class="speech-text">
+          <p><span class="cue-tone">Tono: Preciso y de infraestructura</span> Pasemos a la arquitectura. En pantalla pueden observar el diagrama esquemático con los componentes efectivamente desplegados. El sistema operó sobre un host físico con <span class="cue-data">Windows 10 Pro y Docker Desktop sobre el subsistema WSL2</span> con kernel Linux 5.15.</p>
+
+          <p>Una decisión de red crucial fue la <span class="cue-emphasis">exposición sin apertura de puertos</span>. En lugar de exponer el router hogareño mediante Port Forwarding en puertos 80 o 443 —lo que expondría la IP residencial a ataques DDoS—, implementamos un <span class="cue-data">Cloudflare Argo Tunnel</span> mediante el contenedor <code>cloudflared</code>. Este contenedor establece un túnel cifrado saliente por QUIC hacia el Edge de Cloudflare.</p>
+
+          <p>Dentro del host, aplicamos un principio de <span class="cue-emphasis">aislamiento estricto por redes Docker bridge</span> independientes:
+          <br>• Primero, <code>tunnel_net</code> (subred 10.98.0.0/24), que conecta exclusivamente a <code>cloudflared</code> con el proxy inverso Nginx 1.29.
+          <br>• Segundo, <code>honeypot_net</code> (subred 10.98.1.0/24), que vincula a Nginx con el backend Django 5.1 servido por Gunicorn.
+          <br>• Tercero, <code>telemetry_net</code> (subred 10.98.2.0/24), donde conviven Promtail, Loki 3.5.0 y Grafana OSS.</p>
+
+          <p><span class="cue-action">AVANZAR SLIDE AHORA</span></p>
+        </div>
+      </div>
+
+      <!-- SLIDE 7 -->
+      <div class="speech-slide-container" data-slide="6">
+        <div class="slide-cue-header">
+          <span class="slide-number-tag">DIAPOSITIVA 07 // RESTITUCIÓN DE IDENTIDAD L7</span>
+          <span class="slide-target-time">⏱ TIEMPO: 07:00 - 08:10</span>
+        </div>
+        <div class="speech-text">
+          <p><span class="cue-tone">Tono: Foco en Internetworking</span> Como estudiantes de Internetworking, sabemos que introducir un proxy inverso altera la visibilidad de la capa de red. En una conexión intermediada por Cloudflare, a nivel L4 (TCP), la dirección IP que ve Nginx es la IP interna de <code>cloudflared</code> o una IP Anycast de Cloudflare, nunca la IP del cliente final.</p>
+
+          <p>Si hubiéramos confiado ciegamente en cabeceras como <code>X-Forwarded-For</code>, cualquier atacante podría haber inyectado una IP falsa (spoofing L7). Para resolverlo de manera robusta, configuramos el módulo <code>ngx_http_realip_module</code> de Nginx con una política estricta de confianza:</p>
+
+          <p>1. Definimos la directiva <code>set_real_ip_from 10.98.0.0/24</code>, ordenando a Nginx confiar únicamente en paquetes provenientes de la red del túnel.
+          <br>2. Configuramos <code>real_ip_header CF-Connecting-IP</code>, que es la cabecera autenticada e inmutable que Cloudflare inyecta en el borde tras validar la conexión TCP del cliente.
+          <br>3. Adicionalmente, verificamos que la variable interna <code>via_cloudflare</code> fuera igual a 1, registrando tanto la IP real del cliente (<code>remote_ip</code>) como la IP del par del túnel (<code>peer_ip</code>).</p>
+
+          <p><span class="cue-action">AVANZAR SLIDE AHORA</span></p>
+        </div>
+      </div>
+
+      <!-- SLIDE 8 -->
+      <div class="speech-slide-container" data-slide="7">
+        <div class="slide-cue-header">
+          <span class="slide-number-tag">DIAPOSITIVA 08 // MOTOR SIN ESTADO (HMAC-SHA256)</span>
+          <span class="slide-target-time">⏱ TIEMPO: 08:10 - 09:20</span>
+        </div>
+        <div class="speech-text">
+          <p><span class="cue-tone">Tono: Criptográfico y algorítmico</span> ¿Cómo generar un laberinto dinámico para absorber millones de peticiones sin colapsar el almacenamiento? La solución fue un <span class="cue-emphasis">diseño puramente sin estado basado en criptografía simétrica</span>.</p>
+
+          <p>Cada URL generada contiene un token de 52 caracteres hexadecimales compuesto por:
+          <br>• Un UUIDv4 único de 32 hex.
+          <br>• El timestamp de emisión de 8 hex (para medir la latencia del crawler).
+          <br>• La profundidad de 2 hex.
+          <br>• Y una firma <span class="cue-data">HMAC-SHA256</span> truncada a 10 caracteres hex (40 bits).</p>
+
+          <p>Cuando un bot pide una página, Django no consulta ninguna base de datos: recalcula la firma en memoria con su clave secreta. Si coincide, recupera la técnica y la profundidad. Truncar a 40 bits reduce el tamaño de las URLs a la vez que ofrece más de 1 billón de combinaciones, haciendo imposible la falsificación por fuerza bruta. Además, establecimos <span class="cue-data">HONEYPOT_MAX_DEPTH=10</span>, sirviendo hojas sin enlaces en nivel 11.</p>
+
+          <p><span class="cue-action">AVANZAR SLIDE AHORA</span></p>
+        </div>
+      </div>
+
+      <!-- SLIDE 9 -->
+      <div class="speech-slide-container" data-slide="8">
+        <div class="slide-cue-header">
+          <span class="slide-number-tag">DIAPOSITIVA 09 // MECANISMO DE TRAMPA: CSS VS. LÉXICO</span>
+          <span class="slide-target-time">⏱ TIEMPO: 09:20 - 10:30</span>
+        </div>
+        <div class="speech-text">
+          <p><span class="cue-tone">Tono: Dinámico y descriptivo visual</span> En pantalla pueden ver la animación del mecanismo de captura. Cada documento HTML entrega 5 enlaces públicos bajo <code>/public/</code> y 5 enlaces trampa bajo la ruta prohibida <code>/archivo-interno/</code>.</p>
+
+          <p>Los 5 enlaces trampa implementan 5 técnicas distintas:
+          <br>1. <code>visible</code> (grupo de control).
+          <br>2. <code>display_none_inline</code> (estilo en línea).
+          <br>3. <code>display_none_class</code> (clase CSS en cabecera).
+          <br>4. <code>opacity_0</code> (opacidad cero).
+          <br>5. <code>offscreen</code> (posicionamiento absoluto en <code>left: -10000px</code>).</p>
+
+          <p>Para evitar que un scraper evada la trampa memorizando nombres de clase estáticos, <span class="cue-action">ENFATIZAR</span> <strong>el nombre de cada clase se regenera aleatoriamente en cada petición</strong> (una letra y 8 caracteres hex). Solo un cliente que ejecute un motor de renderizado CSS real puede saber qué enlaces están ocultos.</p>
+
+          <p><span class="cue-action">AVANZAR SLIDE AHORA</span></p>
+        </div>
+      </div>
+
+      <!-- SLIDE 10 -->
+      <div class="speech-slide-container" data-slide="9">
+        <div class="slide-cue-header">
+          <span class="slide-number-tag">DIAPOSITIVA 10 // EVOLUCIÓN CRONOLÓGICA (SERIE DIARIA)</span>
+          <span class="slide-target-time">⏱ TIEMPO: 10:30 - 11:40</span>
+        </div>
+        <div class="speech-text">
+          <p><span class="cue-tone">Tono: Analítico sobre datos reales</span> En este gráfico vectorial animado observamos la serie diaria de las <span class="cue-data">3.568.349 peticiones analizadas</span> entre el 18 y el 30 de octubre de 2026.</p>
+
+          <p>El comportamiento presentó dos hitos fundamentales:
+          <br>• El día <span class="cue-emphasis">24 de octubre</span> ocurrió el evento más masivo del experimento: un pico extraordinario de <span class="cue-data">1.638.400 peticiones en 24 horas</span>, impulsado por la concurrencia simultánea de ClaudeBot y GPTBot explorando el árbol público.
+          <br>• El <span class="cue-warning">27 de octubre</span> se produjo un corte de conectividad de 9 horas en el enlace residencial. Al restablecerse el acceso, el túnel de <code>cloudflared</code> se reconectó automáticamente sin intervención manual ni corrupción de logs.</p>
+
+          <p>El sistema demostró una robustez absoluta, procesando picos de más de 38.000 peticiones por hora sin degradación de memoria ni reinicios.</p>
+
+          <p><span class="cue-action">AVANZAR SLIDE AHORA</span></p>
+        </div>
+      </div>
+
+      <!-- SLIDE 11 -->
+      <div class="speech-slide-container" data-slide="10">
+        <div class="slide-cue-header">
+          <span class="slide-number-tag">DIAPOSITIVA 11 // DINÁMICA DEL LABERINTO & GRAFOS</span>
+          <span class="slide-target-time">⏱ TIEMPO: 11:40 - 12:50</span>
+        </div>
+        <div class="speech-text">
+          <p><span class="cue-tone">Tono: Teórico y algorítmico</span> Analicemos la dinámica del laberinto desde la teoría de grafos. Cada página emite 5 enlaces públicos, definiendo un árbol con factor de ramificación <span class="cue-data">b = 5</span>.</p>
+
+          <p>Sin una cota máxima, la explosión combinatoria sería ingobernable: a nivel 10 existirían $5^{10} \approx 9,7$ millones de páginas potenciales. Aquí es donde radica la efectividad del tarpit:</p>
+
+          <p>Establecimos <span class="cue-data">HONEYPOT_MAX_DEPTH=10</span>. Cuando un crawler solicita un token de profundidad 10, Django sirve la página de nivel 11 con el flag <code>is_leaf = true</code> y <span class="cue-emphasis">cero enlaces salientes</span>. Tanto los crawlers que emplean búsqueda en anchura (BFS) como los que utilizan búsqueda en profundidad (DFS) terminaron consumiendo los nodos hoja, deteniendo su recursión de manera limpia y sin sobrecargar la infraestructura.</p>
+
+          <p><span class="cue-action">AVANZAR SLIDE AHORA</span></p>
+        </div>
+      </div>
+
+      <!-- SLIDE 12 -->
+      <div class="speech-slide-container" data-slide="11">
+        <div class="slide-cue-header">
+          <span class="slide-number-tag">DIAPOSITIVA 12 // CARACTERIZACIÓN DE BOTS DE IA</span>
+          <span class="slide-target-time">⏱ TIEMPO: 12:50 - 14:00</span>
+        </div>
+        <div class="speech-text">
+          <p><span class="cue-tone">Tono: Comparativo y riguroso</span> Pudimos comparar empíricamente las dos arquitecturas dominantes de rastreo de IA: <span class="cue-emphasis">ClaudeBot (Anthropic) y GPTBot (OpenAI)</span>. Sus estrategias de red son completamente opuestas:</p>
+
+          <p>• <strong>GPTBot</strong> sigue una estrategia reactiva e inmediata: la mediana entre que se emite un enlace y GPTBot lo solicita es de apenas <span class="cue-data">8,9 segundos</span>. Envía la cabecera <code>Referer</code> en el 100 % de sus peticiones y sostiene un ritmo sumamente predecible de ~2,0 peticiones por segundo.</p>
+
+          <p>• <strong>ClaudeBot</strong> opera mediante una arquitectura de cola diferida por lotes: nunca pide un enlace antes de 1 hora, con una mediana de retraso de <span class="cue-data">5,0 horas</span>. No envía cabecera <code>Referer</code> y trabaja en ráfagas agresivas que alcanzaron hasta <span class="cue-data">10,8 peticiones por segundo</span>.</p>
+
+          <p>Ambos respetaron al 100 % las exclusiones de <code>robots.txt</code>.</p>
+
+          <p><span class="cue-action">AVANZAR SLIDE AHORA</span></p>
+        </div>
+      </div>
+
+      <!-- SLIDE 13 -->
+      <div class="speech-slide-container" data-slide="12">
+        <div class="slide-cue-header">
+          <span class="slide-number-tag">DIAPOSITIVA 13 // DETECCIÓN EN LA TRAMPA & CHI-CUADRADO</span>
+          <span class="slide-target-time">⏱ TIEMPO: 14:00 - 15:10</span>
+        </div>
+        <div class="speech-text">
+          <p><span class="cue-tone">Tono: Foco en ciberseguridad y estadística</span> Llegamos a la trampa: ¿Quiénes entraron a <code>/archivo-interno/</code>? Hubo exactamente <span class="cue-data">207 peticiones no autorizadas</span> provenientes de 6 direcciones IP reales.</p>
+
+          <p>En el gráfico de barras animado pueden apreciar la distribución por técnica de ocultamiento: 43 para visible, 43 para display_none_inline, 42 para offscreen, 40 para display_none_class y 39 para opacity_0. Frente a una expectativa teórica uniforme de 41,4 accesos por categoría, el estadístico de bondad de ajuste arroja <span class="cue-data">χ² = 0,3188 con p = 0,9886</span>.</p>
+
+          <p>Como aclaramos rigurosamente en nuestro informe: este test estadístico <span class="cue-action">ENFATIZAR</span> <strong>debe interpretarse como exploratorio</strong>. Al estar los eventos agrupados en apenas 6 orígenes, no son observaciones independientes; sin embargo, descriptivamente demuestra que estos scrapers son absolutamente ciegos a las reglas CSS.</p>
+
+          <p><span class="cue-action">AVANZAR SLIDE AHORA</span></p>
+        </div>
+      </div>
+
+      <!-- SLIDE 14 -->
+      <div class="speech-slide-container" data-slide="13">
+        <div class="slide-cue-header">
+          <span class="slide-number-tag">DIAPOSITIVA 14 // ANÁLISIS FORENSE: LAS 6 IPS</span>
+          <span class="slide-target-time">⏱ TIEMPO: 15:10 - 16:20</span>
+        </div>
+        <div class="speech-text">
+          <p><span class="cue-tone">Tono: Forense e investigativo</span> Realizamos un análisis forense pormenorizado de los 6 actores infractores que cayeron en la trampa. Todos utilizaron User-Agents falsificados de Google Chrome y <span class="cue-warning">ninguno consultó jamás robots.txt (100 % Nivel 2)</span>.</p>
+
+          <p>La tabla forense proyectada revela dos perfiles claros de infractores:
+          <br>1. <strong>Scrapers puros de enlaces</strong>: Los actores de EE. UU., Canadá y Polonia (A1 en <code>154.28.229.0/24</code>, A2 en <code>103.196.9.0/24</code>, C en <code>158.69.55.0/24</code> y D en <code>45.138.12.0/24</code>), que consumieron enlaces en profundidad. El 79,2 % de los accesos (164 de 207) fueron a enlaces invisibilizados por CSS (Nivel 3). Además, <span class="cue-emphasis">ninguno de los 6 actores solicitó /favicon.ico</span>, prueba definitiva de que eran headless scrapers ciegos.</p>
+
+          <p>2. <strong>Escáneres hostiles de vulnerabilidades</strong>: B1 en Países Bajos (<code>93.123.109.0/24</code>) y B2 en Polonia (<code>45.138.12.0/24</code>), que cayeron en la trampa mientras buscaban activamente archivos <code>/.env</code>, <code>/.git/config</code> y <code>wp-login.php</code> con cientos de respuestas 404 (315 y 285 errores).</p>
+
+          <p><span class="cue-action">AVANZAR SLIDE AHORA</span></p>
+        </div>
+      </div>
+
+      <!-- SLIDE 15 -->
+      <div class="speech-slide-container" data-slide="14">
+        <div class="slide-cue-header">
+          <span class="slide-number-tag">DIAPOSITIVA 15 // OBSERVABILIDAD EN VIVO</span>
+          <span class="slide-target-time">⏱ TIEMPO: 16:20 - 17:30</span>
+        </div>
+        <div class="speech-text">
+          <p><span class="cue-tone">Tono: Operacional y de sistemas distribuidos</span> La observabilidad fue una pieza clave del proyecto. En pantalla pueden observar el dashboard real de Grafana en producción alimentado por Loki y Promtail.</p>
+
+          <p>Durante la operación enfrentamos un desafío de ingeniería crítico: durante el pico de 1,6 millones de peticiones, ejecutar consultas pesadas en LogQL directamente sobre Loki colapsaba la memoria del contenedor. La solución consistió en <span class="cue-emphasis">desacoplar la ingesta operativa en tiempo real del procesamiento analítico en lote</span>.</p>
+
+          <p>Promtail continuó alimentando a Grafana para monitorizar la salud del servicio en vivo, mientras que la analítica forense pesada se procesó offline mediante scripts en Python con NumPy y Polars sobre los registros estructurados en JSON, preservando la estabilidad del host.</p>
+
+          <p><span class="cue-action">AVANZAR SLIDE AHORA</span></p>
+        </div>
+      </div>
+
+      <!-- SLIDE 16 -->
+      <div class="speech-slide-container" data-slide="15">
+        <div class="slide-cue-header">
+          <span class="slide-number-tag">DIAPOSITIVA 16 // LECCIONES DE INTERNETWORKING</span>
+          <span class="slide-target-time">⏱ TIEMPO: 17:30 - 18:45</span>
+        </div>
+        <div class="speech-text">
+          <p><span class="cue-tone">Tono: Conclusivo y técnico</span> Esta investigación nos dejó tres lecciones fundamentales de Internetworking:</p>
+
+          <p>1. <span class="cue-emphasis">robots.txt se verifica por Operador, no por Crawler</span>. Descubrimos que GPTBot no consultó <code>robots.txt</code> directamente; en su lugar, el crawler satélite <code>OAI-SearchBot</code> consultó <code>robots.txt</code> exactamente 1 segundo antes de la primera visita de GPTBot y luego refrescó la caché cada 6 horas. Lo mismo ocurre con Googlebot y GoogleOther. Medir robots.txt únicamente por User-Agent aislado subestima el cumplimiento real.</p>
+
+          <p>2. <span class="cue-emphasis">La ofuscación CSS dinámica es un detector certero</span>. Los scrapers agresivos siguen parseando HTML plano para ahorrar cómputo, lo que valida las técnicas de ocultamiento dinámico como una contramedida de bajo costo computacional.</p>
+
+          <p>3. <span class="cue-emphasis">Límites del fingerprinting TLS en túneles</span>. Al delegar la terminación TLS en Cloudflare, perdimos la capacidad de calcular firmas JA3/JA4 en el origen.</p>
+
+          <p><span class="cue-action">AVANZAR SLIDE AHORA</span></p>
+        </div>
+      </div>
+
+      <!-- SLIDE 17 -->
+      <div class="speech-slide-container" data-slide="16">
+        <div class="slide-cue-header">
+          <span class="slide-number-tag">DIAPOSITIVA 17 // RECOMENDACIONES & CIERRE</span>
+          <span class="slide-target-time">⏱ TIEMPO: 18:45 - 20:00</span>
+        </div>
+        <div class="speech-text">
+          <p><span class="cue-tone">Tono: Firme, conclusiones y agradecimiento</span> Para cerrar nuestra presentación, proponemos tres recomendaciones prácticas para administradores de red:
+          <br>• Desplegar enlaces trampa con CSS dinámico en páginas públicas para alimentar reglas automáticas de baneo en firewalls o WAFs.
+          <br>• Filtrar o inspeccionar con mayor rigor el tráfico proveniente de ASNs de hosting (como OVH o DataCamp), donde se originó el 100 % de las infracciones.
+          <br>• Y basar las políticas de control en direcciones IP y no en cabeceras User-Agent fácilmente falsificables.</p>
+
+          <p>Hemos cumplido íntegramente los objetivos planteados: desplegamos un honeypot real en Internet, validamos el cumplimiento absoluto de las directivas RFC 9309 por parte de los crawlers dominantes de IA y caracterizamos a los actores encubiertos.</p>
+
+          <p>Todo el código fuente y los datasets se encuentran documentados en el repositorio del proyecto. Muchas gracias por su atención; quedamos a disposición de la cátedra para responder sus preguntas.</p>
+
+          <p><span class="cue-action">FIN DE LA PRESENTACIÓN · ABRIR RONDA DE PREGUNTAS</span></p>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- PIE DE PÁGINA -->
+  <footer class="prompter-footer">
+    <div class="shortcut-hints">
+      <span><span class="kbd-tag">ESPACIO</span> Crono</span>
+      <span><span class="kbd-tag">◀ / ▶</span> Diapositiva</span>
+      <span><span class="kbd-tag">A- / A+</span> Tamaño Fuente</span>
+      <span><span class="kbd-tag">R</span> Reset</span>
+    </div>
+    <div>
+      <span>ENLACE: <strong>honeypot_presentation_sync</strong></span>
+    </div>
+  </footer>
+
+  <script>
+    // METADATOS DE LAS 17 DIAPOSITIVAS
+    const SLIDE_METADATA = [
+      {
+        goal: "Presentar formalmente el trabajo, el contexto de Internetworking y el alcance experimental del despliegue.",
+        time: "00:00 - 01:10 (Meta: 1:10)",
+        bullets: [
+          "Experimento real en producción: <strong>18 al 30 de octubre de 2026</strong>.",
+          "Dominio público: <code>definitivamente-no-hay-trabas.com.ar</code>.",
+          "<strong>3.568.349</strong> peticiones válidas analizadas.",
+          "Aislamiento de red sin puertos abiertos mediante <strong>Cloudflare Argo Tunnel</strong>."
+        ],
+        metrics: ["3,56 M", "Peticiones Nginx", "207", "Accesos Trampa", "6 IPs", "Orígenes Reales", "100%", "Cumplimiento IA/Buscadores"],
+        tip: "Mantén un tono pausado y seguro. No leas palabra por palabra; usa los términos en azul y ámbar para guiar tu mirada mientras miras a la cámara o al tribunal."
+      },
+      {
+        goal: "Explicar el panorama del scraping moderno y la carrera de las IAs por acumular datos a expensas de la infraestructura web.",
+        time: "01:10 - 02:20 (Meta: 1:10)",
+        bullets: [
+          "Presión de modelos fundacionales (GPT-4, Claude 3.5) por ingestar texto masivo.",
+          "Quiebre del pacto histórico: extracción de datos sin retorno de tráfico web.",
+          "Consumo no intencional de CPU, DoS asimétrico y costos de ancho de banda.",
+          "La hipótesis central: ¿Respetan las corporaciones las directivas cuando hay presión comercial?"
+        ],
+        metrics: ["Petabytes", "Demanda de Texto", "0 Tráfico", "Devuelto por IA", "RFC 9309", "Estándar Voluntario", "L7", "Capa Afectada"],
+        tip: "Enfatiza que este problema impacta directamente a los administradores de sistemas y telecomunicaciones."
+      },
+      {
+        goal: "Presentar la taxonomía formal de rastreadores web: buscadores, bots de entrenamiento de IA y scrapers encubiertos.",
+        time: "02:20 - 03:30 (Meta: 1:10)",
+        bullets: [
+          "<strong>Buscadores:</strong> Googlebot, Bingbot (atribuibles por DNS inverso PTR).",
+          "<strong>Crawlers de IA:</strong> ClaudeBot, GPTBot (99,6 % del tráfico en este estudio).",
+          "<strong>Scrapers encubiertos:</strong> Falsifican cabeceras Chrome para eludir bloqueos.",
+          "Solo los scrapers encubiertos violaron las directivas del honeypot."
+        ],
+        metrics: ["99,6 %", "Tráfico de IA", "3 Clases", "De Rastreadores", "PTR", "Verificación DNS", "Chrome", "Falso User-Agent"],
+        tip: "Destaca la diferencia entre crawlers que declaran su identidad y aquellos que la enmascaran."
+      },
+      {
+        goal: "Explicar la diferencia entre Honeypot y Tarpit, el estándar RFC 9309 y el problema del scraping ciego a CSS.",
+        time: "03:30 - 04:40 (Meta: 1:10)",
+        bullets: [
+          "<strong>Honeypot L7:</strong> trampa en la capa de aplicación HTTP.",
+          "<strong>Tarpit dinámico:</strong> laberinto acotado (<span class='cad-tag'>HONEYPOT_MAX_DEPTH=10</span>).",
+          "<strong>RFC 9309:</strong> protocolo voluntario; no hay bloqueo a nivel TCP/IP.",
+          "<strong>Divergencia:</strong> navegadores calculan CSSOM; scrapers leen texto plano."
+        ],
+        metrics: ["L7", "Capa de Aplicación", "RFC 9309", "robots.txt", "CSSOM", "Árbol Render", "0", "Robots.txt por infractores"],
+        tip: "Subraya que la materia es Internetworking: explica la relación entre capas L4 y L7."
+      },
+      {
+        goal: "Exponer el mapeo exhaustivo de la arquitectura en las 7 capas del modelo OSI (Física hasta Aplicación).",
+        time: "04:40 - 05:50 (Meta: 1:10)",
+        bullets: [
+          "<strong>L7 Aplicación:</strong> RFC 9309, HTTP, Django, CSSOM y CF-Connecting-IP.",
+          "<strong>L6 Presentación:</strong> TLS 1.3 en Edge, Logs JSON Nginx, HMAC-SHA256 Base64URL.",
+          "<strong>L4/L5 Transporte y Sesión:</strong> Túnel QUIC saliente por UDP (cero puertos TCP abiertos).",
+          "<strong>L1-L3 Física y Red:</strong> WSL2 Docker bridges, subredes RFC 1918 y Anycast BGP."
+        ],
+        metrics: ["7 Capas", "Modelo OSI", "QUIC UDP", "Capa L4/L5", "BGP Anycast", "Capa L3", "RFC 9309", "Capa L7"],
+        tip: "Este es el núcleo conceptual de la materia. Señala visualmente cómo interactúan las capas L3/L4 con la capa L7."
+      },
+      {
+        goal: "Detallar la arquitectura física y de contenedores: Windows 10 + Docker WSL2, redes bridge y aislamiento.",
+        time: "05:50 - 07:00 (Meta: 1:10)",
+        bullets: [
+          "Host físico: <strong>Windows 10 Pro + Docker Desktop (WSL2 v2.4.10)</strong>.",
+          "Túnel saliente QUIC cifrado con <code>cloudflared</code>: <strong>cero puertos abiertos</strong>.",
+          "3 redes bridge aisladas: <code>tunnel_net</code>, <code>honeypot_net</code>, <code>telemetry_net</code>.",
+          "Django opera con <code>read_only: true</code>: <strong>sistema inmutable sin base de datos</strong>."
+        ],
+        metrics: ["3 Redes", "Docker Bridge", "QUIC", "Túnel Cloudflare", "0 Puertos", "Abiertos en Router", "read_only", "Contenedor Django"],
+        tip: "Menciona que este diseño de túnel reverso previene ataques DDoS contra la IP residencial del estudiante."
+      },
+      {
+        goal: "Explicar el problema de la pérdida de IP en proxies L7 y cómo se restituyó la identidad mediante CF-Connecting-IP.",
+        time: "07:00 - 08:10 (Meta: 1:10)",
+        bullets: [
+          "Problema L4: Nginx solo ve la IP interna del túnel <code>cloudflared</code> (10.98.0.2).",
+          "Riesgo: <code>X-Forwarded-For</code> puede ser suplantado (spoofing L7).",
+          "Solución Nginx: <code>set_real_ip_from 10.98.0.0/24</code> y <code>real_ip_header CF-Connecting-IP</code>.",
+          "Validación con <code>via_cloudflare=1</code> en cada petición registrada."
+        ],
+        metrics: ["10.98.0.0/24", "Subred del Túnel", "CF-IP", "Cabecera Inmutable", "Nginx", "ngx_http_realip", "100%", "Trazabilidad Forense"],
+        tip: "Este es un punto clave de evaluación para la cátedra de Internetworking. Explica con claridad la diferencia entre L4 (TCP peer) y L7 (HTTP header)."
+      },
+      {
+        goal: "Presentar el token criptográfico HMAC-SHA256, el diseño sin estado y el control de profundidad.",
+        time: "08:10 - 09:20 (Meta: 1:10)",
+        bullets: [
+          "Token de 52 hex: <code>UUID (32) + Epoch (8) + Depth (2) + HMAC (10)</code>.",
+          "Sin base de datos ni escrituras a disco: validación y regeneración al vuelo.",
+          "Firma de 40 bits: balance óptimo de compacidad y seguridad (2⁴⁰ ≈ 1,1 billones de combinaciones).",
+          "Límite estricto: <code>HONEYPOT_MAX_DEPTH=10</code>, hojas en profundidad 11."
+        ],
+        metrics: ["52 hex", "Longitud de Token", "40 bits", "Firma HMAC", "Nivel 10", "Profundidad Máx", "Nivel 11", "Nodo Hoja (Sin enlaces)"],
+        tip: "Aclara que aunque 40 bits no es para banca electrónica, para un laberinto web equivale a 1 billón de combinaciones, imposible de adivinar por brute force."
+      },
+      {
+        goal: "Mostrar cómo funciona el engaño: 5 técnicas CSS y nombres de clase dinámicos por petición.",
+        time: "09:20 - 10:30 (Meta: 1:10)",
+        bullets: [
+          "Cada página entrega 5 enlaces públicos y 5 enlaces trampa.",
+          "5 técnicas: <code>visible</code>, <code>display_none_inline</code>, <code>display_none_class</code>, <code>opacity_0</code>, <code>offscreen</code>.",
+          "Nombres de clase aleatorios (letra + 8 hex) regenerados en cada request.",
+          "Imposible de evadir sin ejecutar un motor de diseño CSS completo."
+        ],
+        metrics: ["5 Técnicas", "De Ocultamiento", "Letra+8h", "Clase Aleatoria", "/archivo/", "Ruta Prohibida", "/public/", "Ruta Permitida"],
+        tip: "Aprovecha que la diapositiva en pantalla muestra la animación vectorial interactiva del bot cayendo en la trampa mientras el humano pasa de largo."
+      },
+      {
+        goal: "Analizar la serie temporal de 12 días, el pico de 1,6 millones y la caída del túnel del 27 de octubre.",
+        time: "10:30 - 11:40 (Meta: 1:10)",
+        bullets: [
+          "Dataset final: <strong>3.568.349 peticiones</strong> depuradas de calidad.",
+          "Pico máximo el <strong>24/10: 1.638.400 peticiones en un solo día</strong>.",
+          "Incidente operativo el <strong>27/10: caída de 9 horas en el túnel</strong>.",
+          "Recuperación automática de <code>cloudflared</code> y reanudación limpia."
+        ],
+        metrics: ["3,56 M", "Total Peticiones", "1,63 M", "Pico Diario (24/10)", "9 horas", "Caída Túnel (27/10)", "12 días", "Duración Total"],
+        tip: "Destaca la honestidad académica de mostrar la caída del 27 de octubre y cómo el sistema se autorrecuperó sin intervención manual."
+      },
+      {
+        goal: "Explicar la dinámica del laberinto desde la teoría de grafos: ramificación exponencial b=5 y poda por nodos hoja.",
+        time: "11:40 - 12:50 (Meta: 1:10)",
+        bullets: [
+          "Árbol con factor de ramificación <strong>b = 5</strong>: espacio potencial de 5¹⁰ ≈ 9,7 millones de páginas.",
+          "Exploración en anchura (BFS) vs profundidad (DFS) en algoritmos de crawlers.",
+          "Contención efectiva: el nivel 11 se emite sin enlaces, deteniendo la recursión.",
+          "Protección de los recursos del crawler y del servidor."
+        ],
+        metrics: ["b = 5", "Factor Ramificación", "9,7 M", "Páginas Teóricas", "Nivel 10", "Profundidad Máx", "Nivel 11", "Nodo Hoja"],
+        tip: "Conecta este concepto con la materia de Internetworking y algoritmos de encaminamiento en grafos."
+      },
+      {
+        goal: "Comparar las dinámicas de rastreo opuestas de ClaudeBot (batch diferido) y GPTBot (seguimiento inmediato).",
+        time: "12:50 - 14:00 (Meta: 1:10)",
+        bullets: [
+          "<strong>GPTBot:</strong> seguimiento en 8,9 s (mediana), 100% Referer, ritmo estable de ~2 req/s.",
+          "<strong>ClaudeBot:</strong> encolado diferido (mediana 5,0 h), 0% Referer, ráfagas de 10,8 req/s.",
+          "Ambos rastreadores alcanzaron sistemáticamente el fondo en el nivel 11.",
+          "Cumplimiento del 100 % respecto de las rutas de exclusión."
+        ],
+        metrics: ["8,9 s", "Retardo GPTBot", "5,0 h", "Retardo ClaudeBot", "10,8 req/s", "Ráfaga ClaudeBot", "Nivel 11", "Tope Alcanzado"],
+        tip: "Subraya el contraste: GPTBot actúa en tiempo real como un rastreador reactivo; ClaudeBot opera con una arquitectura de pipeline offline desacoplado."
+      },
+      {
+        goal: "Explicar las 207 capturas en la trampa, las 6 IPs y el significado del test Chi-cuadrado exploratorio.",
+        time: "14:00 - 15:10 (Meta: 1:10)",
+        bullets: [
+          "<strong>Cumplimiento de IA y buscadores oficiales: 100%</strong>.",
+          "207 peticiones en la trampa concentradas en <strong>6 IPs reales</strong>.",
+          "User-Agents falsificados de Chrome; <strong>ninguno pidió robots.txt</strong>.",
+          "Chi-cuadrado (χ² = 0,3188, p = 0,9886): distribución exploratoria equiprobable de técnicas."
+        ],
+        metrics: ["0", "Violaciones IA Oficial", "207", "Capturas Trampa", "6 IPs", "Orígenes Hostiles", "p = 0.988", "Uniformidad Léxica"],
+        tip: "¡ATENCIÓN! No digas que p=0.9886 'demuestra' uniformidad. Di con precisión que es exploratorio debido al agrupamiento de las 6 IPs y no rechaza la equiprobabilidad."
+      },
+      {
+        goal: "Analizar el desglose forense detallado de las 6 IPs capturadas, ASNs, secuencias temporales y diccionarios de ataque.",
+        time: "15:10 - 16:20 (Meta: 1:10)",
+        bullets: [
+          "6 actores infractores en subredes /24 de EE. UU., Canadá, Polonia y Países Bajos.",
+          "Prueba del Favicon: 0 de 207 solicitaron /favicon.ico (headless scrapers confirmados).",
+          "Dos escáneres oportunistas buscando rutas de exploit (B1 y B2 con 315 y 285 errores 404).",
+          "Cuatro scrapers sistemáticos de enlaces a alta velocidad (A1, A2, C, D hasta prof. 2 y 3)."
+        ],
+        metrics: ["6 Actores", "Infractores", "79,2%", "Nivel 3 (CSS)", "0/207", "Favicon Reqs", "207", "Capturas Trampa"],
+        tip: "Muestra cómo el análisis forense de logs revela la presencia de actores maliciosos en la red viva."
+      },
+      {
+        goal: "Mostrar el panel de Grafana en producción, el pipeline Promtail-Loki y el manejo de alto volumen.",
+        time: "16:20 - 17:30 (Meta: 1:10)",
+        bullets: [
+          "Logs JSON estructurados generados en Nginx y leídos por Promtail.",
+          "Grafana Loki 3.5.0 para consultas en vivo y dashboards de operaciones.",
+          "Desacoplamiento: ingesta en tiempo real vs. scripts analíticos por lotes.",
+          "Uso de NumPy y Polars para el cálculo offline de métricas complejas."
+        ],
+        metrics: ["Loki 3.5", "Motor de Logs", "JSON", "Formato de Nginx", "Promtail", "Agente Ingesta", "Polars", "Procesamiento Batch"],
+        tip: "Apunta al panel de Grafana proyectado: describe cómo las métricas de códigos HTTP 200 vs 404 permitieron supervisar la salud del host."
+      },
+      {
+        goal: "Sintetizar los aprendizajes sobre robots.txt por operador, scrapers ciegos y hardening de proxies.",
+        time: "17:30 - 18:45 (Meta: 1:15)",
+        bullets: [
+          "robots.txt se pide a nivel operador (OAI-SearchBot consultó antes que GPTBot).",
+          "Los scrapers no autorizados son 100% ciegos a las reglas CSS.",
+          "Arquitectura sin estado: vital para escalar sin colapsar bases de datos.",
+          "Hardening: Nginx configurado con real_ip y sin exposición de puertos."
+        ],
+        metrics: ["Operador", "Caché de robots.txt", "100%", "Ceguera a CSS", "Stateless", "Escalabilidad", "Hardened", "Reverse Proxy"],
+        tip: "Este es el puente hacia la conclusión. Resume los aportes de ingeniería que diferencian este trabajo de un simple tutorial o script."
+      },
+      {
+        goal: "Brindar recomendaciones prácticas para administradores de red y abrir la sesión de preguntas con solidez.",
+        time: "18:45 - 20:00 (Meta: 1:15)",
+        bullets: [
+          "Inyectar enlaces trampa con CSS dinámico para nutrir bloqueos automáticos en WAFs.",
+          "Filtrar tráfico procedente de ASNs de centros de datos para mitigar el 95% del scraping hostil.",
+          "Código fuente y datasets públicos en el repositorio del proyecto.",
+          "Agradecimiento al tribunal y apertura a la ronda de preguntas."
+        ],
+        metrics: ["WAF", "Regla de Bloqueo", "ASN Drop", "Filtrado Hosting", "GitHub", "Código Abierto", "20:00", "Meta Clavada"],
+        tip: "Mira fijamente a los profesores al decir la última frase. Agradece con tranquilidad y mantén una postura receptiva."
+      }
+    ];
+
+    let currentSlide = 0;
+    const totalSlides = 17;
+    let timerSeconds = 1200; // 20 min
+    let isTimerRunning = false;
+    let timerInterval = null;
+    let isAutoScrolling = false;
+    let autoScrollInterval = null;
+    let speechFontSize = 22;
+
+    const channel = new BroadcastChannel('honeypot_presentation_sync');
+
+    const timerDisplay = document.getElementById('timerDisplay');
+    const paceLabel = document.getElementById('paceLabel');
+    const btnToggleTimer = document.getElementById('btnToggleTimer');
+    const btnResetTimer = document.getElementById('btnResetTimer');
+    const slideIndicator = document.getElementById('slideIndicator');
+    const btnPrevSlide = document.getElementById('btnPrevSlide');
+    const btnNextSlide = document.getElementById('btnNextSlide');
+    const slideSelect = document.getElementById('slideSelect');
+    const syncStatus = document.getElementById('syncStatus');
+    const syncText = document.getElementById('syncText');
+    const speechArea = document.getElementById('speechArea');
+    const btnToggleAutoScroll = document.getElementById('btnToggleAutoScroll');
+    const scrollSpeed = document.getElementById('scrollSpeed');
+    const btnFontInc = document.getElementById('btnFontInc');
+    const btnFontDec = document.getElementById('btnFontDec');
+
+    const slideMetaGoal = document.getElementById('slideMetaGoal');
+    const slideMetaTime = document.getElementById('slideMetaTime');
+    const slideMetaBullets = document.getElementById('slideMetaBullets');
+    const slideMetaTip = document.getElementById('slideMetaTip');
+    const metricVal1 = document.getElementById('metricVal1');
+    const metricLbl1 = document.getElementById('metricLbl1');
+    const metricVal2 = document.getElementById('metricVal2');
+    const metricLbl2 = document.getElementById('metricLbl2');
+    const metricVal3 = document.getElementById('metricVal3');
+    const metricLbl3 = document.getElementById('metricLbl3');
+    const metricVal4 = document.getElementById('metricVal4');
+    const metricLbl4 = document.getElementById('metricLbl4');
+
+    // Horarios objetivo en segundos transcurridos (~70 segundos por diapositiva)
+    const SLIDE_SCHEDULE_SECONDS = [
+      0,    // 01: 00:00
+      70,   // 02: 01:10
+      140,  // 03: 02:20
+      210,  // 04: 03:30
+      280,  // 05: 04:40 (OSI Model)
+      350,  // 06: 05:50 (Architecture)
+      420,  // 07: 07:00 (Real-IP)
+      490,  // 08: 08:10 (HMAC)
+      560,  // 09: 09:20 (Trap CSS)
+      630,  // 10: 10:30 (Daily Series)
+      700,  // 11: 11:40 (Graph Theory)
+      770,  // 12: 12:50 (AI Crawlers)
+      840,  // 13: 14:00 (Trap & Chi2)
+      910,  // 14: 15:10 (6 Hostile IPs)
+      980,  // 15: 16:20 (Observability)
+      1050, // 16: 17:30 (Lessons)
+      1125  // 17: 18:45 (Closing & Recs)
+    ];
+
+    function init() {
+      renderSlide(0);
+      updateTimerDisplay();
+      triggerMathRender();
+
+      channel.postMessage({ type: 'REQUEST_SYNC' });
+
+      btnToggleTimer.addEventListener('click', toggleTimer);
+      btnResetTimer.addEventListener('click', resetTimer);
+      btnPrevSlide.addEventListener('click', () => changeSlide(currentSlide - 1));
+      btnNextSlide.addEventListener('click', () => changeSlide(currentSlide + 1));
+      slideSelect.addEventListener('change', (e) => changeSlide(parseInt(e.target.value)));
+
+      btnToggleAutoScroll.addEventListener('click', toggleAutoScroll);
+      btnFontInc.addEventListener('click', () => changeFontSize(2));
+      btnFontDec.addEventListener('click', () => changeFontSize(-2));
+
+      window.addEventListener('keydown', handleKeydown);
+      channel.onmessage = handleBroadcastMessage;
+    }
+
+    function handleBroadcastMessage(event) {
+      const data = event.data;
+      if (!data) return;
+
+      if (data.type === 'SLIDE_CHANGE') {
+        if (data.index !== currentSlide) {
+          applySlideChange(data.index, false);
+        }
+      } else if (data.type === 'TIMER_UPDATE') {
+        timerSeconds = data.seconds;
+        isTimerRunning = data.isRunning;
+        updateTimerDisplay();
+        updateTimerButton();
+        if (isTimerRunning && !timerInterval) {
+          startTimerLoop();
+        } else if (!isTimerRunning && timerInterval) {
+          clearInterval(timerInterval);
+          timerInterval = null;
+        }
+      } else if (data.type === 'SYNC_RESPONSE' || data.type === 'SYNC_STATE') {
+        if (typeof data.slideIndex === 'number') {
+          applySlideChange(data.slideIndex, false);
+        }
+        if (typeof data.seconds === 'number') {
+          timerSeconds = data.seconds;
+          isTimerRunning = !!data.isRunning;
+          updateTimerDisplay();
+          updateTimerButton();
+          if (isTimerRunning && !timerInterval) {
+            startTimerLoop();
+          } else if (!isTimerRunning && timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+          }
+        }
+        setSyncStatus(true);
+      } else if (data.type === 'REQUEST_SYNC') {
+        channel.postMessage({
+          type: 'SYNC_RESPONSE',
+          slideIndex: currentSlide,
+          seconds: timerSeconds,
+          isRunning: isTimerRunning
+        });
+      }
+    }
+
+    function setSyncStatus(connected) {
+      if (connected) {
+        syncStatus.style.borderColor = 'var(--ink-emerald)';
+        syncStatus.style.background = '#112520';
+        syncStatus.querySelector('.status-dot').style.background = 'var(--ink-emerald)';
+        syncText.textContent = 'SINCRONIZADO';
+      } else {
+        syncStatus.style.borderColor = 'var(--ink-amber)';
+        syncStatus.style.background = '#261b0c';
+        syncStatus.querySelector('.status-dot').style.background = 'var(--ink-amber)';
+        syncText.textContent = 'STANDALONE';
+      }
+    }
+
+    function changeSlide(index) {
+      if (index < 0 || index >= totalSlides) return;
+      applySlideChange(index, true);
+    }
+
+    function applySlideChange(index, broadcast = true) {
+      currentSlide = index;
+      renderSlide(index);
+      if (broadcast) {
+        channel.postMessage({ type: 'SLIDE_CHANGE', index: currentSlide });
+      }
+    }
+
+    function renderSlide(index) {
+      const containers = document.querySelectorAll('.speech-slide-container');
+      containers.forEach(c => {
+        if (parseInt(c.dataset.slide) === index) {
+          c.classList.add('active');
+        } else {
+          c.classList.remove('active');
+        }
+      });
+
+      slideIndicator.textContent = `${String(index + 1).padStart(2, '0')} / ${String(totalSlides).padStart(2, '0')}`;
+      slideSelect.value = index;
+
+      const meta = SLIDE_METADATA[index];
+      if (meta) {
+        slideMetaGoal.textContent = meta.goal;
+        slideMetaTime.textContent = meta.time;
+        slideMetaTip.textContent = meta.tip;
+        slideMetaBullets.innerHTML = meta.bullets.map(b => `<li>${b}</li>`).join('');
+
+        if (meta.metrics) {
+          metricVal1.textContent = meta.metrics[0];
+          metricLbl1.textContent = meta.metrics[1];
+          metricVal2.textContent = meta.metrics[2];
+          metricLbl2.textContent = meta.metrics[3];
+          metricVal3.textContent = meta.metrics[4];
+          metricLbl3.textContent = meta.metrics[5];
+          metricVal4.textContent = meta.metrics[6];
+          metricLbl4.textContent = meta.metrics[7];
+        }
+      }
+
+      speechArea.scrollTo({ top: 0, behavior: 'smooth' });
+      evaluatePacing();
+      triggerMathRender();
+    }
+
+    function triggerMathRender() {
+      if (typeof renderMathInElement === 'function') {
+        renderMathInElement(document.body, {
+          delimiters: [
+            { left: '$$', right: '$$', display: true },
+            { left: '$', right: '$', display: false }
+          ],
+          ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+          throwOnError: false
+        });
+      } else {
+        setTimeout(triggerMathRender, 120);
+      }
+    }
+
+    function toggleTimer() {
+      if (isTimerRunning) {
+        pauseTimer();
+      } else {
+        startTimer();
+      }
+    }
+
+    function startTimer() {
+      if (isTimerRunning) return;
+      isTimerRunning = true;
+      updateTimerButton();
+      startTimerLoop();
+      channel.postMessage({ type: 'TIMER_UPDATE', isRunning: true, seconds: timerSeconds });
+    }
+
+    function pauseTimer() {
+      if (!isTimerRunning) return;
+      isTimerRunning = false;
+      if (timerInterval) clearInterval(timerInterval);
+      timerInterval = null;
+      updateTimerButton();
+      channel.postMessage({ type: 'TIMER_UPDATE', isRunning: false, seconds: timerSeconds });
+    }
+
+    function resetTimer() {
+      pauseTimer();
+      timerSeconds = 1200;
+      updateTimerDisplay();
+      channel.postMessage({ type: 'TIMER_UPDATE', isRunning: false, seconds: 1200 });
+      evaluatePacing();
+    }
+
+    function startTimerLoop() {
+      if (timerInterval) clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        if (timerSeconds > 0) {
+          timerSeconds--;
+          updateTimerDisplay();
+          evaluatePacing();
+          if (timerSeconds % 5 === 0) {
+            channel.postMessage({ type: 'TIMER_UPDATE', isRunning: true, seconds: timerSeconds });
+          }
+        } else {
+          timerSeconds--;
+          updateTimerDisplay();
+        }
+      }, 1000);
+    }
+
+    function updateTimerDisplay() {
+      let absSeconds = Math.abs(timerSeconds);
+      let mins = Math.floor(absSeconds / 60);
+      let secs = absSeconds % 60;
+      let formatted = `${timerSeconds < 0 ? '-' : ''}${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+      timerDisplay.textContent = formatted;
+
+      timerDisplay.classList.remove('warning', 'danger');
+      if (timerSeconds < 60) {
+        timerDisplay.classList.add('danger');
+      } else if (timerSeconds < 300) {
+        timerDisplay.classList.add('warning');
+      }
+    }
+
+    function updateTimerButton() {
+      if (isTimerRunning) {
+        btnToggleTimer.textContent = '⏸ PAUSAR';
+        btnToggleTimer.classList.remove('btn-action');
+      } else {
+        btnToggleTimer.textContent = '▶ INICIAR';
+        btnToggleTimer.classList.add('btn-action');
+      }
+    }
+
+    function evaluatePacing() {
+      const elapsed = 1200 - timerSeconds;
+      const targetTime = SLIDE_SCHEDULE_SECONDS[currentSlide];
+      const diff = elapsed - targetTime;
+
+      if (Math.abs(diff) <= 25) {
+        paceLabel.textContent = 'A TIEMPO';
+        paceLabel.style.color = 'var(--ink-emerald)';
+      } else if (diff > 25) {
+        paceLabel.textContent = `RETRASADO (+${Math.round(diff)}s)`;
+        paceLabel.style.color = 'var(--ink-coral)';
+      } else {
+        paceLabel.textContent = `ADELANTADO (${Math.round(diff)}s)`;
+        paceLabel.style.color = 'var(--ink-blueprint)';
+      }
+    }
+
+    function toggleAutoScroll() {
+      isAutoScrolling = !isAutoScrolling;
+      if (isAutoScrolling) {
+        btnToggleAutoScroll.textContent = '📜 AUTO-SCROLL: ON';
+        btnToggleAutoScroll.classList.add('btn-action');
+        startAutoScroll();
+      } else {
+        btnToggleAutoScroll.textContent = '📜 AUTO-SCROLL: OFF';
+        btnToggleAutoScroll.classList.remove('btn-action');
+        stopAutoScroll();
+      }
+    }
+
+    function startAutoScroll() {
+      stopAutoScroll();
+      autoScrollInterval = setInterval(() => {
+        const speed = parseInt(scrollSpeed.value) || 2;
+        speechArea.scrollTop += speed * 0.7;
+      }, 50);
+    }
+
+    function stopAutoScroll() {
+      if (autoScrollInterval) {
+        clearInterval(autoScrollInterval);
+        autoScrollInterval = null;
+      }
+    }
+
+    function changeFontSize(delta) {
+      speechFontSize = Math.max(16, Math.min(36, speechFontSize + delta));
+      const texts = document.querySelectorAll('.speech-text');
+      texts.forEach(t => t.style.fontSize = `${speechFontSize}px`);
+    }
+
+    function handleKeydown(e) {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
+
+      if (e.code === 'Space') {
+        e.preventDefault();
+        toggleTimer();
+      } else if (e.code === 'ArrowRight' || e.code === 'KeyN') {
+        e.preventDefault();
+        changeSlide(currentSlide + 1);
+      } else if (e.code === 'ArrowLeft' || e.code === 'KeyB') {
+        e.preventDefault();
+        changeSlide(currentSlide - 1);
+      } else if (e.code === 'KeyR') {
+        e.preventDefault();
+        resetTimer();
+      } else if (e.code === 'KeyS') {
+        e.preventDefault();
+        toggleAutoScroll();
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>

@@ -3,6 +3,10 @@ nginx/certs/*.pem
 nginx/certs/*.key
 data/*
 !data/serie_temporal_diaria.csv
+!data/subredes_por_operador.csv
+!data/verificacion_rangos.csv
 __pycache__/
 *.mmdb
 selftest_crawl.py
+
+graficos/
