@@ -1,7 +1,8 @@
 .env
 nginx/certs/*.pem
 nginx/certs/*.key
-data/
+data/*
+!data/serie_temporal_diaria.csv
 __pycache__/
 *.mmdb
 selftest_crawl.py
