@@ -23,7 +23,7 @@ window.PRESENTATION_SLIDES.push(`
         <rect x="15" y="15" width="120" height="70" rx="3" fill="#2d131f" stroke="#f43f5e" stroke-width="1.5"/>
         <text x="75" y="42" fill="#f43f5e" font-family="'JetBrains Mono', monospace" font-size="12" font-weight="700" text-anchor="middle">ATACANTE L7</text>
         <text x="75" y="58" fill="#fca5a5" font-family="'Space Grotesk', sans-serif" font-size="10.5" text-anchor="middle">Inyecta cabecera falsa</text>
-        <text x="75" y="74" fill="#cbd5e1" font-family="'JetBrains Mono', monospace" font-size="10.5" text-anchor="middle">66.249.66.1 (Google)</text>
+        <text x="75" y="74" fill="#cbd5e1" font-family="'JetBrains Mono', monospace" font-size="10.5" text-anchor="middle">66.249.66.x (Google)</text>
 
         <line x1="140" y1="50" x2="260" y2="50" stroke="#f43f5e" stroke-width="2.5" class="wire-pulse-fast"/>
         <text x="200" y="40" fill="#f43f5e" font-family="'JetBrains Mono', monospace" font-size="10.5" font-weight="700" text-anchor="middle">✕ Spoofing No Filtrado</text>

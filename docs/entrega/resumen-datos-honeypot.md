@@ -25,9 +25,9 @@
 | Excluido | Peticiones |
 |---|---:|
 | Auto-test desde la nube (UA `honeypot-selftest/1.0`) | 15 |
-| Tu visita manual del 19/10 (45.191.81.232) | 8 |
-| Pruebas de puesta en línea del 18/10 (186.124.199.212, AR, con UAs falsos de ClaudeBot, GPTBot y Bytespider) | 24 |
-| Probable prueba manual del 20/10 23:22 UTC (181.4.69.199, AR, Chrome, hizo clic en 6 enlaces seguidos) | 8 |
+| Tu visita manual del 19/10 (45.191.81.x) | 8 |
+| Pruebas de puesta en línea del 18/10 (186.124.199.x, AR, con UAs falsos de ClaudeBot, GPTBot y Bytespider) | 24 |
+| Probable prueba manual del 20/10 23:22 UTC (181.4.69.x, AR, Chrome, hizo clic en 6 enlaces seguidos) | 8 |
 | Controles locales con curl (sin pasar por Cloudflare) | 2 |
 | **Total excluido** | **57** |
 
@@ -72,12 +72,12 @@ Horas en UTC.
 
 | IP | País | Peticiones | A la trampa | Respuestas 404 | Cuándo | Duración | Profundidad máx. |
 |---|---|---:|---:|---:|---|---|---:|
-| 158.69.55.82 | Canadá | 200 | 98 | 0 | 21/10 03:53 al 24/10 06:40 | intermitente, 3 días | 3 |
-| 103.196.9.99 | EE. UU. | 111 | 53 | 0 | 24/10 06:36 | 16 segundos | 2 |
-| 154.28.229.150 | EE. UU. | 90 | 43 | 0 | 21/10 03:51 | 29 segundos | 2 |
-| 45.138.12.168 | Polonia | 14 | 5 | 0 | 19/10 al 25/10 | intermitente | 1 |
-| 45.138.12.27 | Polonia | 297 | 4 | 285 | 26/10 14:31 | 3,5 minutos | 1 |
-| 93.123.109.228 | Países Bajos | 334 | 4 | 315 | 23/10 06:31 | 7 minutos | 1 |
+| 158.69.55.x | Canadá | 200 | 98 | 0 | 21/10 03:53 al 24/10 06:40 | intermitente, 3 días | 3 |
+| 103.196.9.x | EE. UU. | 111 | 53 | 0 | 24/10 06:36 | 16 segundos | 2 |
+| 154.28.229.x | EE. UU. | 90 | 43 | 0 | 21/10 03:51 | 29 segundos | 2 |
+| 45.138.12.x | Polonia | 14 | 5 | 0 | 19/10 al 25/10 | intermitente | 1 |
+| 45.138.12.x | Polonia | 297 | 4 | 285 | 26/10 14:31 | 3,5 minutos | 1 |
+| 93.123.109.x | Países Bajos | 334 | 4 | 315 | 23/10 06:31 | 7 minutos | 1 |
 
 ### Por técnica de ocultamiento del enlace
 
@@ -93,9 +93,9 @@ El reparto es casi uniforme: estos bots **no renderizan la página**, leen el HT
 
 ### Qué tipo de actor es cada uno
 
-- **Scrapers de enlaces (3 IPs: 158.69.55.82, 154.28.229.150, 103.196.9.99).** Siguen todos los enlaces, públicos y trampa en partes iguales, a gran velocidad (más de 3 por segundo). Hay coincidencias de horario: 154.28.229.150 terminó el 21/10 a las 03:51 y 158.69.55.82 empezó dos minutos después; 103.196.9.99 actuó el 24/10 a las 06:36 y 158.69.55.82 hizo su último pedido cuatro minutos más tarde. **Puede ser un mismo operador rotando IPs**, pero es una hipótesis.
-- **Escáneres de vulnerabilidades (2 IPs: 93.123.109.228 y 45.138.12.27).** Entraron a la trampa de paso, pero lo que buscaban eran archivos como `/.env` o `/.git/config` (cientos de 404).
-- **Visitante intermitente (45.138.12.168).** Pocas visitas espaciadas en una semana, cambiando de User-Agent. Parece un monitor o un agregador.
+- **Scrapers de enlaces (3 IPs: 158.69.55.x, 154.28.229.x, 103.196.9.x).** Siguen todos los enlaces, públicos y trampa en partes iguales, a gran velocidad (más de 3 por segundo). Hay coincidencias de horario: 154.28.229.x terminó el 21/10 a las 03:51 y 158.69.55.x empezó dos minutos después; 103.196.9.x actuó el 24/10 a las 06:36 y 158.69.55.x hizo su último pedido cuatro minutos más tarde. **Puede ser un mismo operador rotando IPs**, pero es una hipótesis.
+- **Escáneres de vulnerabilidades (2 IPs: 93.123.109.x y 45.138.12.x).** Entraron a la trampa de paso, pero lo que buscaban eran archivos como `/.env` o `/.git/config` (cientos de 404).
+- **Visitante intermitente (45.138.12.x).** Pocas visitas espaciadas en una semana, cambiando de User-Agent. Parece un monitor o un agregador.
 
 ### Clasificación según el diseño del experimento
 
@@ -111,7 +111,7 @@ El reparto es casi uniforme: estos bots **no renderizan la página**, leen el HT
 
 - **Países (según Cloudflare):** EE. UU. concentra el 99,8 % por los crawlers de IA. Fuera de eso: Países Bajos (1.317), Alemania (1.293), Italia (715), Polonia (441), Francia (364).
 - **Rutas inexistentes más pedidas:** `/favicon.ico` (231), `/sitemap.xml` (116), `/.env` (64), `/.git/config` (60) y decenas de variantes de `.env`.
-- **De dónde llegó la gente:** casi nadie trae referer externo. Aparecen 51 desde Google y 1 desde Hacker News. Todavía no se sembraron los enlaces en GitHub ni en Reddit.
+- **De dónde llegó la gente:** casi nadie trae referer externo. Aparecen 51 desde Google y 1 desde Hacker News. Las URL semilla publicadas el 18/10 en GitHub y Hacker News no registraron accesos con su token.
 - **Cloudflare:** según lo visto el 26/10 en su panel, bloqueó 53 escáneres de exploits antes de que llegaran al honeypot. Esos no figuran en este log.
 
 ---
@@ -119,7 +119,7 @@ El reparto es casi uniforme: estos bots **no renderizan la página**, leen el HT
 ## 5. Limitaciones y próximos pasos
 
 1. **Muestra chica para comparar grupos:** solo 4 familias de IA y 2 de buscadores, y ninguna entró a la trampa. Un test de Fisher no tiene sentido con 0 contra 0.
-2. **Siembra pendiente:** sin enlaces en GitHub, Reddit o Hacker News, casi no llegan crawlers "independientes" ni scrapers de datasets, que son los más interesantes.
+2. **Siembra sin efecto observable:** la siembra en GitHub y Hacker News no atrajo crawlers por esos enlaces; casi no llegan crawlers "independientes" ni scrapers de datasets. Conviene ampliarla a otros canales (Reddit, Hugging Face).
 3. **El análisis diario automático dejó de correr el 21/10** (el último archivo en `data/enriched` es del 20/10). Hay que revisar el contenedor `analytics`; sin él no hay enriquecimiento por ASN.
 4. **Verificar identidades:** contrastar las IPs de ClaudeBot y GPTBot con las listas oficiales de cada empresa, y averiguar el ASN de las 6 IPs que entraron a la trampa.
 5. **El log ocupa 3,4 GB** y, al ritmo actual de GPTBot, crece unos 165 MB por día. Conviene rotarlo o comprimirlo.
