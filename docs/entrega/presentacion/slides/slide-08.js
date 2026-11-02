@@ -8,14 +8,14 @@ window.PRESENTATION_SLIDES.push(`
   </div>
   <h1 class="slide-title-hero">El Motor Sin Estado: Laberinto Criptográfico HMAC</h1>
   <p class="slide-lead-desc">
-    Generación y validación matemática de URLs sin base de datos ni escrituras en disco
+    Generación y validación matemática de URLs sin base de datos
   </p>
 
   <!-- BARRA HERO COMPACTA: ANATOMÍA DEL TOKEN WIRE -->
   <div style="background: var(--bg-card); border: 1px solid var(--border-card); border-radius: 6px; padding: 10px 16px; margin-bottom: 14px; flex-shrink: 0;">
     <div style="font-family: var(--font-mono); font-size: 11px; font-weight: 700; color: var(--accent-blue); margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
       <span>ANATOMÍA DEL TOKEN WIRE (52 CARACTERES HEXADECIMALES)</span>
-      <span class="cad-tag">CERO I/O A DISCO</span>
+      <span class="cad-tag">SIN BASE DE DATOS</span>
     </div>
     <div style="display: grid; grid-template-columns: 2fr 1fr 0.9fr 1.1fr; gap: 10px;">
       <div style="background: rgba(10, 15, 28, 0.9); border: 1px solid var(--accent-blue); border-radius: 4px; padding: 6px 10px;">
@@ -28,7 +28,7 @@ window.PRESENTATION_SLIDES.push(`
       </div>
       <div style="background: rgba(10, 15, 28, 0.9); border: 1px solid var(--accent-emerald); border-radius: 4px; padding: 6px 10px;">
         <div style="font-family: var(--font-mono); font-size: 12.5px; font-weight: 700; color: var(--accent-emerald);">Depth (2 hex)</div>
-        <div style="font-size: 11px; color: var(--text-secondary); margin-top:2px;">Profundidad actual (0 a 10)</div>
+        <div style="font-size: 11px; color: var(--text-secondary); margin-top:2px;">Nivel del laberinto (1 a 10)</div>
       </div>
       <div style="background: rgba(10, 15, 28, 0.9); border: 1px solid var(--accent-rose); border-radius: 4px; padding: 6px 10px;">
         <div style="font-family: var(--font-mono); font-size: 12.5px; font-weight: 700; color: var(--accent-rose);">HMAC (10 hex)</div>
@@ -42,14 +42,14 @@ window.PRESENTATION_SLIDES.push(`
     <div class="cad-box-panel">
       <div class="cad-box-title">
         <span>VALIDACIÓN DETERMINISTA EN MEMORIA RAM</span>
-        <span class="cad-tag">LATENCIA &lt; 0.1 MS</span>
+        <span class="cad-tag">MEDIANA 2 MS</span>
       </div>
 
       <svg viewBox="0 0 460 110" style="width: 100%; height: 100px; background: rgba(10, 15, 28, 0.9); border: 1px solid var(--border-subtle); border-radius: 4px; display: block;" xmlns="http://www.w3.org/2000/svg">
         <!-- Entrada -->
         <rect x="15" y="20" width="110" height="70" rx="3" fill="#152244" stroke="#38bdf8" stroke-width="1.2"/>
         <text x="70" y="44" fill="#38bdf8" font-family="'JetBrains Mono', monospace" font-size="11.5" font-weight="700" text-anchor="middle">PETICIÓN L7</text>
-        <text x="70" y="62" fill="#fff" font-family="'JetBrains Mono', monospace" font-size="10.5" text-anchor="middle">/t/{52_hex}/</text>
+        <text x="70" y="62" fill="#fff" font-family="'JetBrains Mono', monospace" font-size="10.5" text-anchor="middle">/public/{52_hex}</text>
         <text x="70" y="78" fill="#94a3b8" font-family="'Space Grotesk', sans-serif" font-size="10.5" text-anchor="middle">Sin acceso a BD</text>
 
         <!-- Canal Entrada -->
@@ -59,7 +59,7 @@ window.PRESENTATION_SLIDES.push(`
         <rect x="175" y="12" width="170" height="86" rx="4" fill="#0f281e" stroke="#10b981" stroke-width="1.5"/>
         <text x="260" y="36" fill="#10b981" font-family="'JetBrains Mono', monospace" font-size="11.5" font-weight="700" text-anchor="middle">MOTOR DJANGO RAM</text>
         <text x="260" y="54" fill="#fff" font-family="'Space Grotesk', sans-serif" font-size="10.5" text-anchor="middle">Recalcula HMAC(Key, datos)</text>
-        <text x="260" y="70" fill="#cbd5e1" font-family="'Space Grotesk', sans-serif" font-size="10.5" text-anchor="middle">5 iteraciones en microsegundos</text>
+        <text x="260" y="70" fill="#cbd5e1" font-family="'Space Grotesk', sans-serif" font-size="10.5" text-anchor="middle">prueba las 6 técnicas posibles</text>
         <text x="260" y="86" fill="#10b981" font-family="'JetBrains Mono', monospace" font-size="10" font-weight="700" text-anchor="middle">compare_digest() [Anti-Timing]</text>
 
         <!-- Canal Salida -->
@@ -74,8 +74,8 @@ window.PRESENTATION_SLIDES.push(`
 
       <ul class="cad-item-list" style="margin-top: 10px;">
         <li><strong>Propiedades Matemáticas:</strong> 52 caracteres hexadecimales compactos: $32 + 8 + 2 + 10$.</li>
-        <li><strong>Resistencia a Colisiones:</strong> $6 / 2^{40} \approx 5,46 \times 10^{-12}$ de probabilidad de adivinar un token válido al azar.</li>
-        <li><strong>Truncamiento a 40 bits vs RFC 2104:</strong> Compromiso deliberado frente a los $\ge 80$ bits recomendados para preservar URLs compactas; vulnerarlo online exigiría $\approx 1,8 \times 10^{11}$ peticiones por la red.</li>
+        <li><strong>Resistencia a Colisiones:</strong> $6 / 2^{40} \\approx 5{,}46 \\times 10^{-12}$ (≈ 1 en 183 mil millones) de adivinar un token válido al azar.</li>
+        <li><strong>Truncamiento a 40 bits vs RFC 2104:</strong> Compromiso deliberado frente a los $\\ge 80$ bits recomendados para preservar URLs compactas; vulnerarlo online exigiría $\\approx 1{,}8 \\times 10^{11}$ peticiones por la red.</li>
       </ul>
     </div>
 
@@ -88,7 +88,7 @@ window.PRESENTATION_SLIDES.push(`
 
       <ul class="cad-item-list">
         <li>
-          <strong>Consumo Plano de Recursos:</strong> Procesó 3,56 millones de peticiones con una huella de memoria RAM estrictamente inferior a <strong>60 MB</strong>.
+          <strong>Latencia Plana:</strong> Respondió 3,57 millones de peticiones con una mediana de <strong>2 ms</strong> (p99 de 3–4 ms), sin consultar ninguna base de datos.
         </li>
         <li>
           <strong>Inmunidad contra Agotamiento de I/O:</strong> Un crawler que solicita miles de páginas por minuto colapsaría una base de datos relacional por contención de bloqueos e I/O de disco.

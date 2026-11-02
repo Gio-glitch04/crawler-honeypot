@@ -41,25 +41,27 @@ El sistema utiliza la API estándar de navegadores **`BroadcastChannel`** (`hone
 
 El cronómetro cuenta hacia atrás desde los **20:00** y evalúa tu ritmo de discurso (**Pacing**) indicándote si vas `A TIEMPO`, `ADELANTADO` o `RETRASADO`:
 
-| # | Diapositiva | Minuto Objetivo | Enfoque Principal |
-|---|---|---|---|
-| **01** | Portada y Ficha Técnica | `00:00 - 01:10` | Ficha técnica, dominio público, 3.568.349 reqs, pregunta de investigación. |
-| **02** | El Auge del Scraping y la IA | `01:10 - 02:20` | Presión por preentrenar LLMs, quiebre del pacto de la web, consumo asimétrico de red. |
-| **03** | Taxonomía de Rastreadores | `02:20 - 03:30` | Buscadores (Googlebot) vs IA (ClaudeBot, GPTBot) vs Scrapers hostiles encubiertos. |
-| **04** | Marco Conceptual & Tarpit | `03:30 - 04:40` | RFC 9309 como sugerencia voluntaria, tarpits dinámicos y divergencia CSSOM vs Regex. |
-| **05** | **Mapeo en el Modelo OSI** | `04:40 - 05:50` | **Gráfico interactivo de las 7 capas OSI**, ubicando protocolos, túnel, Nginx y Django. |
-| **06** | Arquitectura del Sistema | `05:50 - 07:00` | Windows 10 + Docker WSL2, 3 redes bridge aisladas, túnel Argo QUIC (*Paquete animado*). |
-| **07** | Restitución de Identidad L7 | `07:00 - 08:10` | Pérdida de IP en L4, vulnerabilidad de spoofing, mitigación estricta con `CF-Connecting-IP`. |
-| **08** | Motor Sin Estado (HMAC-SHA256) | `08:10 - 09:20` | Token de 52 hex, firma truncada a 40 bits ($2^{40}$ combinaciones), inmutabilidad de Django. |
-| **09** | Mecanismo de Trampa | `09:20 - 10:30` | 5 técnicas CSS, clases dinámicas aleatorias (*Animación de compuerta y captura*). |
-| **10** | Evolución Cronológica (Serie) | `10:30 - 11:40` | *Gráfico interactivo SVG animado*: pico del 24/10 (1,63 M), corte del 27/10 y autorrecuperación. |
-| **11** | Dinámica de Grafos (BFS vs DFS)| `11:40 - 12:50` | *Diagrama de árbol combinatorio*: ramificación $b=5$ y cota en nivel 11 por nodos hoja. |
-| **12** | Caracterización de Bots de IA | `12:50 - 14:00` | GPTBot (reactivo 8,9s, 100% referer) vs ClaudeBot (batch diferido 5,0h, 10,8 req/s). |
-| **13** | La Trampa & Test Chi-Cuadrado | `14:00 - 15:10` | *Gráfico de barras SVG animado*: conteos reales vs $E=41,4$, $\chi^2=0,3188, p=0,9886$. |
-| **14** | Análisis Forense: Las 6 IPs | `15:10 - 16:20` | *Tabla forense*: orígenes (OVH, DataCamp), rotación temporal en 2 min y escaneo de `.env`/`.git`. |
-| **15** | Observabilidad en Producción | `16:20 - 17:30` | Desacoplamiento de ingesta en vivo (Promtail-Loki) vs análisis batch con NumPy/Polars. |
-| **16** | Lecciones de Internetworking | `17:30 - 18:45` | robots.txt por operador (OAI-SearchBot), ceguera a CSS, límites de JA3/JA4 en túneles. |
-| **17** | Recomendaciones & Conclusión | `18:45 - 20:00` | Trampas en producción, filtrado de ASNs de hosting, repositorio abierto y cierre. |
+| # | Diapositiva | Orador | Minuto Objetivo | Enfoque Principal |
+|---|---|---|---|---|
+| **01** | Portada y pregunta | Joel | `00:00 - 00:55` | Pregunta de investigación, dominio señuelo, 3.568.349 pedidos, adelanto 0 / 207. |
+| **02** | El trato roto de la web | Joel | `00:55 - 02:05` | Trueque roto buscador-sitio, 51 % de tráfico automático (Imperva 2025), robots.txt no es un firewall. |
+| **03** | Tres tipos de visitantes | Joel | `02:05 - 03:10` | Buscadores, IA declarada (99,46 %, 0 entradas sobre 5,32 M enlaces) y 6 disfrazados (207). |
+| **04** | Honeypot, laberinto y ceguera | Joel | `03:10 - 04:25` | Honeypot de baja interacción, tarpit con hojas en nivel 11, ceguera al CSS de los robots baratos. |
+| **05** | Modelo OSI | Giovanni | `04:25 - 05:25` | Pila OSI: PC hogareña, túnel saliente sin puertos abiertos, TLS en el borde, honeypot de capa 7. |
+| **06** | Arquitectura en producción | Giovanni | `05:25 - 06:40` | Windows 10 + Docker WSL 2, 3 redes aisladas, Django en solo lectura, se detuvo analytics el 21/10. |
+| **07** | La IP real | Giovanni | `06:40 - 07:50` | IP interna del túnel, X-Forwarded-For falsificable, solo `CF-Connecting-IP` desde 10.98.0.0/24. |
+| **08** | Tokens sin base de datos | Giovanni | `07:50 - 09:10` | Token de 52 hex con HMAC-SHA256 de 40 bits (1 en ~183 mil millones), mediana de 2 ms sin base de datos. |
+| **09** | Trampas y niveles de falta | Joel | `09:10 - 10:45` | 5 variantes de enlace (1 control + 4 ocultas), 3 niveles de falta y el arnés de pruebas. |
+| **10** | 12 días de guardia | Giovanni | `10:45 - 12:20` | Siembra 18/10 (0 visitas por semillas), pico 1.059.733 el 24/10, hueco de 8 h 57 min el 27/10. |
+| **11** | El tope del laberinto | Giovanni | `12:20 - 13:15` | Ramificación 5, tope 10, hojas en nivel 11 con 68–72 % de los pedidos de ClaudeBot y GPTBot. |
+| **12** | GPTBot vs ClaudeBot | Julio | `13:15 - 14:25` | GPTBot en vivo (8,9 s, ~2/s) vs ClaudeBot por tandas (5,0 h, 38.787/h); verificación por red. |
+| **13** | 207 entradas y chi-cuadrado | Julio | `14:25 - 15:40` | 43/43/42/40/39 por técnica, χ² = 0,3188 (p = 0,9886), 79,2 % Nivel 3 y cota del 63,2 %. |
+| **14** | Los 6 infractores | Julio | `15:40 - 16:55` | Tabla 4: 6 orígenes en centros de datos (CA, US, PL, NL), Chrome viejo, `.git`, favicon 0 de 6. |
+| **15** | Grafana y la conciliación | Giovanni | `16:55 - 17:40` | Grafana 12 + Loki 3.5: 213 en el panel − 6 clics de prueba = 207. |
+| **16** | Cuatro aprendizajes | Julio | `17:40 - 18:50` | robots.txt por operador (749 ms), User-Agent es texto libre, huella TLS perdida, literatura IMC 2025. |
+| **17** | Defensa y cierre | Julio | `18:50 - 20:00` | Tres escalones de defensa, límites del estudio y cierre. |
+
+Reparto: Joel ≈ 6:00 (01–04 y 09), Giovanni ≈ 8:00 (05–08, 10, 11 y 15), Julio ≈ 6:00 (12–14, 16 y 17). El texto completo de cada bloque, con las señas de puntero, está en `prompter.html`.
 
 ---
 
@@ -98,30 +100,30 @@ En la diapositiva 05 se introduce un **diagrama técnico interactivo de la pila 
    * Divergencia de parsing: Render Tree / CSSOM frente a tokens léxicos planos.
    * Restitución autenticada de `CF-Connecting-IP`.
 2. **Capa 6 (Presentación):**
-   * Cifrado y terminación TLS 1.3 en el Edge de Cloudflare.
+   * Cifrado y terminación TLS en el borde de Cloudflare.
    * Formato estructurado JSON en los registros de Nginx (`honeypot_access.json`).
-   * Codificación Base64URL y representación hexadecimal de tokens.
-   * Criptografía simétrica HMAC-SHA256 (ausencia de JA3/JA4 en origen).
+   * Representación hexadecimal de los tokens (52 caracteres).
+   * Criptografía simétrica HMAC-SHA256. Por terminar TLS en el borde, no hay huella JA3/JA4 en el origen.
 3. **Capa 5 (Sesión):**
    * Sesiones persistentes HTTP (Keep-Alive).
-   * Multiplexación de túnel Argo QUIC entre `cloudflared` y el borde de Cloudflare.
+   * Conexiones salientes del túnel entre `cloudflared` y el borde de Cloudflare (QUIC por defecto).
    * Comunicación inter-proceso mediante sockets TCP entre Nginx y Gunicorn.
 4. **Capa 4 (Transporte):**
-   * Túnel saliente QUIC por **UDP (puerto 7844)** hacia Cloudflare.
+   * Túnel saliente hacia Cloudflare (QUIC sobre UDP por defecto).
    * Sockets TCP internos dentro de las subredes bridge de Docker.
-   * **Cero puertos L4 abiertos en el router residencial:** Neutralización total de ataques SYN Flood y escaneos de puertos L4 dirigidos a la IP hogareña.
+   * **Cero puertos L4 abiertos en el router residencial:** la IP hogareña no expone ningún servicio.
 5. **Capa 3 (Red):**
    * Enrutamiento Anycast global de Cloudflare.
    * Direccionamiento IPv4 e IPv6 público y atribución de Sistemas Autónomos (BGP / ASN).
-   * Aislamiento por subredes privadas RFC 1918 en Docker (`10.98.0.0/24`, `10.98.1.0/24`, `10.98.2.0/24`).
+   * Aislamiento en tres redes bridge de Docker: `tunnel_net` (`10.98.0.0/24`), `honeypot_net` y `telemetry_net` (rango asignado por Docker).
 6. **Capa 2 (Enlace de Datos):**
    * Conmutadores virtuales bridge de Docker (`docker0`, interfaces virtuales `veth*`).
    * Aislamiento MAC entre subredes de contenedores.
-   * Tramas Ethernet virtuales gestionadas por el kernel Linux 5.15 de WSL2.
+   * Tramas Ethernet virtuales gestionadas por el kernel Linux de WSL 2.
 7. **Capa 1 (Física):**
-   * Host físico con Windows 10 Pro.
+   * PC de escritorio con Windows 10 (22H2).
    * Interfaz de red de hardware Ethernet / Wi-Fi.
-   * Conexión por fibra óptica residencial a Internet.
+   * Conexión hogareña a Internet.
 
 ---
 

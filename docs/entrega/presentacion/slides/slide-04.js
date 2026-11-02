@@ -36,7 +36,7 @@ window.PRESENTATION_SLIDES.push(`
       <ul class="cad-item-list">
         <li><strong>Estándar IETF formal:</strong> Regla de exclusión consultiva sin enforcement forzoso en la red.</li>
         <li><strong>Dependencia ética:</strong> No existe mecanismo a nivel socket o TCP para impedir que un cliente descargue la URL.</li>
-        <li><strong>Caché centralizada:</strong> Proveedores masivos (OpenAI, Google) consultan y comparten directivas en caché por operador.</li>
+        <li><strong>Lectura por operador:</strong> OpenAI leyó robots.txt con OAI-SearchBot; GPTBot rastreó sin pedirlo con su propio nombre.</li>
       </ul>
 
       <div class="cad-callout-card">
@@ -59,7 +59,7 @@ window.PRESENTATION_SLIDES.push(`
         <circle cx="52" cy="62" r="6" fill="#152244" stroke="#10b981" stroke-width="1.2"/>
 
         <rect x="80" y="16" width="188" height="26" rx="3" fill="#0f1932" stroke="#38bdf8" stroke-width="1.2"/>
-        <text x="90" y="33" fill="#38bdf8" font-family="'JetBrains Mono', monospace" font-size="10.5" font-weight="700">Grafo Infinito Stateless</text>
+        <text x="90" y="33" fill="#38bdf8" font-family="'JetBrains Mono', monospace" font-size="10.5" font-weight="700">Grafo Dinámico Stateless</text>
 
         <rect x="80" y="48" width="188" height="26" rx="3" fill="#0f1932" stroke="#f43f5e" stroke-width="1.2"/>
         <text x="90" y="65" fill="#f43f5e" font-family="'JetBrains Mono', monospace" font-size="10.5">Cota Hoja: Nivel 11</text>
@@ -100,7 +100,7 @@ window.PRESENTATION_SLIDES.push(`
       <ul class="cad-item-list">
         <li><strong>Brecha de Renderizado:</strong> Scrapers livianos usan regex o parseo HTML plano sin computar estilos CSS ni visibilidad.</li>
         <li><strong>Técnicas Señuelo:</strong> Enlaces ocultos con <code>display:none</code>, <code>opacity:0</code>, posiciones fuera de pantalla y clases dinámicas.</li>
-        <li><strong>Inmunidad Humana:</strong> Un usuario con navegador visual nunca activa estos enlaces; su consumo delata automatización.</li>
+        <li><strong>Baja confusión humana:</strong> Una persona no ve estos enlaces (el transparente sí puede clickearse por accidente); su consumo masivo delata automatización.</li>
       </ul>
 
       <div class="cad-callout-card">

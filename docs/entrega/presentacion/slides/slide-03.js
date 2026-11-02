@@ -25,7 +25,7 @@ window.PRESENTATION_SLIDES.push(`
         <circle cx="38" cy="45" r="7" fill="none" stroke="#10b981" stroke-width="1.5"/>
 
         <rect x="80" y="16" width="188" height="26" rx="3" fill="#0f1932" stroke="#10b981" stroke-width="1.2"/>
-        <text x="90" y="33" fill="#10b981" font-family="'JetBrains Mono', monospace" font-size="10.5" font-weight="700">✓ DNS PTR: crawl-*.google</text>
+        <text x="90" y="33" fill="#10b981" font-family="'JetBrains Mono', monospace" font-size="10.5" font-weight="700">✓ Listas JSON de Google</text>
 
         <rect x="80" y="48" width="188" height="26" rx="3" fill="#0f1932" stroke="#38bdf8" stroke-width="1.2"/>
         <text x="90" y="65" fill="#cbd5e1" font-family="'JetBrains Mono', monospace" font-size="10.5">Googlebot: 297 robots.txt</text>
@@ -63,8 +63,8 @@ window.PRESENTATION_SLIDES.push(`
 
       <ul class="cad-item-list">
         <li><strong>Ejemplos:</strong> ClaudeBot (1.989.866 reqs, 55,8 %), GPTBot (1.558.875 reqs, 43,7 %) + OAI-SearchBot (49 reqs, 49 robots.txt).</li>
-        <li><strong>Conducta RFC 9309:</strong> 100 % de respeto (0 accesos sobre 5,36M enlaces trampa expuestos).</li>
-        <li><strong>Validación de Red:</strong> ClaudeBot 99,9998 % en registro ARIN RDAP AS16509 (4 GCP sin verificar); GPTBot/SearchBot 100,00 % en Azure (AS8075).</li>
+        <li><strong>Conducta RFC 9309:</strong> 100 % de respeto (0 accesos sobre 5,32M enlaces trampa expuestos).</li>
+        <li><strong>Validación de Red:</strong> ClaudeBot 99,9998 % en el bloque ARIN de Anthropic (anunciado por AS16509, AWS; 4 desde GCP sin verificar); GPTBot/SearchBot 100,00 % en listas de OpenAI (Azure, AS8075).</li>
       </ul>
 
       <div class="cad-callout-card">
@@ -93,7 +93,7 @@ window.PRESENTATION_SLIDES.push(`
       <ul class="cad-item-list">
         <li><strong>Ejemplos:</strong> Scrapers no declarados y escáneres oportunistas de rutas en 6 subredes /24.</li>
         <li><strong>Conducta RFC 9309:</strong> 100 % incurrió en Nivel 2 (omisión total de consultar <code>robots.txt</code>).</li>
-        <li><strong>Firma Favicon:</strong> 0 de 207 solicitaron <code>/favicon.ico</code> (control humano sí); 79,2 % violó Nivel 3 (enlaces CSS).</li>
+        <li><strong>Firma Favicon:</strong> ninguno de los 6 orígenes pidió <code>/favicon.ico</code> (nuestro Chrome de prueba sí); 79,2 % violó Nivel 3 (enlaces CSS).</li>
       </ul>
 
       <div class="cad-callout-card">

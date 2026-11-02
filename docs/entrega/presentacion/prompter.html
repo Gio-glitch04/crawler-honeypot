@@ -497,23 +497,23 @@
       <div class="slide-indicator" id="slideIndicator">01 / 17</div>
       <button class="ctrl-btn btn-action" id="btnNextSlide" title="Flecha Derecha">SIG ▶</button>
       <select class="slide-selector" id="slideSelect">
-        <option value="0">01. Portada y Ficha Técnica</option>
-        <option value="1">02. El Auge del Scraping y la IA</option>
-        <option value="2">03. Taxonomía de Rastreadores Web</option>
-        <option value="3">04. Marco Conceptual: Honeypots & RFC 9309</option>
-        <option value="4">05. Mapeo en el Modelo OSI (L1 a L7)</option>
-        <option value="5">06. Arquitectura del Sistema (Docker & Túnel)</option>
-        <option value="6">07. Restitución de Identidad L7</option>
-        <option value="7">08. Motor Sin Estado (HMAC-SHA256)</option>
-        <option value="8">09. Mecanismo de Trampa: CSS vs. Léxico</option>
-        <option value="9">10. Evolución Cronológica (Serie Diaria)</option>
-        <option value="10">11. Dinámica del Laberinto & Grafos</option>
-        <option value="11">12. Caracterización de Bots de IA</option>
-        <option value="12">13. Detección en la Trampa & Chi-Cuadrado</option>
-        <option value="13">14. Análisis Forense: Las 6 IPs Infractoras</option>
-        <option value="14">15. Observabilidad: Pipeline Grafana Loki</option>
-        <option value="15">16. Hallazgos Clave de Internetworking</option>
-        <option value="16">17. Recomendaciones & Conclusión</option>
+        <option value="0">01. Joel · Portada y Ficha Técnica</option>
+        <option value="1">02. Joel · El Auge del Scraping y la IA</option>
+        <option value="2">03. Joel · Taxonomía de Rastreadores Web</option>
+        <option value="3">04. Joel · Marco Conceptual: Honeypots & RFC 9309</option>
+        <option value="4">05. Giovanni · Mapeo en el Modelo OSI (L1 a L7)</option>
+        <option value="5">06. Giovanni · Arquitectura del Sistema (Docker & Túnel)</option>
+        <option value="6">07. Giovanni · Restitución de Identidad L7</option>
+        <option value="7">08. Giovanni · Motor Sin Estado (HMAC-SHA256)</option>
+        <option value="8">09. Joel · Mecanismo de Trampa: CSS vs. Léxico</option>
+        <option value="9">10. Giovanni · Evolución Cronológica (Serie Diaria)</option>
+        <option value="10">11. Giovanni · Dinámica del Laberinto & Grafos</option>
+        <option value="11">12. Julio · Caracterización de Bots de IA</option>
+        <option value="12">13. Julio · Detección en la Trampa & Chi-Cuadrado</option>
+        <option value="13">14. Julio · Análisis Forense: Las 6 IPs Infractoras</option>
+        <option value="14">15. Giovanni · Observabilidad: Pipeline Grafana Loki</option>
+        <option value="15">16. Julio · Hallazgos Clave de Internetworking</option>
+        <option value="16">17. Julio · Recomendaciones & Conclusión</option>
       </select>
     </div>
 
@@ -591,15 +591,17 @@
       <!-- SLIDE 1 -->
       <div class="speech-slide-container active" data-slide="0">
         <div class="slide-cue-header">
-          <span class="slide-number-tag">DIAPOSITIVA 01 // PORTADA E INTRODUCCIÓN</span>
-          <span class="slide-target-time">⏱ TIEMPO: 00:00 - 01:10</span>
+          <span class="slide-number-tag">DIAPOSITIVA 01 // JOEL · DE QUÉ TRATA EL EXPERIMENTO</span>
+          <span class="slide-target-time">⏱ TIEMPO: 00:00 - 00:55</span>
         </div>
         <div class="speech-text">
-          <p><span class="cue-tone">Tono: Seguro y formal</span> Buenos días profesores y compañeros. Presentamos hoy nuestra defensa del trabajo de investigación para la cátedra de Internetworking titulado: <span class="cue-emphasis">«Honeypots Web para Medir el Cumplimiento de robots.txt (RFC 9309): Diseño con Tokens HMAC sin Estado y Estudio de Caso en un Dominio Señuelo»</span>.</p>
+          <p><span class="cue-tone">JOEL · Tono: Cercano y claro</span> Hola a todos. Somos Joel Marcori, Julio Pintos y Giovanni Piazza, y este es nuestro trabajo de investigación para Internetworking.</p>
 
-          <p>El protocolo fundamental de convivencia y exclusión en la web es la <span class="cue-data">RFC 9309</span>, históricamente conocido como <code>robots.txt</code>. Sin embargo, en el contexto actual surge una interrogante crítica de redes e infraestructura: <span class="cue-emphasis">¿Realmente respetan los recolectores de inteligencia artificial y los buscadores comerciales estas directivas en el tráfico real de producción? ¿Y cómo reaccionan los scrapers encubiertos frente a técnicas de ocultamiento visual basadas en CSS?</span></p>
+          <p>Seguramente escucharon que hoy internet está lleno de robots: programas que recorren páginas web solos, todo el día. Algunos son los de siempre, como el buscador de Google. Otros son nuevos: los que juntan texto para entrenar inteligencias artificiales como ChatGPT o Claude.</p>
 
-          <p>Para responderlo con rigor empírico, <span class="cue-action">ENFATIZAR</span> desplegamos un honeypot de capa de aplicación en producción durante <span class="cue-data">11,85 días continuos en octubre de 2026</span> bajo el dominio <code>definitivamente-no-hay-trabas.com.ar</code>, procesando y analizando más de <span class="cue-data">3,56 millones de peticiones válidas (~10,9 GB de carga útil)</span>.</p>
+          <p>Para hablar con esos robots existe una regla de cortesía, un archivo que se llama robots.txt. Nuestra pregunta fue muy concreta: cuando nadie los está mirando, ¿los robots respetan esa regla?</p>
+
+          <p><span class="cue-action">PUNTERO → panel izquierdo «PREGUNTA & ALCANCE EXPERIMENTAL», recuadro «Dominio Señuelo» con definitivamente-no-hay-trabas.com.ar</span> Para averiguarlo armamos una trampa: un sitio señuelo, definitivamente-no-hay-trabas.com.ar, que estuvo en internet casi doce días, del 18 al 30 de octubre, y recibió más de tres millones y medio de pedidos. <span class="cue-action">PUNTERO → recorrer de izquierda a derecha la barra de cuatro cifras de arriba: «3.568.349», «11,85 DÍAS», «100 %» y «207»</span> En estos veinte minutos les contamos cómo lo armamos y qué encontramos.</p>
 
           <p><span class="cue-action">AVANZAR SLIDE AHORA</span></p>
         </div>
@@ -608,15 +610,17 @@
       <!-- SLIDE 2 -->
       <div class="speech-slide-container" data-slide="1">
         <div class="slide-cue-header">
-          <span class="slide-number-tag">DIAPOSITIVA 02 // EL AUGE DEL SCRAPING Y LA IA</span>
-          <span class="slide-target-time">⏱ TIEMPO: 01:10 - 02:20</span>
+          <span class="slide-number-tag">DIAPOSITIVA 02 // JOEL · POR QUÉ SE ROMPIÓ EL TRATO DE LA WEB</span>
+          <span class="slide-target-time">⏱ TIEMPO: 00:55 - 02:05</span>
         </div>
         <div class="speech-text">
-          <p><span class="cue-tone">Tono: Contextual y reflexivo</span> Para comprender la relevancia de este experimento, debemos situarnos en el ecosistema actual de Capa 7. La carrera por preentrenar grandes modelos de lenguaje (LLMs) y alimentar sistemas RAG ha desatado una demanda voraz por ingestar texto público.</p>
+          <p><span class="cue-tone">JOEL · Tono: Contextual, sin dramatizar</span> Primero, por qué esto es un problema hoy. <span class="cue-action">PUNTERO → panel izquierdo «ASIMETRÍA EN LA INGESTA DE CONTENIDO», caja «WEB PÚBLICA» del diagrama</span></p>
 
-          <p>Esto quebró el pacto histórico de la web abierta documentado por <span class="cue-data">Steinacker et al. (2025)</span>: tradicionalmente, un motor de búsqueda rastreaba contenido a cambio de indexarlo y retribuir tráfico humano al servidor. Los crawlers de IA actuales, en cambio, <span class="cue-emphasis">extraen terabytes de datos sin enviar visitantes de vuelta</span>.</p>
+          <p>Durante años la web funcionó con un trueque. Google lee tu página, la muestra en sus resultados y a cambio te manda gente que la visita. Ganan los dos.</p>
 
-          <p>Mediciones recientes de <span class="cue-data">Imperva (Bad Bot Report 2025)</span> señalan que el tráfico automatizado ya supera el 51 % del total de internet. Esto externaliza severos costos sobre servidores independientes: saturación de CPU, consumo de ancho de banda y denegaciones de servicio involuntarias. Frente a esto, <span class="cue-warning">RFC 9309 no es un cortafuegos</span>: carece de enforcement a nivel socket o TCP. Y como documentaron <span class="cue-data">Kim et al. (IMC 2025)</span>, proliferan scrapers que falsifican cabeceras de navegadores y rotan IPs residenciales.</p>
+          <p><span class="cue-action">PUNTERO → seguir la flecha «INGESTA MASIVA» hasta la caja «CLUSTER IA» y marcar «0 visitas devueltas»</span> Con la inteligencia artificial ese trato se rompió. Un robot recolector descarga miles de páginas para entrenar un modelo, y después el modelo le contesta directamente al usuario en el chat. Al sitio original no vuelve nadie. <span class="cue-action">PUNTERO → segundo punto de la lista, «Carga asimétrica», donde dice 51 %</span> Encima, según el informe de Imperva de 2025, más de la mitad del tráfico de internet, el 51 %, ya no son personas sino programas automáticos. Y el que paga el servidor y el ancho de banda es el dueño del sitio.</p>
+
+          <p><span class="cue-action">PUNTERO → panel derecho «POROSIDAD DE LAS DEFENSAS CLÁSICAS», caja «ROBOTS.TXT» con «(Sin freno en TCP)»</span> Ahora, el detalle de redes que importa: robots.txt no es un firewall. No hay nada en la capa de transporte que corte la conexión. Es un cartel que dice «no pasar». Un robot educado lo lee y obedece. <span class="cue-action">PUNTERO → caja de la derecha «SERVIDORES ALQUILADOS» y su línea «Falso User-Agent Chrome»</span> Uno que no quiere obedecer directamente no lo lee, o se disfraza de navegador común.</p>
 
           <p><span class="cue-action">AVANZAR SLIDE AHORA</span></p>
         </div>
@@ -625,17 +629,19 @@
       <!-- SLIDE 3 -->
       <div class="speech-slide-container" data-slide="2">
         <div class="slide-cue-header">
-          <span class="slide-number-tag">DIAPOSITIVA 03 // TAXONOMÍA DE RASTREADORES WEB</span>
-          <span class="slide-target-time">⏱ TIEMPO: 02:20 - 03:30</span>
+          <span class="slide-number-tag">DIAPOSITIVA 03 // JOEL · LOS TRES TIPOS DE VISITANTES</span>
+          <span class="slide-target-time">⏱ TIEMPO: 02:05 - 03:10</span>
         </div>
         <div class="speech-text">
-          <p><span class="cue-tone">Tono: Analítico y clasificatorio</span> Durante los 11,85 días del experimento caracterizamos tres familias bien diferenciadas de clientes automatizados que interactuaron con el honeypot:</p>
+          <p><span class="cue-tone">JOEL · Tono: Adelanto del resultado, seguro</span> Antes de entrar en cómo lo construimos, les adelanto quiénes vinieron, porque eso ordena todo lo que sigue. <span class="cue-action">PUNTERO → los títulos de los tres paneles: «1. BUSCADORES PÚBLICOS», «2. CRAWLERS DE IA (99,46%)» y «3. SCRAPERS HOSTILES (207)»</span> Encontramos tres tipos de visitantes.</p>
 
-          <p>1. <span class="cue-emphasis">Buscadores comerciales tradicionales</span>: encabezados por Googlebot (1.532 peticiones) y GoogleOther (10.702 peticiones), verificables en un <span class="cue-data">99,8283 % en los prefijos oficiales publicados por Google (AS15169)</span>, con 21 peticiones no listadas en subredes 66.249.x.</p>
+          <p><span class="cue-action">PUNTERO → panel izquierdo; primer punto «Ejemplos: Googlebot (1.532 reqs), GoogleOther (10.702 reqs)» y la caja «Googlebot: 297 robots.txt»</span> En la primera columna, los buscadores de siempre: Googlebot y su pariente GoogleOther. Entre los dos hicieron unos doce mil pedidos, leyeron robots.txt casi trescientas veces y se portaron perfecto.</p>
 
-          <p>2. <span class="cue-emphasis">Crawlers masivos de entrenamiento de IA</span>: concentraron el <span class="cue-data">99,46 % del tráfico</span>. ClaudeBot de Anthropic sumó 1,99 millones de peticiones (verificado al 99,9998 % en el registro ARIN RDAP AS16509, con 4 peticiones en GCP sin verificar). Y GPTBot de OpenAI sumó 1,56 millones de peticiones (100,00 % verificado en prefijos JSON de Azure AS8075). <span class="cue-action">ENFATIZAR</span> <strong>Ambos registraron 0 accesos a la ruta prohibida sobre 5,36 millones de enlaces trampa expuestos</strong>.</p>
+          <p><span class="cue-action">PUNTERO → panel del medio; título «(99,46%)» y, al decir «Cero», el punto «Conducta RFC 9309: 100 % de respeto (0 accesos sobre 5,32M…)»</span> En el medio, los pesos pesados: ClaudeBot, de Anthropic, y GPTBot, de OpenAI. Entre los dos son el 99,5 % de todo el tráfico, unos tres millones y medio de páginas descargadas. Tuvieron delante más de cinco millones de enlaces hacia la zona prohibida. ¿Cuántas veces entraron? Cero.</p>
 
-          <p>3. Y en tercer lugar, <span class="cue-warning">Scrapers no declarados y escáneres hostiles</span>: 6 actores en 6 subredes /24 que falsificaron cabeceras Chrome, omitieron en el 100 % consultar <code>robots.txt</code> y activaron 207 capturas trampa.</p>
+          <p><span class="cue-action">PUNTERO → panel derecho; caja «Falso Chrome · Sin robots.txt» y debajo «207 capturas (6 actores)»</span> Y en la tercera columna, los tramposos: seis direcciones IP que nunca leyeron robots.txt, se hicieron pasar por un navegador Chrome común y entraron 207 veces a la zona prohibida.</p>
+
+          <p><span class="cue-action">PUNTERO → recuadro de abajo del panel derecho, «Detección Efectiva»</span> O sea, la respuesta corta es esta: los robots que dicen quiénes son cumplieron. Los que mienten sobre quiénes son, no.</p>
 
           <p><span class="cue-action">AVANZAR SLIDE AHORA</span></p>
         </div>
@@ -644,35 +650,38 @@
       <!-- SLIDE 4 -->
       <div class="speech-slide-container" data-slide="3">
         <div class="slide-cue-header">
-          <span class="slide-number-tag">DIAPOSITIVA 04 // MARCO CONCEPTUAL: HONEYPOTS, TARPITS Y RFC 9309</span>
-          <span class="slide-target-time">⏱ TIEMPO: 03:30 - 04:40</span>
+          <span class="slide-number-tag">DIAPOSITIVA 04 // JOEL · HONEYPOT, LABERINTO Y LA CEGUERA DE LOS ROBOTS</span>
+          <span class="slide-target-time">⏱ TIEMPO: 03:10 - 04:25</span>
         </div>
         <div class="speech-text">
-          <p><span class="cue-tone">Tono: Académico y conceptual</span> El marco teórico de nuestra defensa integra tres conceptos clave de seguridad y redes:</p>
+          <p><span class="cue-tone">JOEL · Tono: Didáctico</span> Para armar la trampa combinamos tres ideas. <span class="cue-action">PUNTERO → título grande «Marco Conceptual: Honeypots, Tarpits y RFC 9309»</span></p>
 
-          <p>Primero, la disciplina de los <span class="cue-emphasis">Honeypots</span> formalizada por Spitzner. Nuestro sistema opera como un honeypot de Capa de Aplicación (L7) de interacción media/alta: expone páginas HTML válidas y dinámicas pero sin lógica de negocio real.</p>
+          <p><span class="cue-action">PUNTERO → panel del medio, primer punto «Fundamentos de Deception» (Spitzner, LaBrea)</span> La primera es el honeypot, que en inglés quiere decir «tarro de miel». Es un recurso que no tiene ningún uso legítimo, entonces cualquiera que lo toque ya es sospechoso. Nuestra página parece un portal de datos abiertos, pero es pura escenografía: no hay datos de nadie. Es de baja interacción: solo devuelve páginas generadas.</p>
 
-          <p>Segundo, la noción de <span class="cue-emphasis">Tarpit (pozo de brea)</span>: desde LaBrea de Liston a nivel TCP hasta los tarpits L7 modernos como AI Labyrinth de Cloudflare. Nuestro laberinto genera un espacio combinatorio infinito acotado deterministamente en profundidad 10 (<span class="cue-data">HONEYPOT_MAX_DEPTH=10</span>), emitiendo nodos hoja terminales en nivel 11 para atrapar crawlers agresivos sin consumir almacenamiento.</p>
+          <p><span class="cue-action">PUNTERO → título del panel del medio «TARPIT DINÁMICO L7» y la caja «Cota Hoja: Nivel 11»</span> La segunda es el tarpit, o laberinto. Cada página tiene enlaces a páginas nuevas que se fabrican en el momento. Un robot glotón puede seguir bajando, y para no abusar le pusimos un piso final, que les va a contar Giovanni.</p>
 
-          <p>Y tercero, la <span class="cue-emphasis">brecha entre el DOM crudo y el Render Tree</span>: un bot elemental parsea HTML con regex o XPath; un navegador humano compila CSS y calcula el layout visual. Esta discrepancia es el principio discriminador del honeypot.</p>
+          <p><span class="cue-action">PUNTERO → panel derecho «CSSOM VS PARSEO PLANO»: recorrer el diagrama «DOM» → «CSSOM» → «RENDER TREE» y, al decir «href», volver a la caja «DOM &lt;a href&gt;»</span> La tercera es la diferencia entre cómo mira una persona y cómo «mira» un robot barato. Cuando ustedes abren una web, el navegador arma la página, aplica los estilos CSS, y lo que está oculto no se ve. Un robot rudimentario no dibuja nada: lee el HTML crudo y sigue todo lo que diga href, aunque sea invisible. Esa ceguera fue nuestra carnada.</p>
 
-          <p><span class="cue-action">AVANZAR SLIDE AHORA</span></p>
+          <p>Le paso a Giovanni, que armó y vigiló toda la infraestructura.</p>
+
+          <p><span class="cue-action">AVANZAR SLIDE AHORA</span> → pasa a Giovanni</p>
         </div>
       </div>
 
       <!-- SLIDE 5 -->
       <div class="speech-slide-container" data-slide="4">
         <div class="slide-cue-header">
-          <span class="slide-number-tag">DIAPOSITIVA 05 // MAPEO EN EL MODELO OSI</span>
-          <span class="slide-target-time">⏱ TIEMPO: 04:40 - 05:50</span>
+          <span class="slide-number-tag">DIAPOSITIVA 05 // GIOVANNI · EL EXPERIMENTO EN LAS CAPAS DEL MODELO OSI</span>
+          <span class="slide-target-time">⏱ TIEMPO: 04:25 - 05:25</span>
         </div>
         <div class="speech-text">
-          <p><span class="cue-tone">Tono: Arquitectónico y técnico de redes</span> En pantalla observamos la correspondencia punto a punto de cada componente desplegado dentro de las 7 capas del Modelo OSI:</p>
+          <p><span class="cue-tone">GIOVANNI · Tono: Técnico pero llano</span> Gracias, Joel. Como esto es Internetworking, arranquemos por dónde vive cada pieza en el modelo OSI. <span class="cue-action">PUNTERO → diagrama de la izquierda; arrancar abajo de todo, en la fila «L1 · FÍSICA», e ir subiendo por «L2 · ENLACE DE DATOS» y «L3 · RED»</span></p>
 
-          <p>• En <span class="cue-data">Capa 7 (Aplicación)</span> conviven las directivas de RFC 9309, las respuestas HTTP de Django, la ofuscación en el CSSOM y la cabecera <code>CF-Connecting-IP</code>.</p>
-          <p>• En <span class="cue-data">Capa 6 (Presentación)</span> opera el cifrado TLS 1.3 terminado en el borde Anycast, la codificación Base64URL y los logs estructurados JSON de Nginx.</p>
-          <p>• En <span class="cue-data">Capas 4 y 5 (Transporte y Sesión)</span> se ubica el núcleo perimetral: el túnel Cloudflare opera sobre <span class="cue-emphasis">QUIC (UDP saliente)</span>, eliminando la necesidad de abrir puertos TCP entrantes en el firewall local.</p>
-          <p>• Y en <span class="cue-data">Capas 1 a 3 (Física, Enlace y Red)</span> encontramos las 3 redes bridge aisladas de Docker bajo WSL 2 con subredes RFC 1918, alcanzadas globalmente mediante Anycast BGP.</p>
+          <p>Abajo, en las capas física, de enlace y de red, está mi PC de escritorio, en una conexión de casa común. Adentro, Docker arma redes virtuales separadas. Y desde afuera nadie ve la IP de mi casa: ven la red de Cloudflare.</p>
+
+          <p><span class="cue-action">PUNTERO → filas «L4 · TRANSPORTE» y «L5 · SESIÓN»</span> En transporte y sesión está el truco para que sea seguro: no abrimos ningún puerto en el router. Es la PC la que abre, desde adentro, un túnel cifrado saliente hacia Cloudflare. Es como tirar una manguera de adentro hacia afuera en vez de dejar la puerta abierta.</p>
+
+          <p><span class="cue-action">PUNTERO → fila «L6 · PRESENTACIÓN» y después la de arriba de todo, «L7 · APLICACIÓN»</span> En presentación, Cloudflare pone el candadito de HTTPS en su borde. Y arriba de todo, en aplicación, vive lo que realmente estudiamos: el protocolo robots.txt, las cabeceras HTTP y las trampas con CSS. Por eso decimos que es un honeypot de capa 7.</p>
 
           <p><span class="cue-action">AVANZAR SLIDE AHORA</span></p>
         </div>
@@ -681,18 +690,21 @@
       <!-- SLIDE 6 -->
       <div class="speech-slide-container" data-slide="5">
         <div class="slide-cue-header">
-          <span class="slide-number-tag">DIAPOSITIVA 06 // ARQUITECTURA EFECTIVAMENTE DESPLEGADA</span>
-          <span class="slide-target-time">⏱ TIEMPO: 05:50 - 07:00</span>
+          <span class="slide-number-tag">DIAPOSITIVA 06 // GIOVANNI · LA ARQUITECTURA QUE ESTUVO EN PRODUCCIÓN</span>
+          <span class="slide-target-time">⏱ TIEMPO: 05:25 - 06:40</span>
         </div>
         <div class="speech-text">
-          <p><span class="cue-tone">Tono: Práctico y de ingeniería de sistemas</span> Pasemos a la topología física real. El sistema se alojó en un host con <span class="cue-emphasis">Windows 10 Pro (22H2)</span> ejecutando Docker Desktop sobre el backend <span class="cue-emphasis">WSL 2 con Ubuntu</span>.</p>
+          <p><span class="cue-tone">GIOVANNI · Tono: Concreto, de quien lo armó</span> Esta es la arquitectura que de verdad estuvo en producción. <span class="cue-action">PUNTERO → diagrama de la izquierda: de «INTERNET PÚBLICA» a «CLOUDFLARE», seguir la flecha «QUIC/UDP» hasta el recuadro grande «HOST LOCAL: WINDOWS 10 + DOCKER WSL2»</span> No alquilamos ningún servidor: todo corrió en mi PC con Windows 10, con Docker Desktop sobre WSL 2.</p>
 
-          <p>Diseñamos una política estricta de segmentación mediante tres redes bridge independientes:
-          <br>1. <code>tunnel_net</code> (<code>10.98.0.0/24</code>), donde conviven exclusivamente el conector <code>cloudflared:2025.9.1</code> y el proxy inverso Nginx.
-          <br>2. <code>honeypot_net</code> (<code>172.20.0.0/16</code>), que aísla a Django, ejecutado en modo <span class="cue-data">read_only: true</span> para garantizar cero escrituras a disco.
-          <br>3. Y <code>telemetry_net</code> (<code>172.21.0.0/16</code>), dedicada a Promtail y Loki.</p>
+          <p><span class="cue-action">PUNTERO → panel derecho, punto «Aislamiento de Red L2/L3 en Docker» con sus tres redes</span> Separé los contenedores en tres redes que no se ven entre sí, como tres peceras.</p>
 
-          <p>Como nota de transparencia operativa: el 21 de octubre Loki sufrió un desbordamiento de memoria (OOM) por las ráfagas extremas; la telemetría canónica final se extrajo y procesó en streaming offline directo desde los logs JSON de Nginx (<code>honeypot_access.json.tar.gz</code>).</p>
+          <p><span class="cue-action">PUNTERO → en el diagrama, caja «cloudflared / tunnel_net / 10.98.0.x» y la caja «NGINX REVERSE»</span> En la primera, el contenedor del túnel de Cloudflare recibe el tráfico y se lo pasa a Nginx, que hace de recepcionista y anota cada visita en un registro en formato JSON.</p>
+
+          <p><span class="cue-action">PUNTERO → caja «DJANGO ENGINE» con «Disco solo lectura»</span> En la segunda está Django, que fabrica las páginas del laberinto. Ese contenedor corre sin privilegios y con el disco en solo lectura: aunque alguien encontrara una falla, no podría escribir nada.</p>
+
+          <p><span class="cue-action">PUNTERO → caja «PROMTAIL / Pipe JSON Log / Loki → Grafana»</span> Y en la tercera está la vigilancia: Promtail lee el registro, Loki lo guarda y Grafana me lo muestra en vivo, solo en mi máquina.</p>
+
+          <p><span class="cue-action">PUNTERO → barra de abajo del diagrama, «STREAMING OFFLINE EN PYTHON» con «analytics se detuvo el 21/10 → log completo (3,57M)»</span> Un problema real que tuvimos: el 21 de octubre, cuando llegó la avalancha de los bots de IA, se detuvo el contenedor que hacía los resúmenes automáticos. Como Nginx seguía escribiendo cada pedido en disco, al final procesamos el registro completo, tres gigas y medio, línea por línea.</p>
 
           <p><span class="cue-action">AVANZAR SLIDE AHORA</span></p>
         </div>
@@ -701,18 +713,17 @@
       <!-- SLIDE 7 -->
       <div class="speech-slide-container" data-slide="6">
         <div class="slide-cue-header">
-          <span class="slide-number-tag">DIAPOSITIVA 07 // RESTITUCIÓN DE IP REAL EN NGINX</span>
-          <span class="slide-target-time">⏱ TIEMPO: 07:00 - 08:10</span>
+          <span class="slide-number-tag">DIAPOSITIVA 07 // GIOVANNI · EL PROBLEMA DEL MENSAJERO: LA IP REAL</span>
+          <span class="slide-target-time">⏱ TIEMPO: 06:40 - 07:50</span>
         </div>
         <div class="speech-text">
-          <p><span class="cue-tone">Tono: Seguridad y protocolos</span> Un desafío central en arquitecturas con túneles inversos L7 es la <span class="cue-emphasis">pérdida de la IP de origen</span>. Nginx, a nivel socket TCP, solo ve la IP interna del contenedor del túnel (<code>10.98.0.2</code>).</p>
+          <p><span class="cue-tone">GIOVANNI · Tono: Explicativo, con la analogía del sobre</span> Ahora, un problema clásico de redes cuando ponés un túnel adelante: el problema del mensajero. <span class="cue-action">PUNTERO → panel izquierdo, punto «Problema L4» donde dice «una dirección de 10.98.0.0/24»</span></p>
 
-          <p>Si confiáramos ingenuamente en cabeceras estándar como <code>X-Forwarded-For</code>, cualquier atacante podría inyectar una IP arbitraria —por ejemplo de Googlebot— para eludir listas de bloqueo o ensuciar los logs forenses.</p>
+          <p>Como el pedido me llega por adentro del túnel, Nginx siempre ve la misma dirección de origen: la del contenedor del túnel, una IP interna de la red 10.98.0. Si me quedaba con eso, parecía que los tres millones y medio de pedidos los había hecho mi propia PC.</p>
 
-          <p>Para cerrar esta vulnerabilidad implementamos una cadena de confianza estricta en Nginx:
-          <br>• <code>set_real_ip_from 10.98.0.0/24;</code> — Solo confiamos en la subred interna del túnel.
-          <br>• <code>real_ip_header CF-Connecting-IP;</code> — Cabecera firmada e inmutable inyectada por el edge Anycast.
-          <br>• <code>proxy_hide_header X-Honeypot-*;</code> — Ocultamos cualquier metadato interno para evitar fingerprinting de la defensa.</p>
+          <p><span class="cue-action">PUNTERO → diagrama del panel izquierdo: caja «ATACANTE L7» con «66.249.66.x (Google)» hasta «[ATRIBUCIÓN ROTA]»</span> La IP verdadera viene escrita en una cabecera. Muchos tutoriales te dicen que uses X-Forwarded-For, pero esa cabecera es como el remitente escrito a mano en un sobre: cualquiera puede poner ahí una IP de Google y hacerse pasar por Google.</p>
+
+          <p><span class="cue-action">PUNTERO → panel derecho «CONFIGURACIÓN ESTRICTA EN NGINX»: el bloque de código y después los puntos «Filtro de confianza explícito», «Inmutabilidad L7» y «Ofuscación interna» a medida que se nombran</span> Entonces en Nginx pusimos dos reglas. Primero, solo creemos la cabecera si la conexión viene de la red del túnel. Segundo, la única cabecera que leemos es CF-Connecting-IP, que la escribe Cloudflare en la frontera y pisa cualquier cosa que haya inventado el cliente. Y además, antes de responder, Nginx borra nuestras cabeceras internas, para no delatar que esto es un honeypot.</p>
 
           <p><span class="cue-action">AVANZAR SLIDE AHORA</span></p>
         </div>
@@ -721,60 +732,61 @@
       <!-- SLIDE 8 -->
       <div class="speech-slide-container" data-slide="7">
         <div class="slide-cue-header">
-          <span class="slide-number-tag">DIAPOSITIVA 08 // MOTOR CRIPTOGRÁFICO HMAC STATELESS</span>
-          <span class="slide-target-time">⏱ TIEMPO: 08:10 - 09:20</span>
+          <span class="slide-number-tag">DIAPOSITIVA 08 // GIOVANNI · EL SELLO EN EL ENLACE: TOKENS SIN BASE DE DATOS</span>
+          <span class="slide-target-time">⏱ TIEMPO: 07:50 - 09:10</span>
         </div>
         <div class="speech-text">
-          <p><span class="cue-tone">Tono: Criptográfico y algorítmico</span> ¿Cómo generar un laberinto infinito de páginas sin colapsar una base de datos? La respuesta es nuestra arquitectura <span class="cue-emphasis">Stateless con tokens HMAC-SHA256</span>.</p>
+          <p><span class="cue-tone">GIOVANNI · Tono: Entusiasta: es la parte favorita</span> Esta es mi parte favorita. <span class="cue-action">PUNTERO → franja de arriba «ANATOMÍA DEL TOKEN WIRE (52 CARACTERES HEXADECIMALES)»</span> El laberinto fabrica millones de enlaces únicos. <span class="cue-action">PUNTERO → panel derecho, punto «Inmunidad contra Agotamiento de I/O»</span> Si tuviera que guardar cada uno en una base de datos para acordarme de dónde salió, con decenas de pedidos por segundo el disco se ahoga.</p>
 
-          <p>Cada URL contiene un token wire de <span class="cue-data">52 caracteres hexadecimales</span> dividido en cuatro campos:
-          <br>1. <strong>UUIDv4 (32 hex)</strong>: 128 bits aleatorios que impiden la memorización de rutas.
-          <br>2. <strong>Epoch (8 hex)</strong>: marca temporal Unix para medir la latencia del crawler (<code>tok_age</code>).
-          <br>3. <strong>Depth (2 hex)</strong>: profundidad actual dentro del árbol (0 a 10).
-          <br>4. <strong>HMAC (10 hex)</strong>: firma criptográfica truncada a 40 bits calculada con una clave secreta en RAM.</p>
+          <p>Entonces dimos vuelta el problema: el servidor no guarda nada, y cada enlace trae su historia escrita encima. Como el sello en la muñeca cuando entrás a un boliche: el de la puerta no anota tu nombre, mira el sello y ya sabe que pagaste.</p>
 
-          <p>La probabilidad de acertar un token al azar es de apenas <span class="cue-data">5,46 × 10⁻¹²</span>. Truncar a 40 bits es un trade-off deliberado de diseño frente a los ≥80 bits de RFC 2104 para mantener URLs compactas; un ataque por fuerza bruta requeriría más de 180.000 millones de peticiones online, inviable sobre la red.</p>
+          <p><span class="cue-action">PUNTERO → recorrer los cuatro recuadros de colores de izquierda a derecha: «UUIDv4 (32 hex)», «Epoch (8 hex)», «Depth (2 hex)» y «HMAC (10 hex)»</span> Cada enlace lleva un código de 52 caracteres hexadecimales con cuatro partes: un identificador al azar, la hora exacta en que se creó, en qué nivel del laberinto está y, al final, una firma: un HMAC-SHA256 calculado con una clave secreta que solo tiene el servidor.</p>
 
-          <p><span class="cue-action">AVANZAR SLIDE AHORA</span></p>
+          <p><span class="cue-action">PUNTERO → panel izquierdo, punto «Resistencia a Colisiones» donde dice «≈ 1 en 183 mil millones»</span> Si alguien inventa un enlace o le cambia un solo carácter, la firma no coincide. Acertar uno al azar tiene una probabilidad de una en unos ciento ochenta mil millones. Y como la hora va adentro del enlace, después pudimos medir cuánto tardaba cada robot en usarlo. <span class="cue-action">PUNTERO → etiqueta «MEDIANA 2 MS» del panel izquierdo y el punto «Latencia Plana» del derecho</span> Y el servidor respondía en dos milisegundos de mediana, sin base de datos.</p>
+
+          <p>Joel les cuenta las trampas.</p>
+
+          <p><span class="cue-action">AVANZAR SLIDE AHORA</span> → pasa a Joel</p>
         </div>
       </div>
 
       <!-- SLIDE 9 -->
       <div class="speech-slide-container" data-slide="8">
         <div class="slide-cue-header">
-          <span class="slide-number-tag">DIAPOSITIVA 09 // TRAMPAS CSS Y TAXONOMÍA DE VIOLACIONES</span>
-          <span class="slide-target-time">⏱ TIEMPO: 09:20 - 10:30</span>
+          <span class="slide-number-tag">DIAPOSITIVA 09 // JOEL · TRAMPAS INVISIBLES, NIVELES DE FALTA Y ARNÉS DE PRUEBAS</span>
+          <span class="slide-target-time">⏱ TIEMPO: 09:10 - 10:45</span>
         </div>
         <div class="speech-text">
-          <p><span class="cue-tone">Tono: Dinámico y descriptivo visual</span> En cada página HTML generada se emiten 5 enlaces públicos normales y 5 enlaces trampa hacia la ruta vedada <code>/archivo-interno/</code>.</p>
+          <p><span class="cue-tone">JOEL · Tono: Ordenado, enumerando</span> Gracias. Veamos qué tenía cada página adentro. <span class="cue-action">PUNTERO → panel izquierdo, punto «Factor de ramificación»</span></p>
 
-          <p>Los enlaces trampa aplican 5 variantes de ofuscación:
-          <br>1. <code>visible</code> (grupo de control).
-          <br>2. <code>display_none_inline</code> (estilo en línea).
-          <br>3. <code>display_none_class</code> (clase CSS en cabecera).
-          <br>4. <code>opacity_0</code> (opacidad cero y puntero deshabilitado).
-          <br>5. <code>offscreen</code> (posicionamiento absoluto en coordenadas negativas).</p>
+          <p>Cada página le daba al visitante cinco enlaces normales y cinco enlaces trampa que apuntaban a una carpeta llamada /archivo-interno/, que es justo la que robots.txt prohíbe.</p>
 
-          <p>Para neutralizar reglas heurísticas estáticas, <span class="cue-action">ENFATIZAR</span> <strong>los nombres de clase CSS se regeneran aleatoriamente en cada respuesta</strong>. Establecimos una taxonomía formal de infracciones: Nivel 1 (violación simple tras consultar robots.txt; 0 casos en bots declarados), Nivel 2 (omisión total de consultar robots.txt; 207 de 207 infractores) y Nivel 3 (ceguera visual por consumo de enlaces ocultos CSS; 164 de 207 infractores, 79,2 %).</p>
+          <p><span class="cue-action">PUNTERO → los cinco recuadros del panel izquierdo, de «1. VISIBLE (Control)» a «5. OFFSCREEN (Fuera de Pantalla)», uno por uno; al final, el punto «Clases CSS dinámicas aleatorias»</span> ¿Por qué cinco trampas? Porque queríamos ver si la forma de esconderlas cambiaba algo. Una está a la vista, como grupo de control. Las otras cuatro son invisibles para una persona: una apagada con display none en la misma etiqueta, otra apagada con una clase de estilo, otra con opacidad cero, o sea totalmente transparente, y otra corrida diez mil píxeles afuera de la pantalla. Y los nombres de las clases se sortean en cada visita, así ningún robot puede aprenderse «esta clase es la trampa».</p>
 
-          <p><span class="cue-action">AVANZAR SLIDE AHORA</span></p>
+          <p><span class="cue-action">PUNTERO → panel derecho, las tres tarjetas de arriba abajo: «NIVEL 1: Violación Simple», «NIVEL 2: Omisión Total» y «NIVEL 3: Ceguera Visual CSS»</span> Con eso definimos tres niveles de falta. Nivel 1: leyó robots.txt y entró igual. Nivel 2: ni siquiera lo leyó. Y el Nivel 3, que se suma a cualquiera de los otros: entró por un enlace invisible, o sea, no está mirando la página como un navegador.</p>
+
+          <p><span class="cue-action">PUNTERO → recuadro de abajo del panel izquierdo, «Arnés de Pruebas»</span> Antes de salir a internet, todo pasó por el arnés de pruebas, que fue mi parte junto con la documentación: un simulador que, en una red local cerrada, imita a GPTBot, ClaudeBot, Googlebot, Bytespider, un Googlebot falso y un script de Python. Comprobamos que cada falta cayera en el nivel correcto y que no se filtrara ninguna cabecera interna. Recién ahí salimos a producción. Giovanni.</p>
+
+          <p><span class="cue-action">AVANZAR SLIDE AHORA</span> → pasa a Giovanni</p>
         </div>
       </div>
 
       <!-- SLIDE 10 -->
       <div class="speech-slide-container" data-slide="9">
         <div class="slide-cue-header">
-          <span class="slide-number-tag">DIAPOSITIVA 10 // CRONOLOGÍA Y DINÁMICA TEMPORAL</span>
-          <span class="slide-target-time">⏱ TIEMPO: 10:30 - 11:40</span>
+          <span class="slide-number-tag">DIAPOSITIVA 10 // GIOVANNI · SALIMOS A INTERNET: 12 DÍAS DE GUARDIA</span>
+          <span class="slide-target-time">⏱ TIEMPO: 10:45 - 12:20</span>
         </div>
         <div class="speech-text">
-          <p><span class="cue-tone">Tono: Analítico sobre datos reales</span> En este gráfico vectorial observamos la serie temporal de las <span class="cue-data">3.568.349 peticiones analizadas</span> entre el 18 y el 30 de octubre de 2026.</p>
+          <p><span class="cue-tone">GIOVANNI · Tono: Narrativo, como una bitácora</span> El 18 de octubre a la noche prendimos todo. <span class="cue-action">PUNTERO → etiqueta «18/10» del eje del gráfico y el primer punto de la derecha, «18–22 Oct (Descubrimiento & Despegue)»</span> Ese mismo día salimos a pescar: publicamos enlaces semilla en GitHub y en Hacker News, cada uno con su propio código para saber por dónde llegaba cada visita. ¿Cuántos robots entraron por esos enlaces? Ninguno.</p>
 
-          <p>La cronología revela hitos críticos:
-          <br>• Entre el 18 y el 22 de octubre se realizó seeding en GitHub y Hacker News (con 0 accesos mediante tokens de semilla; los crawlers llegaron orgánicamente vía Certificate Transparency y raíz). El 21/10 a las 05:30 UTC, <code>OAI-SearchBot</code> consultó <code>robots.txt</code> y 0,75 s después GPTBot inició su indexación.
-          <br>• El <span class="cue-emphasis">24 de octubre</span> se registró el pico diario máximo del experimento con <span class="cue-data">1.059.733 peticiones</span>, impulsado por ráfagas de ClaudeBot de hasta 38.787 req/h (~10,8 req/s).
-          <br>• El <span class="cue-warning">27 de octubre</span> ocurrió una interrupción de 8h 57m por reposo/suspensión del host local por inactividad (~64.000 peticiones estimadas perdidas según la cadencia constante de GPTBot), reanudándose normalmente sin pérdida de datos.
-          <br>• Del 26 al 30 de octubre GPTBot operó a ritmo constante de ~2,00 req/s (7.184 req/h mediana).</p>
+          <p>Entonces, ¿cómo nos encontraron? Lo más probable, por el candadito: cada certificado HTTPS queda anotado en un registro público, Certificate Transparency, que los grandes rastreadores miran. Vieron nacer el dominio y vinieron solos.</p>
+
+          <p><span class="cue-action">PUNTERO → etiqueta «20/10» del eje; después subir por la curva hasta el rótulo «Pico 24/10: 1,06M reqs»</span> El 20 llegó ClaudeBot. El 21, GPTBot. Y el 24 de octubre tuvimos el pico: más de un millón de pedidos en un solo día, casi todos de ClaudeBot, con ráfagas de casi once por segundo. <span class="cue-action">PUNTERO → puntos de la derecha «24–25 Oct (Diluvio de IA)» y «26–30 Oct (Cadencia Constante)»</span> Al día siguiente ClaudeBot se fue, sin haber tocado nunca la trampa, y GPTBot siguió hasta el final a un ritmo clavado de dos por segundo.</p>
+
+          <p><span class="cue-action">PUNTERO → quieto. Opcional: si Grafana sigue andando en la PC, cortar unos segundos a la pestaña de Grafana (Chrome, http://localhost:3000, tablero del honeypot) y volver a la presentación con Alt+Tab</span> Mi trabajo esos días fue de guardia: mirar Grafana, revisar que el túnel estuviera sano y comprobar con curl que la trampa, el robots.txt y el ocultamiento de cabeceras seguían funcionando.</p>
+
+          <p><span class="cue-action">PUNTERO → recuadro de abajo a la derecha, «Incidencia Host 27/10»</span> Y hubo un hueco: el 27, entre la medianoche y las nueve de la mañana hora argentina, la PC dejó de atender. Fueron casi nueve horas sin registro, unos 64.000 pedidos de GPTBot perdidos. No pudimos confirmar la causa y quedó declarado en el informe. La lección es clara: en casa hay que desactivar la suspensión y los reinicios automáticos, o usar un VPS.</p>
 
           <p><span class="cue-action">AVANZAR SLIDE AHORA</span></p>
         </div>
@@ -783,34 +795,36 @@
       <!-- SLIDE 11 -->
       <div class="speech-slide-container" data-slide="10">
         <div class="slide-cue-header">
-          <span class="slide-number-tag">DIAPOSITIVA 11 // DINÁMICA DEL LABERINTO & GRAFOS</span>
-          <span class="slide-target-time">⏱ TIEMPO: 11:40 - 12:50</span>
+          <span class="slide-number-tag">DIAPOSITIVA 11 // GIOVANNI · EL TOPE DEL LABERINTO</span>
+          <span class="slide-target-time">⏱ TIEMPO: 12:20 - 13:15</span>
         </div>
         <div class="speech-text">
-          <p><span class="cue-tone">Tono: Teórico y algorítmico</span> Analicemos la topología del laberinto desde la teoría de grafos. Con un factor de ramificación <span class="cue-data">b = 5</span>, a profundidad 10 existirían $5^{10} pprox 9,76$ millones de páginas teóricas.</p>
+          <p><span class="cue-tone">GIOVANNI · Tono: Breve y visual</span> Un segundo sobre el tamaño del laberinto. <span class="cue-action">PUNTERO → árbol de la izquierda: bajar desde «PORTADA: Nivel 1» por «CADA PÁGINA: 5 Enlaces Públicos + 5 Trampas» hasta «RECURSIÓN DETERMINISTA: Niveles 2 a 10»</span> Si cada página da cinco enlaces nuevos, y cada uno otros cinco, a diez pasos ya hay casi diez millones de páginas posibles. <span class="cue-action">PUNTERO → panel derecho, punto «Protección del Servidor» donde dice «9,76 millones»</span> Sin límite iban a pasar dos cosas malas: saturar mi conexión de casa y hacerles gastar recursos sin fin a robots que sí se portan bien.</p>
 
-          <p>Para evitar un consumo desmedido de ancho de banda y CPU, la directiva <span class="cue-data">HONEYPOT_MAX_DEPTH=10</span> impone un corte determinista: en nivel 11 se emiten nodos hoja (<code>is_leaf = true</code>) sin enlaces salientes.</p>
+          <p><span class="cue-action">PUNTERO → caja roja de abajo del árbol, «NIVEL 11: NODO HOJA (is_leaf = true)»</span> Por eso configuré un tope en profundidad 10. La página del nivel 11 se sirve normal, pero sin enlaces: en teoría de grafos, es una hoja.</p>
 
-          <p>Esto contuvo tanto a GPTBot (que explora en anchura, BFS) como a scripts agresivos (que exploran en profundidad, DFS). Debido a la geometría del árbol, entre el <span class="cue-emphasis">68 % y el 72 % del tráfico total</span> recayó sobre estos nodos hoja terminales, protegiendo tanto los recursos del crawler como la estabilidad del servidor.</p>
+          <p><span class="cue-action">PUNTERO → punto «Concentración en Hojas», donde dice «68 % y el 72 %»</span> Y como en cualquier árbol la mayoría de las ramas están en la punta, entre el 68 y el 72 % de los pedidos de ClaudeBot y de GPTBot terminaron justo en esas hojas. Los dos llegaron al fondo y chocaron contra la pared, como estaba previsto. Julio sigue con los resultados.</p>
 
-          <p><span class="cue-action">AVANZAR SLIDE AHORA</span></p>
+          <p><span class="cue-action">AVANZAR SLIDE AHORA</span> → pasa a Julio</p>
         </div>
       </div>
 
       <!-- SLIDE 12 -->
       <div class="speech-slide-container" data-slide="11">
         <div class="slide-cue-header">
-          <span class="slide-number-tag">DIAPOSITIVA 12 // CARACTERIZACIÓN DE IA: GPTBOT VS CLAUDEBOT</span>
-          <span class="slide-target-time">⏱ TIEMPO: 12:50 - 14:00</span>
+          <span class="slide-number-tag">DIAPOSITIVA 12 // JULIO · GPTBOT CONTRA CLAUDEBOT</span>
+          <span class="slide-target-time">⏱ TIEMPO: 13:15 - 14:25</span>
         </div>
         <div class="speech-text">
-          <p><span class="cue-tone">Tono: Comparativo y riguroso</span> Pudimos contrastar empíricamente las dos arquitecturas dominantes de rastreo de IA:</p>
+          <p><span class="cue-tone">JULIO · Tono: Analítico</span> Gracias. Yo me encargué de pulir el informe final, así que me toca contar qué dicen los datos, con sus límites. <span class="cue-action">PUNTERO → panel derecho, títulos de las dos tarjetas: «ClaudeBot (Anthropic)» y «GPTBot (OpenAI)»</span></p>
 
-          <p>• <strong>GPTBot (OpenAI)</strong>: arquitectura reactiva y sincronizada. Mediana de latencia (<code>tok_age</code>) de apenas <span class="cue-data">8,9 segundos</span>, cabecera <code>Referer</code> enviada en el 100 % de los casos y cadencia constante de ~2,00 req/s mediante algoritmo token bucket. Verificado al 100,00 % en Azure AS8075.</p>
+          <p>¿Se acuerdan de que cada enlace llevaba la hora en que se creó? Restando esa hora a la del pedido, vimos cómo trabajan por dentro.</p>
 
-          <p>• <strong>ClaudeBot (Anthropic)</strong>: arquitectura desacoplada por lotes (batch pipeline). Mediana de latencia de <span class="cue-data">5,0 horas</span>, 0 % de cabecera <code>Referer</code> y ráfagas masivas de hasta 10,8 req/s. Verificado al 99,9998 % en ARIN RDAP AS16509.</p>
+          <p><span class="cue-action">PUNTERO → tarjeta de abajo, «GPTBot (OpenAI)»: «Latencia (tok_age): 8,9 segundos», después «Cabecera Referer» y «Cadencia: 2,00 req/s»</span> GPTBot, de OpenAI, trabaja en vivo: ve un enlace y lo pide, con una mediana de nueve segundos. Siempre avisa de qué página viene y mantiene un ritmo casi constante de dos pedidos por segundo, como si tuviera un limitador.</p>
 
-          <p>Ambos respetaron con absoluta rigurosidad las exclusiones de <code>robots.txt</code> (0 accesos a la ruta prohibida sobre 5,32 millones de enlaces trampa expuestos a ellos).</p>
+          <p><span class="cue-action">PUNTERO → tarjeta de arriba, «ClaudeBot (Anthropic)»: «5,0 horas», «Ráfagas: 38.787 req/h» y «0 % Referer»</span> ClaudeBot, de Anthropic, trabaja por tandas: junta enlaces en una cola, los deja esperar, con una mediana de cinco horas, y después los pide en ráfagas de hasta casi 39.000 por hora.</p>
+
+          <p><span class="cue-action">PUNTERO → recuadro de abajo «✓ Cumplimiento Estricto»; al hablar de las IPs, subir a las líneas «Validación Red» de cada tarjeta</span> Dos formas opuestas, con el mismo resultado: cero entradas a la zona prohibida. Y no nos quedamos con el nombre que decían tener: con los scripts que preparó Joel cruzamos las IPs con las listas oficiales de OpenAI y de Google, y con el registro de direcciones ARIN para Anthropic. Coincidieron prácticamente en el 100 %.</p>
 
           <p><span class="cue-action">AVANZAR SLIDE AHORA</span></p>
         </div>
@@ -819,15 +833,15 @@
       <!-- SLIDE 13 -->
       <div class="speech-slide-container" data-slide="12">
         <div class="slide-cue-header">
-          <span class="slide-number-tag">DIAPOSITIVA 13 // DETECCIÓN EN LA TRAMPA & CHI-CUADRADO</span>
-          <span class="slide-target-time">⏱ TIEMPO: 14:00 - 15:10</span>
+          <span class="slide-number-tag">DIAPOSITIVA 13 // JULIO · LA TRAMPA EN ACCIÓN: 207 ENTRADAS</span>
+          <span class="slide-target-time">⏱ TIEMPO: 14:25 - 15:40</span>
         </div>
         <div class="speech-text">
-          <p><span class="cue-tone">Tono: Foco en ciberseguridad y estadística</span> Llegamos a la trampa: ¿Quiénes ingresaron a <code>/archivo-interno/</code>? Hubo exactamente <span class="cue-data">207 capturas netas</span> concentradas en 6 actores infractores.</p>
+          <p><span class="cue-tone">JULIO · Tono: Riguroso, con límites claros</span> Ahora sí, la escena del crimen. <span class="cue-action">PUNTERO → gráfico de barras de la izquierda</span> Hubo 207 entradas a /archivo-interno/, todas de los seis actores disfrazados, y ninguno había leído robots.txt. O sea, 100 % de Nivel 2. Nivel 1, leer la regla y romperla, no hubo ni un caso.</p>
 
-          <p>La distribución por variante CSS fue: 43 en visible, 43 en none inline, 42 en offscreen, 40 en none class y 39 en opacity 0. Frente a una expectativa uniforme de $E = 41,4$, la prueba arrojó <span class="cue-data">χ² = 0,3188 con p = 0,9886 (gl = 4)</span>, no rechazándose la hipótesis nula de equiprobabilidad.</p>
+          <p><span class="cue-action">PUNTERO → recorrer las cinco barras de izquierda a derecha («visible», «none in», «offscreen», «none cl», «opacity 0») y marcar la línea punteada «Frecuencia Esperada: E = 41,4»</span> Miren cuántas veces entraron por cada tipo de enlace: 43 por el visible, 43 por el oculto en la etiqueta, 42 por el de fuera de pantalla, 40 por el de la clase y 39 por el transparente. Prácticamente iguales. <span class="cue-action">PUNTERO → barra de abajo del gráfico, «p = 0,9886»</span> La prueba chi-cuadrado da un p de 0,99: no hay ninguna preferencia. Dicho fácil: estos programas no miran la pantalla, agarran todos los href del HTML y los siguen. <span class="cue-action">PUNTERO → panel derecho, punto «Ceguera Visual de Scrapers» (79,2 %)</span> Por eso casi el 80 % de sus entradas fueron por enlaces que una persona nunca podría ver.</p>
 
-          <p>Como aclaramos en nuestro informe, <span class="cue-action">ENFATIZAR</span> <strong>esta prueba debe interpretarse como exploratoria</strong> debido a la no independencia de las 207 observaciones agrupadas en 6 actores. Además, enmarcado a nivel de operador ($n = 3, k = 0$), la cota superior exacta de Clopper-Pearson al 95 % es del <span class="cue-data">63,2 % (70,8 % bilateral)</span>; las cotas infinitesimales de 10⁻⁶ por enlace constituyen pseudorreplicación al asumir independencia que no existe en el tráfico de red.</p>
+          <p><span class="cue-action">PUNTERO → panel derecho, final del primer punto «(6 IPs: describe, no demuestra)» y después el punto «Marco Estadístico de Operador»</span> Dos aclaraciones del informe. Primero, las 207 entradas vienen de solo seis IPs, no son casos independientes: la prueba describe, no demuestra. Segundo, con solo tres empresas grandes, la estadística nos deja decir que la proporción que no cumple está por debajo del 63 %. Es una gran señal, pero no alcanza para hablar de toda la web.</p>
 
           <p><span class="cue-action">AVANZAR SLIDE AHORA</span></p>
         </div>
@@ -836,59 +850,51 @@
       <!-- SLIDE 14 -->
       <div class="speech-slide-container" data-slide="13">
         <div class="slide-cue-header">
-          <span class="slide-number-tag">DIAPOSITIVA 14 // ANÁLISIS FORENSE: LAS 6 IPS INFRACTORAS</span>
-          <span class="slide-target-time">⏱ TIEMPO: 15:10 - 16:20</span>
+          <span class="slide-number-tag">DIAPOSITIVA 14 // JULIO · QUIÉNES ERAN LOS SEIS INFRACTORES</span>
+          <span class="slide-target-time">⏱ TIEMPO: 15:40 - 16:55</span>
         </div>
         <div class="speech-text">
-          <p><span class="cue-tone">Tono: Forense e investigativo</span> La Tabla 4 canónica detalla los 6 orígenes infractores:
-          <br>• Grupos A1 y A2 en DigitalOcean (US y NL) con Python-requests (107 peticiones combinadas).
-          <br>• Grupo C en DigitalOcean (Singapur) con Go-http-client (46 peticiones).
-          <br>• Grupos B1 y B2 en Tencent Cloud (Hong Kong) fingiendo Chrome 126 (53 peticiones).
-          <br>• Y actor D en M247 (Italia) declarando Chrome 150 (1 petición).</p>
+          <p><span class="cue-tone">JULIO · Tono: Investigativo</span> ¿Y quiénes eran? <span class="cue-action">PUNTERO → bajar por la columna «PAÍS» de la tabla</span> Todos salían de servidores alquilados en centros de datos de Canadá, Estados Unidos, Polonia y Países Bajos, nunca de una conexión de casa. <span class="cue-action">PUNTERO → columna «SUBRED /24» y el punto «Protección de Datos Personales» (etiqueta «LEY 25.326»)</span> En el informe mostramos sus IPs con el último número tapado, por la Ley de Protección de Datos Personales.</p>
 
-          <p>Tres precisiones metodológicas cruciales:
-          <br>1. <strong>Chrome 150</strong>: versión oficial y estable lanzada el 30 de junio de 2026; su carácter hostil no deriva de una versión inexistente, sino de operar desde un proxy datacenter omitiendo robots.txt.
-          <br>2. <strong>Control Positivo de Favicon</strong>: 0 de 207 peticiones pidió <code>/favicon.ico</code>; las pruebas manuales humanas de la cátedra desde <code>181.4.69.0/24</code> sí la solicitaron de inmediato.
-          <br>3. <strong>Ley 25.326</strong>: todas las IPs se publican enmascaradas a nivel <code>/24</code> para proteger datos personales.</p>
+          <p><span class="cue-action">PUNTERO → columna «USER-AGENT DECLARADO» y el punto «Chrome Desactualizado»</span> Todos decían ser Chrome, pero versiones viejas, de la 124 a la 150, cuando durante el experimento la vigente era la 155 y después la 156. Típico de un script con cabeceras fijas. <span class="cue-action">PUNTERO → filas A2 y A1, después B2 y B1, y el punto «Dos Firmas de Herramienta»</span> Además se distinguen herramientas: dos IPs con el mismo perfil exacto, que barrieron el laberinto en segundos, y otras dos con el navegador en francés que en realidad buscaban carpetas .git con código fuente y entraron a la trampa de paso.</p>
 
-          <p><span class="cue-action">AVANZAR SLIDE AHORA</span></p>
+          <p><span class="cue-action">PUNTERO → panel derecho, punto «Control Positivo de Favicon»</span> ¿Y cómo sabemos que no eran personas? Por un detalle chiquito: el iconito de la pestaña, el favicon. Un navegador de verdad lo pide solo al abrir una página. Cuando probamos la trampa con nuestro Chrome, lo pidió. Estos seis no lo pidieron nunca. No es una prueba definitiva, porque hasta GPTBot lo pidió una vez, pero sumado a todo lo demás es un indicio muy fuerte.</p>
+
+          <p><span class="cue-action">AVANZAR SLIDE AHORA</span> → pasa a Giovanni</p>
         </div>
       </div>
 
       <!-- SLIDE 15 -->
       <div class="speech-slide-container" data-slide="14">
         <div class="slide-cue-header">
-          <span class="slide-number-tag">DIAPOSITIVA 15 // OBSERVABILIDAD EN GRAFANA Y RECONCILIACIÓN</span>
-          <span class="slide-target-time">⏱ TIEMPO: 16:20 - 17:30</span>
+          <span class="slide-number-tag">DIAPOSITIVA 15 // GIOVANNI · LA VIGILANCIA EN GRAFANA Y LAS CUENTAS QUE CIERRAN</span>
+          <span class="slide-target-time">⏱ TIEMPO: 16:55 - 17:40</span>
         </div>
         <div class="speech-text">
-          <p><span class="cue-tone">Tono: Operaciones y telemetría</span> En pantalla observamos la captura del dashboard en producción desplegado en Grafana 10.4 sobre Loki 3.5.0.</p>
+          <p><span class="cue-tone">GIOVANNI · Tono: Breve, de auditoría</span> Vuelvo un minuto para mostrar cómo vigilábamos todo. <span class="cue-action">PUNTERO → captura de Grafana de la izquierda; marcar el primer recuadro de arriba («2.95 Mil», peticiones totales) y el gráfico verde de abajo</span> Esto es Grafana, alimentado por Loki: ahí veía en vivo cuántos pedidos llegaban, de quién, y quién caía en la trampa.</p>
 
-          <p>Es fundamental explicar la reconciliación forense entre el dashboard y el informe:
-          <br>El panel en vivo registró <span class="cue-emphasis">213 accesos brutos a /trap/</span> y 45 a la técnica <code>opacity_0</code>. Al contrastar con los logs detallados, se identificaron <span class="cue-data">6 accesos manuales interactivos</span> realizados por el equipo de cátedra durante pruebas de laboratorio (desde la subred <code>181.4.69.0/24</code> y terminales de prueba). Al depurarlos, se obtienen con total rigor los <span class="cue-data">207 accesos netos y 39 en opacity_0</span>.</p>
+          <p>Y acá hay un detalle de auditoría que nos importa. <span class="cue-action">PUNTERO → el número rojo «213» de la captura, tercer recuadro de arriba</span> Si miran la captura, el contador de la trampa marca 213, y en el informe decimos 207. ¿Por qué la diferencia de seis? <span class="cue-action">PUNTERO → panel derecho, punto «Reconciliación de Accesos a Trampa»; al decir «transparentes», el anillo de colores a la derecha de la captura</span> Porque esos seis fueron clics nuestros, de prueba, sobre enlaces transparentes, para comprobar que la alarma sonaba. Los identificamos por la IP, por la hora y porque nuestro Chrome sí pidió el favicon. Los sacamos, junto con todas nuestras otras pruebas, y los números cierran exactos. Julio cierra.</p>
 
-          <p>Esta concordancia matemática exacta demuestra la trazabilidad inalterable de nuestro pipeline de datos.</p>
-
-          <p><span class="cue-action">AVANZAR SLIDE AHORA</span></p>
+          <p><span class="cue-action">AVANZAR SLIDE AHORA</span> → pasa a Julio</p>
         </div>
       </div>
 
       <!-- SLIDE 16 -->
       <div class="speech-slide-container" data-slide="15">
         <div class="slide-cue-header">
-          <span class="slide-number-tag">DIAPOSITIVA 16 // HALLAZGOS CLAVE DE INTERNETWORKING</span>
-          <span class="slide-target-time">⏱ TIEMPO: 17:30 - 18:45</span>
+          <span class="slide-number-tag">DIAPOSITIVA 16 // JULIO · CUATRO APRENDIZAJES DE REDES</span>
+          <span class="slide-target-time">⏱ TIEMPO: 17:40 - 18:50</span>
         </div>
         <div class="speech-text">
-          <p><span class="cue-tone">Tono: Conclusivo y conceptual de redes</span> Sintetizamos los aportes más profundos para la materia de Internetworking:</p>
+          <p><span class="cue-tone">JULIO · Tono: Reflexivo</span> Nos llevamos cuatro aprendizajes de redes. <span class="cue-action">PUNTERO → los títulos de los dos paneles, «REDES & PROTOCOLOS L7» y «SEGURIDAD & APLICACIÓN»</span></p>
 
-          <p>1. <span class="cue-emphasis">robots.txt opera a nivel de operador</span>: GPTBot nunca pidió directamente <code>robots.txt</code>; fue su satélite <code>OAI-SearchBot</code> quien lo descargó 749 ms antes y compartió la directiva en caché centralizada. Similarmente, Googlebot y GoogleOther compartieron IPs en AS15169. Auditar por User-Agent aislado es un sesgo metodológico.</p>
+          <p><span class="cue-action">PUNTERO → panel izquierdo: diagrama «OAI-SearchBot» → «749 ms antes» → «GPTBot Cluster» y el punto «robots.txt se Consulta por Operador»</span> Uno: robots.txt se lee por empresa, no por robot. GPTBot nunca pidió robots.txt con su nombre, y a primera vista parecía un infractor. Pero 749 milisegundos antes de su primer pedido, otro bot de OpenAI, OAI-SearchBot, lo leyó desde la misma red. Si auditábamos robot por robot, lo acusábamos injustamente.</p>
 
-          <p>2. <span class="cue-emphasis">Atribución de Red L3/L4 vs Cabeceras L7</span>: La identidad real descansa en prefijos BGP, rangos JSON y registros RDAP, no en cadenas de User-Agent fácilmente falseables.</p>
+          <p><span class="cue-action">PUNTERO → punto «Atribución L3/L4 Rigurosa» y el recuadro «Visión de Red»</span> Dos: el nombre que declara un visitante es texto libre. Confiar en el User-Agent es como dejar pasar a alguien porque tiene puesta una remera que dice «Policía». Lo que vale es verificar a qué red pertenece su IP.</p>
 
-          <p>3. <span class="cue-emphasis">Límites de Túneles L7</span>: Delegar TLS en Cloudflare Tunnel oculta las firmas criptográficas JA3/JA4 en el origen.</p>
+          <p><span class="cue-action">PUNTERO → punto «Pérdida de Huella TLS en Túneles L7»</span> Tres: el túnel nos dio seguridad, pero tiene un costo. Como Cloudflare abre la conexión cifrada en su borde, perdimos la huella TLS del visitante, que serviría para saber si un «Chrome» es Chrome de verdad.</p>
 
-          <p>4. <span class="cue-emphasis">Resonancia con la Literatura</span>: Nuestros datos replican de forma independiente las observaciones de Liu et al. (IMC 2025) y Kim et al. (IMC 2025) para ClaudeBot y GPTBot, demostrando que los honeypots stateless en RAM neutralizan scrapers ciegos con costo $O(1)$.</p>
+          <p><span class="cue-action">PUNTERO → panel derecho, punto «Convergencia con Literatura»</span> Y cuatro: desde una PC en Corrientes llegamos a lo mismo que dos estudios publicados en 2025 en la principal conferencia de medición de internet: los grandes crawlers declarados respetan las reglas benignas.</p>
 
           <p><span class="cue-action">AVANZAR SLIDE AHORA</span></p>
         </div>
@@ -897,19 +903,21 @@
       <!-- SLIDE 17 -->
       <div class="speech-slide-container" data-slide="16">
         <div class="slide-cue-header">
-          <span class="slide-number-tag">DIAPOSITIVA 17 // RECOMENDACIONES DE INGENIERÍA Y CIERRE</span>
-          <span class="slide-target-time">⏱ TIEMPO: 18:45 - 20:00</span>
+          <span class="slide-number-tag">DIAPOSITIVA 17 // JULIO · CÓMO DEFENDER UN SERVIDOR HOY Y CIERRE</span>
+          <span class="slide-target-time">⏱ TIEMPO: 18:50 - 20:00</span>
         </div>
         <div class="speech-text">
-          <p><span class="cue-tone">Tono: Firme, profesional y de cierre</span> Para concluir nuestra defensa, planteamos tres recomendaciones prácticas de ingeniería:</p>
+          <p><span class="cue-tone">JULIO · Tono: Conclusivo y agradecido</span> Para cerrar: ¿qué haríamos si mañana nos toca defender un servidor real? <span class="cue-action">PUNTERO → panel izquierdo «1. DEFENSA EN PROFUNDIDAD», las tres capas del diagrama</span> No hay una sola herramienta que alcance; son tres escalones.</p>
 
-          <p>1. <strong>Defensa en Profundidad</strong>: Implementar un esquema híbrido de tres niveles. RFC 9309 para contener crawlers comerciales éticos; tarpits criptográficos stateless para ralentizar rastreadores agresivos; y enlaces trampa CSS dinámicos vinculados a reglas automatizadas en WAFs para bloquear scrapers no declarados.</p>
+          <p><span class="cue-action">PUNTERO → capa «Capa 1: robots.txt (RFC 9309)»</span> Primero, un robots.txt bien escrito. Los grandes operadores lo respetan, así que solo con eso ya ordenás a casi todo el tráfico declarado.</p>
 
-          <p>2. <strong>Auditoría Correlacionada por Operador</strong>: Evaluar el tráfico agrupando por ASN y bloques CIDR completos en lugar de confiar en cabeceras HTTP.</p>
+          <p><span class="cue-action">PUNTERO → capa «Capa 3: Trampas CSS + WAF»</span> Segundo, trampas invisibles conectadas a un bloqueo. Los que mienten sobre quiénes son caen solos en un enlace que ninguna persona ve, y eso funciona como alarma.</p>
 
-          <p>3. <strong>Resiliencia Criptográfica sin Estado</strong>: Diseñar mecanismos de defensa en memoria RAM que inmunicen los servidores frente a DoS por I/O de disco.</p>
+          <p><span class="cue-action">PUNTERO → panel derecho «3. RESILIENCIA COMPUTACIONAL», cajas «HMAC RAM» y «Anti-DoS»</span> Tercero, que esas trampas no tengan estado, con enlaces firmados, para que una avalancha de bots no te tire el servidor.</p>
 
-          <p>El código fuente, scripts de análisis y datasets anonimizados se encuentran disponibles en nuestro repositorio público de GitHub. Agradecemos a los profesores por su atención y quedamos a disposición para la ronda de preguntas.</p>
+          <p><span class="cue-action">PUNTERO → recuadro de abajo «CONCLUSIÓN GENERAL DE LA INVESTIGACIÓN», donde empieza «Límites:»</span> Y los límites, dichos con honestidad: probamos una sola regla, la más permisiva posible, en un solo dominio, durante doce días y con tres empresas grandes. Para generalizar falta probar reglas más estrictas y atraer a otros bots.</p>
+
+          <p><span class="cue-action">PUNTERO → soltar el mouse y dejar quieta la pantalla, con «Marcori · Pintos · Piazza» a la vista</span> Gracias por escucharnos. El código, los datos anonimizados y el informe están en el repositorio del proyecto. Quedamos atentos a sus preguntas.</p>
         </div>
       </div>
 
@@ -934,208 +942,208 @@
     // METADATOS DE LAS 17 DIAPOSITIVAS
     const SLIDE_METADATA = [
       {
-        goal: "Presentar formalmente el trabajo, el contexto de Internetworking y el alcance experimental del despliegue.",
-        time: "00:00 - 01:10 (Meta: 1:10)",
+        goal: "Joel: Presentar al equipo, la pregunta de investigación y el sitio señuelo.",
+        time: "00:00 - 00:55 (Meta: 0:55)",
         bullets: [
-          "Experimento real en producción: <strong>18 al 30 de octubre de 2026 (11,85 días)</strong>.",
-          "Dominio público: <code>definitivamente-no-hay-trabas.com.ar</code>.",
-          "<strong>3.568.349</strong> peticiones válidas analizadas (~10,9 GB de carga útil).",
-          "Aislamiento de red sin puertos abiertos mediante <strong>Cloudflare Tunnel (cloudflared:2025.9.1)</strong>."
+          "Pregunta: ¿los robots respetan robots.txt cuando nadie los mira?",
+          "Sitio señuelo <code>definitivamente-no-hay-trabas.com.ar</code>, del 18 al 30 de octubre de 2026.",
+          "<strong>3.568.349</strong> pedidos válidos en <strong>11,85 días</strong>.",
+          "Adelanto: 0 entradas de bots declarados y 207 de seis disfrazados."
         ],
-        metrics: ["3,56 M", "Peticiones Nginx", "207", "Accesos Trampa", "6 IPs", "Orígenes Reales", "100%", "Cumplimiento IA/Buscadores"],
-        tip: "Mantén un tono pausado y seguro. No leas palabra por palabra; usa los datos clave de la pantalla."
+        metrics: ["3,57 M", "Pedidos válidos", "11,85", "Días en línea", "0", "Bots declarados en la trampa", "207", "Entradas prohibidas"],
+        tip: "Arrancar la grabación ya parados en esta diapositiva. Ritmo tranquilo: es la primera impresión."
       },
       {
-        goal: "Explicar el panorama del scraping moderno y la carrera de las IAs respaldado por la literatura científica.",
-        time: "01:10 - 02:20 (Meta: 1:10)",
+        goal: "Joel: Explicar el trueque roto entre buscadores y sitios, y por qué robots.txt no es un candado.",
+        time: "00:55 - 02:05 (Meta: 1:10)",
         bullets: [
-          "Presión de modelos fundacionales (GPT-4, Claude 3.5) por ingestar texto masivo.",
-          "Quiebre del pacto histórico: extracción sin retorno de tráfico web (Steinacker et al., 2025).",
-          "Tráfico automatizado supera el 51 % en la web abierta (Imperva Bad Bot Report 2025).",
-          "RFC 9309 consultivo; proliferación de User-Agent spoofing y proxies residenciales (Kim et al., IMC 2025)."
+          "Antes: el buscador indexa y devuelve visitas. Ahora: la IA descarga y no devuelve nadie.",
+          "Imperva 2025: el 51 % del tráfico de internet es automático.",
+          "robots.txt no corta nada en la capa de transporte: es un cartel, no un firewall.",
+          "Quien no quiere obedecer no lo lee o se disfraza de navegador."
         ],
-        metrics: ["51 %", "Tráfico Automatizado", "0 Visitas", "Retorno de IA", "RFC 9309", "Protocolo Consultivo", "Spoofing", "Evasión de Firmas"],
-        tip: "Enfatiza que el sitio web financia la infraestructura mientras los modelos monetizan sin reciprocidad."
+        metrics: ["51 %", "Tráfico automático", "0", "Visitas de vuelta", "RFC 9309", "Cumplimiento voluntario", "User-Agent", "Texto libre"],
+        tip: "La analogía del cartel «no pasar» es la idea fuerza; decirla despacio."
       },
       {
-        goal: "Presentar la taxonomía formal de rastreadores web: buscadores, bots de IA y scrapers encubiertos.",
-        time: "02:20 - 03:30 (Meta: 1:10)",
+        goal: "Joel: Adelantar quiénes vinieron: buscadores, IA declarada y disfrazados.",
+        time: "02:05 - 03:10 (Meta: 1:05)",
         bullets: [
-          "<strong>Buscadores:</strong> Googlebot (1.532 reqs) y GoogleOther (10.702 reqs), 99,83 % en prefijos oficiales JSON.",
-          "<strong>Crawlers de IA:</strong> ClaudeBot y GPTBot (99,46 % del tráfico total, 0 accesos a la ruta prohibida).",
-          "<strong>Scrapers encubiertos:</strong> 6 actores falsificando Chrome en 6 subredes /24; 100 % Nivel 2 y 79,2 % Nivel 3.",
-          "Verificación de red en ARIN RDAP AS16509 (ClaudeBot) y Azure AS8075 (GPTBot)."
+          "Buscadores: Googlebot y GoogleOther, ~12.200 pedidos, 297 lecturas de robots.txt, 0 entradas.",
+          "IA declarada: ClaudeBot y GPTBot, 99,46 % del tráfico, 0 entradas sobre 5,32 M enlaces trampa.",
+          "Disfrazados: 6 IPs con Chrome falso, sin robots.txt, 207 entradas.",
+          "Resumen: los que dicen quiénes son cumplieron; los que mienten, no."
         ],
-        metrics: ["99,8 %", "Tráfico de IA", "3 Clases", "De Rastreadores", "PTR/RDAP", "Verificación Red", "Chrome", "Falso User-Agent"],
-        tip: "Menciona que ClaudeBot y GPTBot respetaron plenamente las directivas sin una sola violación."
+        metrics: ["12.234", "Pedidos de Google", "99,46 %", "Tráfico de IA", "0", "Entradas de declarados", "207", "Entradas de disfrazados"],
+        tip: "Remarcar el «Cero» con una pausa corta antes de decirlo."
       },
       {
-        goal: "Explicar la diferencia entre Honeypot y Tarpit, el estándar RFC 9309 y la brecha DOM vs Render Tree.",
-        time: "03:30 - 04:40 (Meta: 1:10)",
+        goal: "Joel: Explicar honeypot, tarpit y la diferencia entre ver la página y leer el HTML crudo.",
+        time: "03:10 - 04:25 (Meta: 1:15)",
         bullets: [
-          "<strong>Honeypot L7:</strong> trampa en la capa de aplicación HTTP de interacción media/alta (Spitzner, 2002).",
-          "<strong>Tarpit dinámico:</strong> laberinto acotado (<span class='cad-tag'>HONEYPOT_MAX_DEPTH=10</span>) inspirado en LaBrea y AI Labyrinth.",
-          "<strong>RFC 9309:</strong> estándar IETF voluntario; compatible con caché de operador de 24 horas.",
-          "<strong>Divergencia:</strong> navegadores compilan CSSOM/layout; scrapers leen texto plano."
+          "Honeypot: recurso sin uso legítimo; tocarlo ya es sospechoso. De baja interacción.",
+          "Tarpit: páginas que se fabrican al vuelo, con piso en nivel 11.",
+          "Un robot barato no aplica CSS: sigue todo <code>href</code>, aunque sea invisible.",
+          "Esa ceguera es la carnada."
         ],
-        metrics: ["L7", "Honeypot Web", "Nivel 10", "Tope Laberinto", "RFC 9309", "Estándar IETF", "CSSOM", "Discriminador"],
-        tip: "Conecta este concepto con la materia: no es seguridad por oscuridad sino asimetría computacional."
+        metrics: ["Baja", "Interacción del honeypot", "Nivel 11", "Hojas sin enlaces", "CSS", "Lo que el robot no aplica", "href", "Lo que sí sigue"],
+        tip: "Al final, pasar la palabra a Giovanni mirando a cámara."
       },
       {
-        goal: "Exponer el mapeo exhaustivo de la arquitectura en las 7 capas del modelo OSI (Física hasta Aplicación).",
-        time: "04:40 - 05:50 (Meta: 1:10)",
+        goal: "Giovanni: Ubicar cada pieza del experimento en el modelo OSI.",
+        time: "04:25 - 05:25 (Meta: 1:00)",
         bullets: [
-          "<strong>L7 Aplicación:</strong> RFC 9309, HTTP/2, Django, CSSOM y CF-Connecting-IP.",
-          "<strong>L6 Presentación:</strong> TLS 1.3 en Edge, Logs JSON Nginx, HMAC-SHA256 Base64URL.",
-          "<strong>L4/L5 Transporte y Sesión:</strong> Túnel QUIC saliente por UDP (cero puertos TCP abiertos).",
-          "<strong>L1-L3 Física y Red:</strong> WSL2 Docker bridges, subredes RFC 1918 y Anycast BGP."
+          "L1–L3: PC hogareña, redes virtuales de Docker; afuera solo se ve la red de Cloudflare.",
+          "L4–L5: ningún puerto abierto; túnel saliente de cloudflared (QUIC por defecto).",
+          "L6: HTTPS termina en el borde de Cloudflare.",
+          "L7: robots.txt, cabeceras HTTP y trampas CSS. Honeypot de capa 7."
         ],
-        metrics: ["L7 a L1", "Pila Completa OSI", "QUIC/UDP", "Transporte Túnel", "Bridge L2", "Redes Docker", "Anycast", "Enrutamiento L3"],
-        tip: "Esta es la diapositiva más apreciada por la cátedra de redes. Señala claramente la transición entre capas."
+        metrics: ["7", "Capas", "0", "Puertos abiertos", "Saliente", "Sentido del túnel", "L7", "Capa estudiada"],
+        tip: "Mover el puntero de abajo hacia arriba, fila por fila, al ritmo de lo que se nombra."
       },
       {
-        goal: "Detallar la arquitectura física y de contenedores: Windows 10 + Docker WSL2, redes bridge y aislamiento.",
-        time: "05:50 - 07:00 (Meta: 1:10)",
+        goal: "Giovanni: Mostrar la arquitectura real: una PC con Windows 10, tres redes Docker y el túnel.",
+        time: "05:25 - 06:40 (Meta: 1:15)",
         bullets: [
-          "Host físico: <strong>Windows 10 Pro (22H2) + Docker Desktop (WSL2 Ubuntu)</strong>.",
-          "Túnel saliente QUIC cifrado con <code>cloudflared:2025.9.1</code>: <strong>cero puertos abiertos</strong>.",
-          "3 redes bridge aisladas: <code>tunnel_net</code> (10.98.0.0/24), <code>honeypot_net</code>, <code>telemetry_net</code>.",
-          "Django opera con <code>read_only: true</code>; telemetría final en streaming offline por OOM de Loki el 21/10."
+          "Todo en la PC de Giovanni: Windows 10 + Docker Desktop (WSL 2). Sin servidor alquilado.",
+          "<code>tunnel_net</code> (10.98.0.0/24): cloudflared y Nginx, que registra cada pedido en JSON.",
+          "<code>honeypot_net</code>: Django sin privilegios y con disco de solo lectura.",
+          "<code>telemetry_net</code>: Promtail, Loki y Grafana. El 21/10 se detuvo <code>analytics</code>; se procesó el log completo."
         ],
-        metrics: ["3 Redes", "Bridges Docker", "0 Puertos", "Expuestos Inbound", "read_only", "Django Inmutable", "Streaming", "Offline Python"],
-        tip: "Aclara con transparencia el evento de OOM en Loki: los logs crudos JSON de Nginx preservaron la evidencia intacta."
+        metrics: ["3", "Redes aisladas", "10.98.0.0/24", "Red del túnel", "3,45 GB", "Log de Nginx", "21/10", "Se detuvo analytics"],
+        tip: "La analogía de las tres peceras ayuda; no leer los nombres de red de corrido."
       },
       {
-        goal: "Explicar el problema de la pérdida de IP en proxies L7 y cómo se restituyó la identidad mediante CF-Connecting-IP.",
-        time: "07:00 - 08:10 (Meta: 1:10)",
+        goal: "Giovanni: Explicar por qué detrás de un túnel se pierde la IP real y cómo se recuperó sin dejarla falsificar.",
+        time: "06:40 - 07:50 (Meta: 1:10)",
         bullets: [
-          "Problema L4: Nginx solo ve la IP interna del túnel <code>cloudflared</code> (10.98.0.2).",
-          "Riesgo: <code>X-Forwarded-For</code> puede ser suplantado (spoofing L7).",
-          "Solución Nginx: <code>set_real_ip_from 10.98.0.0/24</code> y <code>real_ip_header CF-Connecting-IP</code>.",
-          "Ocultamiento interno con <code>proxy_hide_header X-Honeypot-*</code> para evitar fingerprinting."
+          "Nginx ve siempre una IP interna de la red del túnel (10.98.0.0/24).",
+          "<code>X-Forwarded-For</code> la puede escribir cualquiera: es el remitente escrito a mano.",
+          "Se confía solo en conexiones del túnel y solo en <code>CF-Connecting-IP</code>.",
+          "Nginx borra las cabeceras internas <code>X-Honeypot-*</code> antes de responder."
         ],
-        metrics: ["10.98.0.0/24", "Subred de Confianza", "CF-Header", "IP Real Segura", "Anti-Spoof", "Validación L7", "Filtro", "proxy_hide_header"],
-        tip: "Explica que sin esta directiva, los logs forenses atribuirían ataques a Googlebot si el cliente inyectara la IP."
+        metrics: ["10.98.0.0/24", "Única red de confianza", "CF-Connecting-IP", "Cabecera leída", "XFF", "Cabecera ignorada", "4", "Cabeceras internas ocultas"],
+        tip: "Señalar el bloque de código solo cuando se nombran las reglas."
       },
       {
-        goal: "Presentar el token criptográfico HMAC-SHA256, el diseño sin estado y la justificación de 40 bits.",
-        time: "08:10 - 09:20 (Meta: 1:10)",
+        goal: "Giovanni: Explicar el token firmado de 52 caracteres y por qué no hace falta base de datos.",
+        time: "07:50 - 09:10 (Meta: 1:20)",
         bullets: [
-          "Token de 52 hex: <code>UUID (32) + Epoch (8) + Depth (2) + HMAC (10)</code>.",
-          "Sin base de datos ni escrituras a disco: validación y regeneración al vuelo en memoria RAM.",
-          "Firma de 40 bits: colisión accidental de $5,46 \times 10^{-12}$; brute force online exigiría $1,8 \times 10^{11}$ reqs.",
-          "Justificación vs RFC 2104: trade-off deliberado para URLs compactas sin comprometer la seguridad en red."
+          "Token de 52 hex: identificador (32) + hora (8) + nivel (2) + firma HMAC-SHA256 (10).",
+          "Inventar o tocar un carácter invalida la firma: 1 en ~183 mil millones.",
+          "La hora dentro del enlace permitió medir cuánto tarda cada robot.",
+          "Mediana de respuesta de 2 ms, sin base de datos."
         ],
-        metrics: ["52 hex", "Longitud Token", "40 bits", "Firma HMAC", "5,46e-12", "Prob. Colisión", "< 60 MB", "Memoria RAM"],
-        tip: "Si preguntan por RFC 2104 (que recomienda ≥80 bits), responde con seguridad: es un trade-off por longitud de URL."
+        metrics: ["52", "Caracteres hex", "40 bits", "Firma truncada", "1 en 183 mil M", "Acertar al azar", "2 ms", "Mediana de respuesta"],
+        tip: "La analogía del sello del boliche es clave: decirla mirando a cámara."
       },
       {
-        goal: "Mostrar cómo funciona el engaño: 5 técnicas CSS y nombres de clase dinámicos por petición.",
-        time: "09:20 - 10:30 (Meta: 1:10)",
+        goal: "Joel: Mostrar las cinco variantes de trampa, los tres niveles de falta y el arnés de pruebas.",
+        time: "09:10 - 10:45 (Meta: 1:35)",
         bullets: [
-          "Cada página entrega 5 enlaces públicos y 5 enlaces trampa hacia <code>/archivo-interno/</code>.",
-          "5 técnicas: <code>visible</code>, <code>display_none_inline</code>, <code>display_none_class</code>, <code>opacity_0</code>, <code>offscreen</code>.",
-          "Nombres de clase aleatorios dinámicos regenerados en cada request.",
-          "Taxonomía de 3 niveles: 100 % de los accesos a trampa fueron Nivel 2 y 79,2 % Nivel 3."
+          "Cada página: 5 enlaces normales y 5 trampas a <code>/archivo-interno/</code>.",
+          "Variantes: visible (control), display none en la etiqueta, clase, opacidad 0 y fuera de pantalla.",
+          "Nivel 1: leyó y entró. Nivel 2: no leyó. Nivel 3 (se suma): entró por un enlace invisible.",
+          "Arnés: simulador en red local con GPTBot, ClaudeBot, Googlebot, Bytespider, Googlebot falso y script Python."
         ],
-        metrics: ["5 Enlaces", "Públicos / Trampas", "Dinámico", "Nombre de Clase", "100%", "Nivel 2 (Sin robots)", "79,2%", "Nivel 3 (CSS)"],
-        tip: "Resalta que ningún usuario humano con navegador visual es capaz de activar estas trampas."
+        metrics: ["5 + 5", "Enlaces por página", "5", "Variantes de trampa", "3", "Niveles de falta", "6", "Perfiles simulados"],
+        tip: "Si el bloque se alarga, recortar la lista de bots del simulador."
       },
       {
-        goal: "Analizar la serie temporal de 11,85 días, el pico de 1,06M y la interrupción del host del 27/10.",
-        time: "10:30 - 11:40 (Meta: 1:10)",
+        goal: "Giovanni: Contar la salida, la siembra, la llegada de los bots, el pico y el hueco del 27/10.",
+        time: "10:45 - 12:20 (Meta: 1:35)",
         bullets: [
-          "Dataset final: <strong>3.568.349 peticiones</strong> depuradas de calidad.",
-          "Pico máximo el <strong>24/10: 1.059.733 peticiones en un solo día</strong> (ráfagas de ClaudeBot de 10,8 req/s).",
-          "Interrupción el <strong>27/10: 8h 57m por suspensión/reposo del host Windows 10</strong> (~64.000 reqs perdidas).",
-          "Seeding en GitHub y Hacker News: 0 visitas por tokens semilla; descubrimiento orgánico por CT logs y raíz."
+          "18/10: salida y siembra en GitHub y Hacker News; 0 visitas por los enlaces semilla.",
+          "20/10 llega ClaudeBot; 21/10 GPTBot (749 ms después de que OAI-SearchBot leyera robots.txt).",
+          "24/10: pico de 1.059.733 pedidos. 25/10: ClaudeBot se va; GPTBot sigue a ~2 por segundo.",
+          "27/10: 8 h 57 min sin registro (~64.000 pedidos de GPTBot). Causa no confirmada."
         ],
-        metrics: ["3,56 M", "Total Peticiones", "1,06 M", "Pico Diario (24/10)", "8h 57m", "Reposo Host (27/10)", "11,85 días", "Duración Total"],
-        tip: "Destaca la honestidad académica de documentar la causa real de la interrupción del 27 de octubre (suspensión del equipo)."
+        metrics: ["1.059.733", "Pico del 24/10", "0", "Visitas por semillas", "~2/s", "Ritmo de GPTBot", "8 h 57 min", "Hueco del 27/10"],
+        tip: "Opcional: corte de unos segundos a Grafana (http://localhost:3000) y volver con Alt+Tab."
       },
       {
-        goal: "Explicar la dinámica del laberinto desde la teoría de grafos: ramificación exponencial b=5 y poda por nodos hoja.",
-        time: "11:40 - 12:50 (Meta: 1:10)",
+        goal: "Giovanni: Explicar por qué el laberinto tiene piso en profundidad 10 y qué pasó en las hojas.",
+        time: "12:20 - 13:15 (Meta: 0:55)",
         bullets: [
-          "Árbol con factor de ramificación <strong>b = 5</strong>: espacio potencial de 5¹⁰ ≈ 9,76 millones de páginas.",
-          "Exploración en anchura (BFS) en GPTBot vs profundidad (DFS) en scripts agresivos.",
-          "Contención efectiva: el nivel 11 se emite sin enlaces (is_leaf = true), deteniendo la recursión.",
-          "Nodos hoja concentraron entre el 68 % y el 72 % del tráfico total."
+          "5 enlaces nuevos por página: a 10 pasos, 5¹⁰ ≈ 9,76 millones de páginas posibles.",
+          "Tope en profundidad 10; el nivel 11 es una hoja sin enlaces.",
+          "68–72 % de los pedidos de ClaudeBot y GPTBot cayeron en las hojas.",
+          "Los infractores no pasaron del nivel 3."
         ],
-        metrics: ["b = 5", "Factor Ramificación", "9,76 M", "Páginas Teóricas", "Nivel 10", "Profundidad Máx", "68-72 %", "Tráfico en Hojas"],
-        tip: "Conecta este concepto con la materia de Internetworking y algoritmos de encaminamiento en grafos."
+        metrics: ["5", "Ramificación", "10", "Profundidad máxima", "9,76 M", "Páginas posibles", "68–72 %", "Pedidos en hojas"],
+        tip: "Bloque corto: no detenerse en la fórmula."
       },
       {
-        goal: "Comparar las dinámicas de rastreo opuestas de ClaudeBot (batch diferido) y GPTBot (seguimiento inmediato).",
-        time: "12:50 - 14:00 (Meta: 1:10)",
+        goal: "Julio: Comparar cómo rastrean GPTBot y ClaudeBot y cómo se verificó su origen.",
+        time: "13:15 - 14:25 (Meta: 1:10)",
         bullets: [
-          "<strong>GPTBot:</strong> seguimiento en 8,9 s (mediana), 100 % Referer, cadencia constante ~2,00 req/s (Azure AS8075).",
-          "<strong>ClaudeBot:</strong> encolado diferido (mediana 5,0 h), 0 % Referer, ráfagas de hasta 10,8 req/s (ARIN RDAP AS16509).",
-          "Ambos rastreadores alcanzaron sistemáticamente el fondo en el nivel 11.",
-          "Cumplimiento del 100 % respecto de las rutas de exclusión (0 accesos sobre 5,32M trampas)."
+          "GPTBot: en vivo, 8,9 s de mediana entre ver y pedir, 100 % Referer, ~2 pedidos/s.",
+          "ClaudeBot: por tandas, 5,0 h de mediana, 0 % Referer, ráfagas de 38.787/h.",
+          "Ambos: 0 entradas a la trampa.",
+          "Verificación: listas de OpenAI y Google; bloque ARIN de Anthropic. ~100 %."
         ],
-        metrics: ["8,9 s", "Retardo GPTBot", "5,0 h", "Retardo ClaudeBot", "10,8 req/s", "Ráfaga ClaudeBot", "Nivel 11", "Tope Alcanzado"],
-        tip: "Subraya el contraste: GPTBot actúa en tiempo real como un rastreador reactivo; ClaudeBot opera con una arquitectura de pipeline offline desacoplado."
+        metrics: ["8,9 s", "Espera de GPTBot", "5,0 h", "Espera de ClaudeBot", "38.787/h", "Ráfaga de ClaudeBot", "0", "Entradas de ambos"],
+        tip: "Leer las cifras de las tarjetas en el mismo orden en ambas."
       },
       {
-        goal: "Explicar las 207 capturas en la trampa, las 6 IPs y el significado del test Chi-cuadrado y cotas Clopper-Pearson.",
-        time: "14:00 - 15:10 (Meta: 1:10)",
+        goal: "Julio: Mostrar las 207 entradas por técnica, el chi-cuadrado y sus límites.",
+        time: "14:25 - 15:40 (Meta: 1:15)",
         bullets: [
-          "<strong>Cumplimiento de IA y buscadores oficiales: 100 %</strong> (0 violaciones).",
-          "207 peticiones en la trampa concentradas en <strong>6 IPs reales</strong>.",
-          "Chi-cuadrado (χ² = 0,3188, gl = 4, p = 0,9886): no rechaza la hipótesis de uniformidad (E = 41,4).",
-          "Cota Clopper-Pearson 95 % a nivel operador (n = 3, k = 0) es 63,2 % (70,8 % bilateral); cotas de 10⁻⁶ son pseudorreplicación."
+          "207 entradas, 100 % Nivel 2; 0 casos de Nivel 1.",
+          "Por técnica: 43 / 43 / 42 / 40 / 39. χ² = 0,3188, p = 0,9886: sin preferencia.",
+          "164 de 207 (79,2 %) por enlaces invisibles: Nivel 3.",
+          "Límites: 6 IPs (describe, no demuestra); n = 3 operadores, cota del 63,2 %."
         ],
-        metrics: ["0", "Violaciones IA Oficial", "207", "Capturas Trampa", "6 IPs", "Orígenes Hostiles", "p = 0,9886", "Uniformidad Léxica"],
-        tip: "¡ATENCIÓN! No digas que p=0,9886 'demuestra' uniformidad. Di con precisión que es exploratorio debido al agrupamiento de las 6 IPs."
+        metrics: ["207", "Entradas", "p = 0,99", "Sin preferencia", "79,2 %", "Nivel 3", "63,2 %", "Cota superior"],
+        tip: "Las dos aclaraciones del final son las que más valora el tribunal: no apurarlas."
       },
       {
-        goal: "Analizar el desglose forense de los 6 actores (Tabla 4), el contexto de Chrome 150 y la Ley 25.326.",
-        time: "15:10 - 16:20 (Meta: 1:10)",
+        goal: "Julio: Presentar a los seis infractores reales (Tabla 4) y por qué no eran personas.",
+        time: "15:40 - 16:55 (Meta: 1:15)",
         bullets: [
-          "6 actores en subredes /24: A1/A2 en DigitalOcean (US/NL), C en DigitalOcean (SG), B1/B2 en Tencent (HK), D en M247 (IT).",
-          "Chrome 150: versión oficial estable lanzada el 30/06/2026; hostil por venir de datacenter proxy sin robots.txt.",
-          "Prueba del Favicon: 0 de 207 solicitaron /favicon.ico (control humano en 181.4.69.0/24 sí lo hizo).",
-          "Anonimización estricta bajo Ley 25.326 enmascarando todas las IPs a /24."
+          "Centros de datos de Canadá, EE. UU., Polonia y Países Bajos; IPs anonimizadas a /24.",
+          "Chrome 124 a 150, cuando el vigente era 155 y 156: cabeceras fijas de un script.",
+          "Dos firmas: A1/A2 (barrido en segundos) y B1/B2 (fr-FR, buscaban <code>.git</code>).",
+          "Favicon: 0 de 6 lo pidieron; nuestro Chrome sí. Indicio, no prueba."
         ],
-        metrics: ["6 Actores", "Infractores", "79,2%", "Nivel 3 (CSS)", "0/207", "Favicon Reqs", "Ley 25.326", "Anonimización /24"],
-        tip: "Muestra cómo el análisis forense de logs revela la presencia de actores maliciosos en la red viva."
+        metrics: ["6", "Orígenes", "98", "Entradas de C", "124–150", "Chrome declarado", "0 de 6", "Pidieron favicon"],
+        tip: "Usar la tabla como mapa; no leer las subredes en voz alta."
       },
       {
-        goal: "Mostrar el panel de Grafana en producción, el pipeline Promtail-Loki y la reconciliación 213 a 207.",
-        time: "16:20 - 17:30 (Meta: 1:10)",
+        goal: "Giovanni: Mostrar el tablero de Grafana y conciliar 213 del panel con 207 del informe.",
+        time: "16:55 - 17:40 (Meta: 0:45)",
         bullets: [
-          "Logs JSON estructurados generados en Nginx y leídos por Promtail.",
-          "Grafana 10.4 + Loki 3.5.0 para consultas en vivo y dashboards de operaciones.",
-          "Reconciliación forense: 213 accesos brutos a /trap/ en Grafana depurados a 207 netos (6 clics de prueba de la cátedra).",
-          "Uso de Python en streaming offline para el dataset canónico final."
+          "Grafana 12.0.0 + Loki 3.5.0, solo en la PC (localhost).",
+          "El panel marca 213 accesos a la trampa y 45 en opacity_0.",
+          "213 − 6 clics de prueba del equipo = 207. Las 7 IPs = 6 infractores + nuestra prueba.",
+          "Las cifras finales salen del log completo de Nginx."
         ],
-        metrics: ["Loki 3.5", "Motor de Logs", "JSON", "Formato de Nginx", "213 → 207", "Reconciliación", "Polars/Python", "Streaming Offline"],
-        tip: "Apunta al panel de Grafana proyectado: explica claramente por qué el panel muestra 213 y el informe 207."
+        metrics: ["213", "En el panel", "6", "Clics de prueba", "207", "En el informe", "7 IPs", "6 + nuestra prueba"],
+        tip: "Bloque de 45 segundos: ir directo a la resta."
       },
       {
-        goal: "Sintetizar los aprendizajes sobre robots.txt por operador, scrapers ciegos y respaldo bibliográfico.",
-        time: "17:30 - 18:45 (Meta: 1:15)",
+        goal: "Julio: Resumir cuatro aprendizajes de redes del experimento.",
+        time: "17:40 - 18:50 (Meta: 1:10)",
         bullets: [
-          "robots.txt se pide a nivel operador (OAI-SearchBot consultó 749 ms antes que GPTBot; Googlebot y GoogleOther compartieron IPs).",
-          "Los scrapers no autorizados son ciegos a las reglas CSS (79,2 % en enlaces ocultos, 0 % favicon).",
-          "Arquitectura sin estado en RAM: vital para procesar 3,56M peticiones sin tocar base de datos.",
-          "Convergencia con literatura: replica hallazgos de Liu et al. (IMC 2025) y Kim et al. (IMC 2025)."
+          "robots.txt se lee por empresa: OAI-SearchBot lo leyó 749 ms antes de GPTBot.",
+          "El User-Agent es texto libre: lo que identifica es la red de la IP.",
+          "El túnel cuesta la huella TLS (JA3/JA4) del visitante.",
+          "Coincide con Kim et al. y Liu et al. (IMC 2025)."
         ],
-        metrics: ["Operador", "Caché de robots.txt", "79,2 %", "Ceguera a CSS", "Stateless", "Escalabilidad RAM", "Liu & Kim", "Literatura IMC 25"],
-        tip: "Este es el puente hacia la conclusión. Resume los aportes de ingeniería que diferencian este trabajo de un simple tutorial o script."
+        metrics: ["749 ms", "OAI-SearchBot antes de GPTBot", "RDAP", "Verificación por red", "JA3/JA4", "Huella perdida", "IMC 2025", "Literatura que coincide"],
+        tip: "Contar los aprendizajes con los dedos ayuda a la cámara."
       },
       {
-        goal: "Brindar recomendaciones prácticas para administradores de red y abrir la sesión de preguntas con solidez.",
-        time: "18:45 - 20:00 (Meta: 1:15)",
+        goal: "Julio: Cerrar con tres escalones de defensa, los límites y el agradecimiento.",
+        time: "18:50 - 20:00 (Meta: 1:10)",
         bullets: [
-          "Inyectar enlaces trampa con CSS dinámico para nutrir bloqueos automáticos en WAFs.",
-          "Filtrar tráfico procedente de ASNs de centros de datos para mitigar scraping hostil.",
-          "Auditoría por operador y bloques CIDR en lugar de cadenas de User-Agent manipulables.",
-          "Código fuente y datasets públicos en el repositorio del proyecto."
+          "1. Un robots.txt claro: los grandes operadores lo respetan.",
+          "2. Trampas invisibles conectadas a un bloqueo: alarma para los que mienten.",
+          "3. Enlaces firmados, sin estado: una avalancha no tira el servidor.",
+          "Límites: una regla permisiva, un dominio, 12 días, 3 operadores (63,2 %)."
         ],
-        metrics: ["WAF", "Regla de Bloqueo", "ASN Drop", "Filtrado Hosting", "GitHub", "Código Abierto", "20:00", "Meta Clavada"],
-        tip: "Mira fijamente a los profesores al decir la última frase. Agradece con tranquilidad y mantén una postura receptiva."
+        metrics: ["3", "Escalones", "1", "Regla probada", "12", "Días", "63,2 %", "Cota superior"],
+        tip: "Después de «sus preguntas», quedarse quietos dos segundos antes de cortar."
       }
     ];
 
@@ -1179,25 +1187,25 @@
     const metricVal4 = document.getElementById('metricVal4');
     const metricLbl4 = document.getElementById('metricLbl4');
 
-    // Horarios objetivo en segundos transcurridos (~70 segundos por diapositiva)
+    // Horarios objetivo en segundos transcurridos (según el guion por roles)
     const SLIDE_SCHEDULE_SECONDS = [
-      0,    // 01: 00:00
-      70,   // 02: 01:10
-      140,  // 03: 02:20
-      210,  // 04: 03:30
-      280,  // 05: 04:40 (OSI Model)
-      350,  // 06: 05:50 (Architecture)
-      420,  // 07: 07:00 (Real-IP)
-      490,  // 08: 08:10 (HMAC)
-      560,  // 09: 09:20 (Trap CSS)
-      630,  // 10: 10:30 (Daily Series)
-      700,  // 11: 11:40 (Graph Theory)
-      770,  // 12: 12:50 (AI Crawlers)
-      840,  // 13: 14:00 (Trap & Chi2)
-      910,  // 14: 15:10 (6 Hostile IPs)
-      980,  // 15: 16:20 (Observability)
-      1050, // 16: 17:30 (Lessons)
-      1125  // 17: 18:45 (Closing & Recs)
+      0,     // 01: 00:00 (Joel)
+      55,    // 02: 00:55 (Joel)
+      125,   // 03: 02:05 (Joel)
+      190,   // 04: 03:10 (Joel)
+      265,   // 05: 04:25 (Giovanni)
+      325,   // 06: 05:25 (Giovanni)
+      400,   // 07: 06:40 (Giovanni)
+      470,   // 08: 07:50 (Giovanni)
+      550,   // 09: 09:10 (Joel)
+      645,   // 10: 10:45 (Giovanni)
+      740,   // 11: 12:20 (Giovanni)
+      795,   // 12: 13:15 (Julio)
+      865,   // 13: 14:25 (Julio)
+      940,   // 14: 15:40 (Julio)
+      1015,  // 15: 16:55 (Giovanni)
+      1060,  // 16: 17:40 (Julio)
+      1130  // 17: 18:50 (Julio)
     ];
 
     function init() {
