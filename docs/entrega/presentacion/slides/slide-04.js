@@ -36,7 +36,7 @@ window.PRESENTATION_SLIDES.push(`
       <ul class="cad-item-list">
         <li><strong>Estándar IETF formal:</strong> Regla de exclusión consultiva sin enforcement forzoso en la red.</li>
         <li><strong>Dependencia ética:</strong> No existe mecanismo a nivel socket o TCP para impedir que un cliente descargue la URL.</li>
-        <li><strong>Caché centralizada:</strong> Proveedores masivos como OpenAI consultan y cachean por operador.</li>
+        <li><strong>Caché centralizada:</strong> Proveedores masivos (OpenAI, Google) consultan y comparten directivas en caché por operador.</li>
       </ul>
 
       <div class="cad-callout-card">
@@ -66,13 +66,13 @@ window.PRESENTATION_SLIDES.push(`
       </svg>
 
       <ul class="cad-item-list">
-        <li><strong>Consumo asimétrico de CPU:</strong> Atrapa al scraper consumiendo sus hilos de ejecución, memoria y colas.</li>
-        <li><strong>Sin persistencia en base de datos:</strong> Generación y validación al vuelo por firmas criptográficas HMAC en RAM.</li>
-        <li><strong>Clausura determinista:</strong> Se corta en profundidad 11 emitiendo nodos hoja sin enlaces salientes.</li>
+        <li><strong>Fundamentos de Deception:</strong> De Spitzner (2002) y LaBrea (Liston, 2001) a los tarpits L7 modernos (Cloudflare AI Labyrinth).</li>
+        <li><strong>Sin persistencia en base de datos:</strong> Generación y validación al vuelo por firmas criptográficas HMAC en RAM ($O(1)$).</li>
+        <li><strong>Clausura determinista:</strong> Se corta en profundidad 10 emitiendo nodos hoja terminales en nivel 11 sin enlaces salientes.</li>
       </ul>
 
       <div class="cad-callout-card">
-        <span style="color:var(--accent-blue); font-weight:700;">Neutralización:</span> Transforma el costo del scraping en un bucle cerrado sin fin útil.
+        <span style="color:var(--accent-blue); font-weight:700;">Neutralización:</span> Transforma el costo del scraping en un bucle cerrado sin fin útil ni impacto en disco.
       </div>
     </div>
 
@@ -84,27 +84,27 @@ window.PRESENTATION_SLIDES.push(`
       </div>
 
       <svg class="box-mini-svg" viewBox="0 0 280 90" xmlns="http://www.w3.org/2000/svg">
-        <rect x="14" y="20" width="58" height="24" rx="3" fill="#0f281e" stroke="#10b981" stroke-width="1.2"/>
-        <text x="43" y="36" fill="#10b981" font-family="'JetBrains Mono', monospace" font-size="10" font-weight="700" text-anchor="middle">HUMANO</text>
+        <rect x="14" y="20" width="58" height="50" rx="3" fill="#111c35" stroke="#38bdf8" stroke-width="1.2"/>
+        <text x="43" y="42" fill="#38bdf8" font-family="'JetBrains Mono', monospace" font-size="10" font-weight="700" text-anchor="middle">DOM</text>
+        <text x="43" y="56" fill="#cbd5e1" font-family="'JetBrains Mono', monospace" font-size="9.5" text-anchor="middle">&lt;a href&gt;</text>
 
-        <rect x="14" y="52" width="58" height="24" rx="3" fill="#2d131f" stroke="#f43f5e" stroke-width="1.2"/>
-        <text x="43" y="68" fill="#f43f5e" font-family="'JetBrains Mono', monospace" font-size="10" font-weight="700" text-anchor="middle">SCRAPER</text>
+        <path d="M 76 45 L 122 45" stroke="#f59e0b" stroke-width="2" class="wire-pulse-fast"/>
+        <text x="99" y="38" fill="#f59e0b" font-family="'JetBrains Mono', monospace" font-size="8.5" font-weight="700" text-anchor="middle">CSSOM</text>
 
-        <rect x="80" y="16" width="188" height="26" rx="3" fill="#0f1932" stroke="#10b981" stroke-width="1.2"/>
-        <text x="90" y="33" fill="#10b981" font-family="'JetBrains Mono', monospace" font-size="10.5">CSSOM: 0 trampas visibles</text>
-
-        <rect x="80" y="48" width="188" height="26" rx="3" fill="#0f1932" stroke="#f43f5e" stroke-width="1.2"/>
-        <text x="90" y="65" fill="#f43f5e" font-family="'JetBrains Mono', monospace" font-size="10.5">Regex: Lee texto plano</text>
+        <rect x="126" y="15" width="142" height="60" rx="3" fill="#2d131f" stroke="#f43f5e" stroke-width="1.2"/>
+        <text x="197" y="34" fill="#f43f5e" font-family="'JetBrains Mono', monospace" font-size="10" font-weight="700" text-anchor="middle">RENDER TREE</text>
+        <text x="197" y="48" fill="#fca5a5" font-family="'Space Grotesk', sans-serif" font-size="9" text-anchor="middle">display: none;</text>
+        <text x="197" y="62" fill="#10b981" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="700" text-anchor="middle">0x0 px (Invisible)</text>
       </svg>
 
       <ul class="cad-item-list">
-        <li><strong>Filtro por costo de cómputo:</strong> Los navegadores humanos omiten enlaces con <code>display:none</code> o fuera de pantalla.</li>
-        <li><strong>Ceguera de scripts livianos:</strong> Bibliotecas como Scrapy o requests no computan el motor de layout ni las CSS Rules.</li>
-        <li><strong>Fidelidad forense absoluta:</strong> 100% de scrapers capturados sin un solo falso positivo humano.</li>
+        <li><strong>Brecha de Renderizado:</strong> Scrapers livianos usan regex o parseo HTML plano sin computar estilos CSS ni visibilidad.</li>
+        <li><strong>Técnicas Señuelo:</strong> Enlaces ocultos con <code>display:none</code>, <code>opacity:0</code>, posiciones fuera de pantalla y clases dinámicas.</li>
+        <li><strong>Inmunidad Humana:</strong> Un usuario con navegador visual nunca activa estos enlaces; su consumo delata automatización.</li>
       </ul>
 
       <div class="cad-callout-card">
-        <span style="color:var(--accent-emerald); font-weight:700;">Precisión Máxima:</span> Diferenciación intrínseca basada en la capacidad de renderizado web.
+        <span style="color:var(--accent-emerald); font-weight:700;">Discriminación Visual:</span> Separa crawlers avanzados de extractores ciegos sin interacción invasiva.
       </div>
     </div>
   </div>

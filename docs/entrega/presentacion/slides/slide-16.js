@@ -37,7 +37,10 @@ window.PRESENTATION_SLIDES.push(`
           <strong>robots.txt se Consulta por Operador:</strong> GPTBot nunca solicitó <code>robots.txt</code> con su User-Agent propio; su satélite <code>OAI-SearchBot</code> lo descargó y compartió en caché en 0,75s. Auditar por User-Agent aislado es un sesgo metodológico.
         </li>
         <li>
-          <strong>Pérdida de Huella TLS en Túneles L7:</strong> Al delegar la terminación SSL en Cloudflare, se perdió la visibilidad de firmas JA3/JA4 en el origen. Para fingerprinting criptográfico se requeriría un proxy TCP/SNI directo (Spectrum).
+          <strong>Pérdida de Huella TLS en Túneles L7:</strong> Al delegar la terminación SSL en Cloudflare, se perdió la visibilidad de firmas JA3/JA4 en el origen. Para fingerprinting criptográfico se requeriría proxy TCP passthrough.
+        </li>
+        <li>
+          <strong>Atribución L3/L4 Rigurosa:</strong> La verificación sólida descansa en prefijos BGP, ASNs y registros RDAP, no en cabeceras HTTP manipulables.
         </li>
       </ul>
 
@@ -65,10 +68,13 @@ window.PRESENTATION_SLIDES.push(`
 
       <ul class="cad-item-list">
         <li>
-          <strong>La Ofuscación CSS es un Detector Infalible:</strong> Las 207 capturas provinieron de scripts ciegos al diseño visual (0/207 favicon). Las clases dinámicas aleatorias neutralizan extractores con cero falsos positivos humanos.
+          <strong>Mecanismo Discriminador Altamente Efectivo:</strong> Las 207 capturas provinieron de scripts ciegos al diseño visual (0/207 favicon). Las clases dinámicas neutralizan extractores con cero falsos positivos humanos.
         </li>
         <li>
-          <strong>Arquitectura Cero Estado (Stateless):</strong> Validar URLs mediante firmas HMAC-SHA256 en memoria RAM procesó más de 3,56 millones de peticiones con un consumo plano inferior a 60 MB de memoria RAM sin bases de datos.
+          <strong>Arquitectura Cero Estado (Stateless):</strong> Validar URLs mediante firmas HMAC-SHA256 en memoria procesó más de 3,56M peticiones con menos de 60 MB de RAM sin tocar disco ni base de datos.
+        </li>
+        <li>
+          <strong>Convergencia con Literatura:</strong> Se replica el cumplimiento observado por Liu et al. (IMC 2025) y Kim et al. (IMC 2025) para grandes operadores de IA.
         </li>
       </ul>
 

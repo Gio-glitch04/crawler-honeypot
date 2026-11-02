@@ -18,7 +18,7 @@ window.PRESENTATION_SLIDES.push(`
         <line x1="60" y1="20" x2="60" y2="240" stroke="#263c70" stroke-width="1.2"/>
         <line x1="60" y1="240" x2="590" y2="240" stroke="#263c70" stroke-width="1.2"/>
 
-        <!-- Línea esperada (E = 41.4) sin colisión con las barras -->
+        <!-- Línea esperada (E = 41.4) -->
         <line x1="60" y1="80" x2="590" y2="80" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="4 4"/>
         <text x="70" y="45" fill="#f59e0b" font-family="'JetBrains Mono', monospace" font-size="11" font-weight="700" text-anchor="start">--- Frecuencia Esperada: E = 41,4 (Uniforme)</text>
 
@@ -55,59 +55,49 @@ window.PRESENTATION_SLIDES.push(`
           <animate attributeName="y" from="240" to="82" begin="0.3s" dur="1s" fill="freeze" calcMode="spline" keySplines="0.1 0.8 0.2 1" keyTimes="0;1"/>
         </rect>
         <text x="420" y="72" fill="#fff" font-family="'JetBrains Mono', monospace" font-size="14" font-weight="800" text-anchor="middle">40</text>
-        <text x="420" y="260" fill="#38bdf8" font-family="'JetBrains Mono', monospace" font-size="11.5" font-weight="700" text-anchor="middle">none cls</text>
+        <text x="420" y="260" fill="#38bdf8" font-family="'JetBrains Mono', monospace" font-size="11.5" font-weight="700" text-anchor="middle">none cl</text>
         <text x="420" y="278" fill="#94a3b8" font-family="'Space Grotesk', sans-serif" font-size="10.5" text-anchor="middle">19,3 %</text>
 
-        <!-- Barra 5: opacity: 0 (39) -->
-        <rect id="chiBar5" class="bar-grow" x="490" y="86" width="60" height="154" fill="#38bdf8" rx="3">
-          <animate attributeName="height" from="0" to="154" begin="0.4s" dur="1s" fill="freeze" calcMode="spline" keySplines="0.1 0.8 0.2 1" keyTimes="0;1"/>
-          <animate attributeName="y" from="240" to="86" begin="0.4s" dur="1s" fill="freeze" calcMode="spline" keySplines="0.1 0.8 0.2 1" keyTimes="0;1"/>
+        <!-- Barra 5: opacity 0 (39) -->
+        <rect id="chiBar5" class="bar-grow" x="490" y="85" width="60" height="155" fill="#38bdf8" rx="3">
+          <animate attributeName="height" from="0" to="155" begin="0.4s" dur="1s" fill="freeze" calcMode="spline" keySplines="0.1 0.8 0.2 1" keyTimes="0;1"/>
+          <animate attributeName="y" from="240" to="85" begin="0.4s" dur="1s" fill="freeze" calcMode="spline" keySplines="0.1 0.8 0.2 1" keyTimes="0;1"/>
         </rect>
-        <text x="520" y="76" fill="#fff" font-family="'JetBrains Mono', monospace" font-size="14" font-weight="800" text-anchor="middle">39</text>
+        <text x="520" y="75" fill="#fff" font-family="'JetBrains Mono', monospace" font-size="14" font-weight="800" text-anchor="middle">39</text>
         <text x="520" y="260" fill="#38bdf8" font-family="'JetBrains Mono', monospace" font-size="11.5" font-weight="700" text-anchor="middle">opacity 0</text>
         <text x="520" y="278" fill="#94a3b8" font-family="'Space Grotesk', sans-serif" font-size="10.5" text-anchor="middle">18,8 %</text>
       </svg>
-
       <div class="cad-caption-bar">
-        <span class="cad-caption-tag"><strong>Chi²:</strong> 0,3188</span>
-        <span class="cad-caption-tag"><strong>p-valor:</strong> 0,9886</span>
-        <span class="cad-caption-tag"><strong>gl:</strong> 4</span>
-        <span class="cad-caption-tag"><strong>Total:</strong> 207 capturas (164 en CSS)</span>
+        <span class="cad-caption-tag"><strong>Estadístico:</strong> χ² = 0,3188 (gl = 4)</span>
+        <span class="cad-caption-tag"><strong>p-valor:</strong> p = 0,9886</span>
+        <span class="cad-caption-tag"><strong>Ajuste:</strong> Distribución Uniforme</span>
       </div>
     </div>
 
-    <!-- PANEL DE EVALUACIÓN CIENTÍFICA -->
+    <!-- COLUMNA DERECHA: INTERPRETACIÓN ESTADÍSTICA RIGUROSA -->
     <div class="cad-box-panel">
       <div class="cad-box-title">
-        <span>EVALUACIÓN RIGUROSA DE LA HIPÓTESIS</span>
-        <span class="cad-tag">ESTADÍSTICA FORENSE</span>
-      </div>
-
-      <!-- FÓRMULA CHI-CUADRADO NATIVA UNICODE -->
-      <div class="math-proof-banner">
-        <div class="math-proof-formula">
-          <span>χ² = ∑ (Oᵢ - Eᵢ)² / Eᵢ = 0,3188</span>
-        </div>
-        <div class="math-proof-metric">
-          <div class="m-metric-val">p = 0,9886 (gl = 4)</div>
-          <div class="m-metric-lbl">No se rechaza la hipótesis de equiprobabilidad</div>
-        </div>
+        <span>INTERPRETACIÓN ESTADÍSTICA RIGUROSA</span>
+        <span class="cad-tag">BONDAD DE AJUSTE</span>
       </div>
 
       <ul class="cad-item-list">
         <li>
-          <strong>100% Cumplimiento Oficial:</strong> 0 violaciones de ClaudeBot, GPTBot y Googlebot sobre más de 5,36 millones de enlaces trampa expuestos.
+          <strong>Equiprobabilidad de Captura:</strong> Con $p = 0,9886$, no se rechaza la hipótesis nula de uniformidad. Los scrapers eligen enlaces al azar sobre el DOM crudo sin computar el Render Tree.
         </li>
         <li>
-          <strong>Infracciones Nivel 3 (79,2 %):</strong> 164 de las 207 capturas ingresaron por enlaces invisibilizados por CSS; las restantes 43 por el enlace visible de control.
+          <strong>Ceguera Visual de Scrapers:</strong> El 79,2 % de las infracciones (164 de 207) recayó en enlaces invisibles por reglas CSS (Nivel 3).
         </li>
         <li>
-          <strong>Cota Clopper-Pearson al 95 %:</strong> A nivel de operador ($n = 3, k = 0$), arroja una cota superior exacta del <strong>63,2 %</strong> (unilateral; 70,8 % bilateral).
+          <strong>Marco Estadístico de Operador:</strong> A nivel de operador ($n = 3, k = 0$), la cota superior exacta de Clopper-Pearson al 95 % es $1 - 0,05^{1/3} \approx 63,2 \%$ (70,8 % bilateral). Cotas de $10^{-6}$ por enlace asumen independencia y constituyen pseudorreplicación.
+        </li>
+        <li>
+          <strong>Control Visible sin Falsos Positivos:</strong> 1.073.064 enlaces visibles fueron expuestos a crawlers de IA sin un solo acceso accidental a la ruta prohibida.
         </li>
       </ul>
 
       <div class="cad-callout-card">
-        <span style="color:var(--accent-amber); font-weight:700;">Conclusión Estadística:</span> Los scrapers consumieron los enlaces con frecuencias indistinguibles de una selección aleatoria, demostrando ceguera absoluta al árbol CSSOM.
+        <span style="color:var(--accent-emerald); font-weight:700;">Conclusión Estadística:</span> Los scrapers hostiles consumen el DOM como texto plano; los bots de IA respetan la directiva sin importar la presentación CSS.
       </div>
     </div>
   </div>
