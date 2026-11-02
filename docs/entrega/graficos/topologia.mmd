@@ -1,0 +1,22 @@
+flowchart LR
+    C["Crawlers y clientes<br/>(Internet)"] -->|HTTPS| CF["Cloudflare<br/>borde Anycast<br/>(TLS termina aquí)"]
+    CF -->|"Cloudflare Tunnel<br/>(conexión saliente)"| CFD
+    subgraph HOST["Windows 10 22H2 · Docker Desktop (WSL 2)"]
+        subgraph TN["tunnel_net 10.98.0.0/24"]
+            CFD["cloudflared<br/>2025.9.1"]
+        end
+        CFD -->|"HTTP :80<br/>+ CF-Connecting-IP"| NG["nginx-proxy<br/>1.29-alpine<br/>realip + log JSON"]
+        subgraph HN["honeypot_net"]
+            APP["honeypot-app<br/>Django 5.2 + Gunicorn<br/>read_only"]
+        end
+        NG -->|"proxy_pass"| APP
+        APP -.->|"X-Honeypot-* (se registran<br/>y se ocultan al cliente)"| NG
+        NG -->|"honeypot_access.json<br/>(volumen nginx-logs)"| PT
+        subgraph TEL["telemetry_net"]
+            PT["promtail 3.5.0"] --> LK["loki 3.5.0"] --> GF["grafana 12.0.0<br/>127.0.0.1:3000"]
+            AN["analytics<br/>(detenido desde 21/10)"]
+            GEO["geoipupdate v7.1.0<br/>GeoLite2-ASN"]
+        end
+        LOC["127.0.0.1:8080<br/>(controles locales,<br/>via_cloudflare = 0)"] --> NG
+    end
+    style AN stroke-dasharray: 5 5
