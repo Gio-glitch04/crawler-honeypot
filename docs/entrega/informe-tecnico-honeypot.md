@@ -102,13 +102,13 @@ Campos vacíos en el 100 % de las filas, porque la terminación TLS ocurre en Cl
 | Criterio | Filas | Justificación |
 |---|---:|---|
 | UA `honeypot-selftest/1.0` | 15 | Auto-test desde el entorno en la nube (2026-10-19 01:21 UTC) |
-| IP 45.191.81.232 | 8 | Visita manual de Giovanni, 2026-10-19 18:21 UTC (Opera) |
-| IP 186.124.199.212 | 24 | 2026-10-18 21:44–23:15 UTC, AR: pruebas de puesta en línea con UAs falsificados de ClaudeBot, GPTBot y Bytespider y con curl |
-| IP 181.4.69.199 | 8 | 2026-10-20 23:22 UTC, AR: navegación manual (pide favicon, envía Referer, 6 clics encadenados sobre `opacity_0`). **Atribución a Giovanni sin confirmar** |
+| IP 45.191.81.x | 8 | Visita manual de Giovanni, 2026-10-19 18:21 UTC (Opera) |
+| IP 186.124.199.x | 24 | 2026-10-18 21:44–23:15 UTC, AR: pruebas de puesta en línea con UAs falsificados de ClaudeBot, GPTBot y Bytespider y con curl |
+| IP 181.4.69.x | 8 | 2026-10-20 23:22 UTC, AR: navegación manual (pide favicon, envía Referer, 6 clics encadenados sobre `opacity_0`). **Atribución a Giovanni sin confirmar** |
 | `via_cloudflare=0` | 2 | `curl` local a 127.0.0.1:8080 (controles de salud) |
 | **Total** | **57** | |
 
-Sin la exclusión de 186.124.199.212, el dataset mostraría falsamente una petición de "ClaudeBot" y otra de "GPTBot" desde Argentina el 18/10.
+Sin la exclusión de 186.124.199.x, el dataset mostraría falsamente una petición de "ClaudeBot" y otra de "GPTBot" desde Argentina el 18/10.
 
 ### 3.3 Calidad y cobertura
 
@@ -225,7 +225,7 @@ EE. UU. concentra 3.562.568 peticiones (99,84 %), por los crawlers de IA. Fuera 
 | Primera petición | 2026-10-21 05:30:31.243 UTC, `GET /` |
 | Última | 2026-10-30 17:57:05 UTC (sigue activo) |
 | Redes | 74.7.242.0/24 (1.557.329), 132.196.86.0/24 (751), 172.182.207.0/24 (410), 172.182.202.0/24 (385) |
-| Concentración | 74.7.242.36 (1.223.640) y 74.7.242.19 (333.689) suman el 99,9 % |
+| Concentración | dos IP de 74.7.242.x (1.223.640 y 333.689) suman el 99,9 % |
 | PoP de Cloudflare | ATL 98,3 %, CDG 0,7 %, MIA 0,7 %, GRU, LAX |
 | Cabeceras | `Accept: */*`, `gzip, br`, sin `Accept-Language`, **`Referer` en el 100 %** (página padre exacta) |
 | Rutas | public 1.558.872, home 2, `/favicon.ico` 1 |
@@ -253,7 +253,7 @@ OAI-SearchBot pidió `robots.txt` 49 veces desde 13 IPs (74.7.175.0/24, 74.7.230
 | Peticiones | 1.532 | 10.702 |
 | Ventana | 19/10 18:44 → 30/10 09:04 | 19/10 20:25 → 22/10 06:01 |
 | Redes | 66.249.73.0/24 (1.423), 192.178.6.0/24 (94), 66.249.69/70 | 66.249.73.0/24 (10.696), otras 66.249.x |
-| IPs compartidas | 66.249.73.169 y .164 son las principales de **ambos** | |
+| IPs compartidas | dos IP de 66.249.73.x son las principales de **ambos** | |
 | robots.txt | 297 (13 IPs, `Accept: text/plain,text/html,*/*`) | 0 |
 | Entre llegadas | p50 42 s, p95 381 s | p50 6,6 s, p95 34 s |
 | Edad del enlace | p50 3,5 h | p50 3,0 h, p99 10,5 h |
@@ -332,49 +332,49 @@ Cada página servida con enlaces expone 5 enlaces trampa. Las páginas con enlac
 
 | IP | País / PoP CF | Peticiones | Trampa | Públicas | 404 | Sesiones (separación > 10 min) | Duración | Prof. máx. | robots.txt |
 |---|---|---:|---:|---:|---:|---:|---|---:|---:|
-| 158.69.55.82 | CA / YYZ | 200 | 98 | 100 | 0 | 2 (100 + 100) | 21/10 03:53 y 24/10 06:40 | 3 | 0 |
-| 103.196.9.99 | US / BOS | 111 | 53 | 55 | 0 | 1 | 16 s (24/10 06:36) | 2 | 0 |
-| 154.28.229.150 | US / IAD | 90 | 43 | 44 | 0 | 1 | 29 s (21/10 03:51) | 2 | 0 |
-| 45.138.12.168 | PL / WAW | 14 | 5 | 5 | 0 | 4 | 19/10 → 25/10 | 1 | 0 |
-| 45.138.12.27 | PL / WAW | 297 | 4 | 5 | 285 | 1 | 3,5 min (26/10 14:31) | 1 | 0 |
-| 93.123.109.228 | NL / AMS | 334 | 4 | 5 | 315 | 1 | 6,7 min (23/10 06:31) | 1 | 0 |
+| 158.69.55.x | CA / YYZ | 200 | 98 | 100 | 0 | 2 (100 + 100) | 21/10 03:53 y 24/10 06:40 | 3 | 0 |
+| 103.196.9.x | US / BOS | 111 | 53 | 55 | 0 | 1 | 16 s (24/10 06:36) | 2 | 0 |
+| 154.28.229.x | US / IAD | 90 | 43 | 44 | 0 | 1 | 29 s (21/10 03:51) | 2 | 0 |
+| 45.138.12.x | PL / WAW | 14 | 5 | 5 | 0 | 4 | 19/10 → 25/10 | 1 | 0 |
+| 45.138.12.x | PL / WAW | 297 | 4 | 5 | 285 | 1 | 3,5 min (26/10 14:31) | 1 | 0 |
+| 93.123.109.x | NL / AMS | 334 | 4 | 5 | 315 | 1 | 6,7 min (23/10 06:31) | 1 | 0 |
 
 ### 7.2 Huellas de cabeceras
 
 | IP | User-Agent(s) | `Accept` | `Accept-Language` | `Accept-Encoding` | `Referer` | Entre llegadas (p50) | Edad del enlace (p50) |
 |---|---|---|---|---|---:|---:|---:|
-| 158.69.55.82 | Chrome/124 Win10 (1) | `*/*` | — | `gzip, br` | 0 % | 13 ms | 1,8 s |
-| 103.196.9.99 | Chrome/130–131 Linux (2) | Chrome completo¹ | `en-US,en;q=0.9` | `gzip, br` | 0 % | 5 ms | 4,3 s |
-| 154.28.229.150 | Chrome/131 Linux y macOS (2) | Chrome completo¹ | `en-US,en;q=0.9` | `gzip, br` | 0 % | 178 ms | 8,9 s |
-| 45.138.12.168 | Chrome/133 Linux, Win y macOS (3) | Firefox-like² | `en-US,en;q=0.9` | `gzip, br` | 0 % | 111 ms | 15,4 h |
-| 45.138.12.27 | Chrome/150 Win10 (1) | Chrome completo¹ / `*/*` | `fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7` | `gzip` | 93 % | 88 ms | 3,1 s |
-| 93.123.109.228 | Chrome/150 Win10 (1) | Chrome completo¹ / `*/*` | `fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7` | `gzip, br` | 83 % | 1 ms | 3,7 s |
+| 158.69.55.x | Chrome/124 Win10 (1) | `*/*` | — | `gzip, br` | 0 % | 13 ms | 1,8 s |
+| 103.196.9.x | Chrome/130–131 Linux (2) | Chrome completo¹ | `en-US,en;q=0.9` | `gzip, br` | 0 % | 5 ms | 4,3 s |
+| 154.28.229.x | Chrome/131 Linux y macOS (2) | Chrome completo¹ | `en-US,en;q=0.9` | `gzip, br` | 0 % | 178 ms | 8,9 s |
+| 45.138.12.x | Chrome/133 Linux, Win y macOS (3) | Firefox-like² | `en-US,en;q=0.9` | `gzip, br` | 0 % | 111 ms | 15,4 h |
+| 45.138.12.x | Chrome/150 Win10 (1) | Chrome completo¹ / `*/*` | `fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7` | `gzip` | 93 % | 88 ms | 3,1 s |
+| 93.123.109.x | Chrome/150 Win10 (1) | Chrome completo¹ / `*/*` | `fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7` | `gzip, br` | 83 % | 1 ms | 3,7 s |
 
 ¹ `text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7`
 ² `text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8`
 
-**Indicadores de automatización** comunes a las 6 IPs: no piden `/favicon.ico` (salvo los escáneres por diccionario), no piden CSS, JS ni imágenes, tienen intervalos de milisegundos entre peticiones y van en paralelo (varias peticiones dentro del mismo milisegundo en 93.123.109.228). Las 4 que no son escáneres tampoco envían `Referer` aunque navegan enlace por enlace, algo que un navegador real sí haría.
+**Indicadores de automatización** comunes a las 6 IPs: no piden `/favicon.ico` (salvo los escáneres por diccionario), no piden CSS, JS ni imágenes, tienen intervalos de milisegundos entre peticiones y van en paralelo (varias peticiones dentro del mismo milisegundo en 93.123.109.x). Las 4 que no son escáneres tampoco envían `Referer` aunque navegan enlace por enlace, algo que un navegador real sí haría.
 
 ### 7.3 Agrupamiento por herramienta
 
-**Grupo A: scraper "en-US Chrome/13x" (103.196.9.99 y 154.28.229.150)**
+**Grupo A: scraper "en-US Chrome/13x" (103.196.9.x y 154.28.229.x)**
 - Perfil de cabeceras idéntico (Accept¹ + `en-US,en;q=0.9` + `gzip, br`).
 - Misma secuencia de arranque: `GET /`, pausa de 10–12 s, `GET /` otra vez, y recién ahí la exploración.
 - Mismo patrón: por página, sigue todos los enlaces (públicos y trampa) hasta la profundidad 2. Las dos sesiones tienen un tamaño parecido (90 y 111 peticiones).
 - UAs Chrome/130–131: la misma versión que usa el escáner distribuido en Google Cloud de §8.2 (Chrome/131 en Mac, Windows y Linux). Es una coincidencia sugerente, pero no concluyente, porque son UAs por defecto muy comunes en las listas de rotación.
 
-**Grupo B: escáner "fr-FR" (93.123.109.228 y 45.138.12.27)**
+**Grupo B: escáner "fr-FR" (93.123.109.x y 45.138.12.x)**
 - `Accept-Language: fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7` idéntico y UA Chrome/150 Win10 idéntico.
 - Mismo diccionario de rutas de traversal: `/{assets,css,img,images,js,lib,media,static,content,events}../.git/config`, `/.git/HEAD`, `/.git/index`.
-- 93.123.109.228 además envió POST a `/api`, `/soap`, `/xml`, `/_next/rsc`, `/rsc`, `/api/rsc`, `/_flight`: **sondeo de endpoints de React Server Components / Next.js**.
+- 93.123.109.x además envió POST a `/api`, `/soap`, `/xml`, `/_next/rsc`, `/rsc`, `/api/rsc`, `/_flight`: **sondeo de endpoints de React Server Components / Next.js**.
 - Rastreo superficial (1 nivel) solo para descubrir rutas: entraron a la trampa porque siguen todo `href`, no porque busquen contenido.
 
-**Actor C: 158.69.55.82 (OVH Canadá, por el rango)**
+**Actor C: 158.69.55.x (OVH Canadá, por el rango)**
 - Perfil mínimo (`Accept: */*`, sin idioma), un solo UA Chrome/124.
 - **Exactamente 100 peticiones por sesión** (49 trampa y 50 públicas + home en ambas): tope fijo de páginas por trabajo.
-- Arranca la primera sesión 2 min después de que termina la de 154.28.229.150 (21/10 03:51 → 03:53) y la segunda 4 min después de la de 103.196.9.99 (24/10 06:36 → 06:40). Esa correlación temporal en dos ocasiones independientes sugiere un **orquestador común que lanza trabajos con distinta configuración de cliente**. Que dos coincidencias de menos de 5 minutos ocurran por azar, con apenas unas 10 sesiones de scrapers en 12 días, es poco probable. Aun así, es una hipótesis sin verificar.
+- Arranca la primera sesión 2 min después de que termina la de 154.28.229.x (21/10 03:51 → 03:53) y la segunda 4 min después de la de 103.196.9.x (24/10 06:36 → 06:40). Esa correlación temporal en dos ocasiones independientes sugiere un **orquestador común que lanza trabajos con distinta configuración de cliente**. Que dos coincidencias de menos de 5 minutos ocurran por azar, con apenas unas 10 sesiones de scrapers en 12 días, es poco probable. Aun así, es una hipótesis sin verificar.
 
-**Actor D: 45.138.12.168 (Polonia, mismo /24 que 45.138.12.27)**
+**Actor D: 45.138.12.x (Polonia, mismo /24 que el actor B2)**
 - 4 visitas en 6 días, una sola con exploración (11 peticiones, 5 trampas). Rota entre 3 UAs Chrome/133.
 - Comparte /24 con el escáner B, pero no la huella de cabeceras. Puede ser un proveedor de VPS o proxy compartido.
 
@@ -392,7 +392,7 @@ Cada página servida con enlaces expone 5 enlaces trampa. Las páginas con enlac
 
 ![Accesos por técnica](graficos/trampa-tecnicas.png)
 
-### 7.5 Ejemplo de secuencia (154.28.229.150)
+### 7.5 Ejemplo de secuencia (154.28.229.x)
 
 ```
 03:51:20.358  GET /                                   home
@@ -428,10 +428,10 @@ Las peticiones a trampa y a páginas públicas se intercalan sin preferencia, a 
 
 | IP | País | 404 | Observación |
 |---|---|---:|---|
-| 130.12.180.117 | DE | 754 | UA con la leyenda "Yokohama Institute of Information Security" (escaneo académico declarado), 19/10 → 24/10 |
-| 93.123.109.228 | NL | 315 | Grupo B (§7.3) |
-| 195.178.110.94 | NL | 300 | Chrome/133 rotando UAs, 4 min el 23/10 |
-| 45.138.12.27 | PL | 285 | Grupo B |
+| 130.12.180.x | DE | 754 | UA con la leyenda "Yokohama Institute of Information Security" (escaneo académico declarado), 19/10 → 24/10 |
+| 93.123.109.x | NL | 315 | Grupo B (§7.3) |
+| 195.178.110.x | NL | 300 | Chrome/133 rotando UAs, 4 min el 23/10 |
+| 45.138.12.x | PL | 285 | Grupo B |
 | 29 IPs en 34.x / 35.x (Google Cloud) | FR, IT, GB, US, ES, NL… | 2.676 | **Escáner distribuido:** muchas IPs hacen **exactamente 271 peticiones** con el mismo diccionario, UA Chrome/131 (Mac 1.249, Win 816, Linux 542), a lo largo de toda la ventana |
 
 ### 8.3 Borde de Cloudflare
@@ -484,13 +484,13 @@ Fisher: p = 1,0. La tasa de violación de las IPs camufladas es baja (1,4 %), po
 ## 10. Amenazas a la validez
 
 1. **Muestra de familias.** Solo llegaron los crawlers con descubrimiento propio por Certificate Transparency y DNS. Faltan CCBot, Bytespider, PerplexityBot, Amazonbot, Meta-ExternalAgent y scrapers de datasets, que son justamente los que la literatura señala como menos cumplidores.
-2. **Siembra pendiente.** Referers externos: 51 de Google y 1 de Hacker News en todo el período. Sin enlaces en GitHub, Reddit o HN, la población de crawlers queda sesgada hacia los grandes operadores.
+2. **Siembra sin efecto observable.** Las URL semilla se publicaron el 18/10 en GitHub y Hacker News, pero ningún token de semilla registró accesos. Referers externos: 51 de Google y 1 de Hacker News en todo el período. La población de crawlers queda sesgada hacia los grandes operadores.
 3. **Suplantación de UA no verificada.** Falta contrastar las IPs con las listas oficiales (`openai.com/gptbot.json`, rangos de Anthropic, DNS inverso de Googlebot) y no hay huella TLS (JA3/JA4 vacíos). Los rangos observados (216.73.216.0/22 para ClaudeBot, 74.7.0.0/16 para OpenAI, 66.249.64.0/19 para Google) coinciden con los operadores esperados, pero eso no reemplaza la verificación formal.
 4. **Atribución de violadores.** No hay ASN porque el batch de enriquecimiento está caído (§11). No se puede saber si los actores A, B, C y D trabajan para empresas de IA.
 5. **Ruta "trap" visible en el HTML.** El enlace `visible` dice "Archivo histórico". Un crawler muy sofisticado podría inferir el honeypot por la estructura repetitiva, aunque los nombres de clase aleatorios lo dificultan.
 6. **Efecto del laberinto infinito.** Que ClaudeBot se haya ido puede deberse a detectar la trampa de URLs infinitas, lo cual reduce la exposición futura. No afecta la medición del cumplimiento, pero sí la comparación entre operadores.
 7. **Hueco de 9 h** el 27/10 (~64.000 peticiones de GPTBot perdidas). No afecta las conclusiones sobre la trampa: ningún violador estaba activo en esas horas según los patrones observados, aunque esto no se puede verificar.
-8. **Exclusión de 181.4.69.199** sin confirmar. Si no fue una prueba propia, se sumaría un séptimo actor de nivel 2+3 (solo `opacity_0`, 6 saltos encadenados hasta la profundidad 6, con favicon y Referer: un perfil humano o de navegador automatizado real).
+8. **Exclusión de 181.4.69.x** sin confirmar. Si no fue una prueba propia, se sumaría un séptimo actor de nivel 2+3 (solo `opacity_0`, 6 saltos encadenados hasta la profundidad 6, con favicon y Referer: un perfil humano o de navegador automatizado real).
 
 ---
 
@@ -511,7 +511,7 @@ Fisher: p = 1,0. La tasa de violación de las IPs camufladas es baja (1,4 %), po
 ### 12.1 Metodológicas
 
 1. **Reformular o ampliar la hipótesis:** H₂, "los agentes con UA camuflado violan robots.txt con más frecuencia que los declarados". Los datos actuales ya la apoyan con fuerza a nivel enlace (0 de 5,4 millones contra 207 de 5.555).
-2. **Sembrar las URLs** (GitHub con `config.json` falso, Reddit r/datasets, HN) para ampliar la población de familias. Es la única forma de que el test de Fisher a nivel familia tenga poder.
+2. **Ampliar la siembra** a otros canales (Reddit r/datasets, Hugging Face, `config.json` falso en GitHub) para ampliar la población de familias. Es la única forma de que el test de Fisher a nivel familia tenga poder.
 3. **Verificar identidades:** DNS inverso más directo para Googlebot y Applebot, y listas JSON publicadas para OpenAI y Anthropic. Agregar una columna `verified` al dataset.
 4. **Enriquecer por ASN** a los 6 violadores y a las 427 IPs con UA de navegador (MaxMind GeoLite2-ASN ya está en el compose).
 5. **Agregar trampas de segundo orden:** un enlace en un comentario HTML (`<!-- -->`), un enlace solo en JavaScript (`onclick`/`fetch`) y otro solo en `sitemap.xml`. Permiten separar mejor parsers de regex, parsers DOM y navegadores headless.
