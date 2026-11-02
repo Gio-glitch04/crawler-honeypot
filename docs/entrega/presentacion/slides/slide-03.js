@@ -34,7 +34,7 @@ window.PRESENTATION_SLIDES.push(`
       <ul class="cad-item-list">
         <li><strong>Ejemplos:</strong> Googlebot (1.532 reqs), GoogleOther (10.702 reqs), Applebot (2 reqs).</li>
         <li><strong>Conducta RFC 9309:</strong> Verificación rigurosa previa de directivas antes de descender.</li>
-        <li><strong>Atribución L3/L4:</strong> IPs 100% verificables por DNS Reverso PTR y rangos JSON (AS15169).</li>
+        <li><strong>Atribución L3/L4:</strong> 99,8283 % verificable en prefijos JSON publicados por Google (AS15169); 21 peticiones no listadas en subredes 66.249.x.</li>
       </ul>
 
       <div class="cad-callout-card">
@@ -62,9 +62,9 @@ window.PRESENTATION_SLIDES.push(`
       </svg>
 
       <ul class="cad-item-list">
-        <li><strong>Ejemplos:</strong> ClaudeBot (1,99M reqs, 55,8%), GPTBot (1,56M reqs, 43,7%).</li>
-        <li><strong>Conducta RFC 9309:</strong> 100% de respeto (0 accesos sobre 5,36M enlaces trampa expuestos).</li>
-        <li><strong>Validación de Red:</strong> 99,9998% verificado en ARIN RDAP AS16509 y 100% en Azure AS8075.</li>
+        <li><strong>Ejemplos:</strong> ClaudeBot (1.989.866 reqs, 55,8 %), GPTBot (1.558.875 reqs, 43,7 %) + OAI-SearchBot (49 reqs, 49 robots.txt).</li>
+        <li><strong>Conducta RFC 9309:</strong> 100 % de respeto (0 accesos sobre 5,36M enlaces trampa expuestos).</li>
+        <li><strong>Validación de Red:</strong> ClaudeBot 99,9998 % en registro ARIN RDAP AS16509 (4 GCP sin verificar); GPTBot/SearchBot 100,00 % en Azure (AS8075).</li>
       </ul>
 
       <div class="cad-callout-card">
@@ -91,13 +91,13 @@ window.PRESENTATION_SLIDES.push(`
       </svg>
 
       <ul class="cad-item-list">
-        <li><strong>Ejemplos:</strong> Scrapers no declarados y escáneres oportunistas de rutas.</li>
-        <li><strong>Conducta RFC 9309:</strong> 100% incurrió en Nivel 2 (omisión total de consultar <code>robots.txt</code>).</li>
-        <li><strong>Firma Favicon:</strong> 0 de 207 solicitaron <code>/favicon.ico</code>; 79,2% violó Nivel 3 (enlaces CSS).</li>
+        <li><strong>Ejemplos:</strong> Scrapers no declarados y escáneres oportunistas de rutas en 6 subredes /24.</li>
+        <li><strong>Conducta RFC 9309:</strong> 100 % incurrió en Nivel 2 (omisión total de consultar <code>robots.txt</code>).</li>
+        <li><strong>Firma Favicon:</strong> 0 de 207 solicitaron <code>/favicon.ico</code> (control humano sí); 79,2 % violó Nivel 3 (enlaces CSS).</li>
       </ul>
 
       <div class="cad-callout-card">
-        <span style="color:var(--accent-rose); font-weight:700;">Captura Infalible:</span> Carentes de motor CSS, caen indefectiblemente en los tarpits.
+        <span style="color:var(--accent-rose); font-weight:700;">Detección Efectiva:</span> La discrepancia entre DOM crudo y Render Tree evidencia la omisión de motores visuales completos.
       </div>
     </div>
   </div>

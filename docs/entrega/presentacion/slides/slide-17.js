@@ -16,22 +16,22 @@ window.PRESENTATION_SLIDES.push(`
     <div class="cad-box-panel">
       <div class="cad-box-title">
         <span>1. DEFENSA EN PROFUNDIDAD</span>
-        <span class="cad-tag">MULTICAPA</span>
+        <span class="cad-tag">ESTRATEGIA</span>
       </div>
 
       <svg class="box-mini-svg" viewBox="0 0 280 80" xmlns="http://www.w3.org/2000/svg">
-        <rect x="15" y="8" width="250" height="19" rx="3" fill="#152244" stroke="#38bdf8" stroke-width="1.2"/>
-        <text x="140" y="21" fill="#38bdf8" font-family="'JetBrains Mono', monospace" font-size="10" font-weight="700" text-anchor="middle">L7: RFC 9309 (Buscadores & IA)</text>
+        <rect x="20" y="15" width="240" height="16" rx="2" fill="#152244" stroke="#38bdf8" stroke-width="1.2"/>
+        <text x="140" y="27" fill="#38bdf8" font-family="'JetBrains Mono', monospace" font-size="9.5" text-anchor="middle">Capa 1: robots.txt (RFC 9309)</text>
 
-        <rect x="15" y="31" width="250" height="19" rx="3" fill="#152244" stroke="#f59e0b" stroke-width="1.2"/>
-        <text x="140" y="44" fill="#f59e0b" font-family="'JetBrains Mono', monospace" font-size="10" font-weight="700" text-anchor="middle">L7: Trampas CSS (Bots Hostiles)</text>
+        <rect x="35" y="35" width="210" height="16" rx="2" fill="#0f281e" stroke="#10b981" stroke-width="1.2"/>
+        <text x="140" y="47" fill="#10b981" font-family="'JetBrains Mono', monospace" font-size="9.5" text-anchor="middle">Capa 2: Tarpit Stateless HMAC</text>
 
-        <rect x="15" y="54" width="250" height="19" rx="3" fill="#152244" stroke="#10b981" stroke-width="1.2"/>
-        <text x="140" y="67" fill="#10b981" font-family="'JetBrains Mono', monospace" font-size="10" font-weight="700" text-anchor="middle">L4/L3: Rate Limiting & Bloqueo IP</text>
+        <rect x="50" y="55" width="180" height="16" rx="2" fill="#2d131f" stroke="#f43f5e" stroke-width="1.2"/>
+        <text x="140" y="67" fill="#f43f5e" font-family="'JetBrains Mono', monospace" font-size="9.5" text-anchor="middle">Capa 3: Trampas CSS + WAF</text>
       </svg>
 
       <p style="font-size:13.5px; line-height:1.45;">
-        No confiar únicamente en <code>robots.txt</code>. Es indispensable combinar directivas consultivas L7 con trampas honeypot y mitigación dinámica en L4.
+        Combinar directivas estándar con tarpits criptográficos y filtrado CSSOM. El estándar protege contra agentes éticos; el tarpit contiene scrapers agresivos.
       </p>
 
       <div class="cad-callout-card">

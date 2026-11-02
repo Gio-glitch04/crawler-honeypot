@@ -38,13 +38,13 @@ window.PRESENTATION_SLIDES.push(`
       </svg>
 
       <ul class="cad-item-list">
-        <li><strong>Ruptura del acuerdo web:</strong> Los buscadores indexaban a cambio de derivar visitas; los LLMs extraen contenido textual sin retorno de tráfico humano.</li>
-        <li><strong>Carga asimétrica:</strong> Ráfagas de decenas de miles de peticiones consumen CPU, hilos web y ancho de banda en servidores de origen independientes.</li>
-        <li><strong>Externalización del costo:</strong> El sitio web asume la factura de infraestructura mientras el operador monetiza los pesos del modelo.</li>
+        <li><strong>Ruptura del acuerdo web:</strong> Los buscadores indexaban a cambio de derivar visitas; los LLMs extraen contenido textual para preentrenamiento y RAG sin retorno de tráfico (Steinacker et al., 2025).</li>
+        <li><strong>Carga asimétrica:</strong> Mediciones de Imperva (Bad Bot Report 2025) señalan que el tráfico automatizado supera el 51 % en la web; ráfagas masivas consumen CPU y ancho de banda en servidores independientes.</li>
+        <li><strong>Externalización de costos:</strong> El servidor de origen asume la factura de infraestructura mientras el operador comercial monetiza el modelo sin reciprocidad.</li>
       </ul>
 
       <div class="cad-callout-card">
-        <span style="color:var(--accent-amber); font-weight:700;">Dilema Operativo:</span> Servidores independientes financian el entrenamiento de LLMs sin reciprocidad de tráfico.
+        <span style="color:var(--accent-amber); font-weight:700;">Dilema Operativo:</span> Servidores independientes financian el entrenamiento de LLMs sin reciprocidad de tráfico ni consentimiento expreso.
       </div>
     </div>
 
@@ -72,8 +72,8 @@ window.PRESENTATION_SLIDES.push(`
 
       <ul class="cad-item-list">
         <li><strong>RFC 9309 no es un firewall:</strong> Es un protocolo consultivo; cualquier cliente HTTP puede ignorarlo deliberadamente sin bloqueo a nivel L4.</li>
-        <li><strong>Evasión de listas negras:</strong> Scrapers no declarados rotan direcciones IP residenciales y fingen firmas de navegadores de escritorio.</li>
-        <li><strong>Ceguera de filtrado:</strong> Los cortafuegos perimetrales no distinguen entre un crawler hostil con falso UA y un usuario legítimo.</li>
+        <li><strong>Evasión de listas negras:</strong> Scrapers no declarados rotan direcciones IP residenciales y fingen firmas de navegadores de escritorio (Kim et al., IMC 2025).</li>
+        <li><strong>Vacío en la literatura:</strong> Auditorías como Liu et al. (IMC 2025) miden robots.txt convencional pero no evalúan trampas señuelo ni ofuscación CSSOM.</li>
       </ul>
 
       <div class="cad-callout-card">

@@ -47,15 +47,15 @@ window.PRESENTATION_SLIDES.push(`
         </div>
         <div class="cad-spec-pill">
           <div class="cad-spec-pill-title">Infraestructura</div>
-          <div class="cad-spec-pill-val">Windows 10 Pro + Docker WSL 2</div>
+          <div class="cad-spec-pill-val">Windows 10 Pro (22H2) + Docker WSL 2</div>
         </div>
         <div class="cad-spec-pill">
           <div class="cad-spec-pill-title">Perímetro L4</div>
-          <div class="cad-spec-pill-val">Cloudflare Tunnel (QUIC / Anycast)</div>
+          <div class="cad-spec-pill-val">Cloudflare Tunnel (cloudflared:2025.9.1)</div>
         </div>
         <div class="cad-spec-pill">
           <div class="cad-spec-pill-title">Telemetría</div>
-          <div class="cad-spec-pill-val">Nginx JSON + Promtail + Loki 3.5.0</div>
+          <div class="cad-spec-pill-val">Nginx JSON + Streaming Offline en Python</div>
         </div>
       </div>
     </div>

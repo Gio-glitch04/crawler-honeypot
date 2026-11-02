@@ -6,17 +6,17 @@ window.PRESENTATION_SLIDES.push(`
     <span>SECCIÓN 07 · AUDITORÍA & ATRIBUCIÓN FORENSE</span>
     <span class="coord-spec">CADENA DE CONFIANZA L7</span>
   </div>
-  <h1 class="slide-title-hero">Restitución de IP Real y Mitigación de Spoofing L7</h1>
+  <h1 class="slide-title-hero">Restitución de la IP Real en Nginx</h1>
   <p class="slide-lead-desc">
-    Mecánica de reconstrucción de identidad forense a través del túnel inverso y prevención de envenenamiento
+    Mecanismos para garantizar trazabilidad e impedir la inyección de cabeceras falseadas
   </p>
 
   <div class="grid-halves equal">
-    <!-- PANEL 1: EL RIESGO DE SPOOFING L7 -->
+    <!-- PANEL 1: EL RIESGO DE SPOOFING -->
     <div class="cad-box-panel">
       <div class="cad-box-title">
-        <span>VULNERABILIDAD: ENVENENAMIENTO DE CABECERAS</span>
-        <span class="cad-tag" style="color:var(--accent-rose); border-color:var(--accent-rose);">SPOOFING L7</span>
+        <span>VULNERABILIDAD ANTE CABECERAS INYECTADAS</span>
+        <span class="cad-tag" style="color:var(--accent-rose); border-color:var(--accent-rose);">SPOOFING</span>
       </div>
 
       <svg class="box-mini-svg" viewBox="0 0 420 100" xmlns="http://www.w3.org/2000/svg">
@@ -70,12 +70,15 @@ window.PRESENTATION_SLIDES.push(`
       <div style="background:rgba(10, 15, 28, 0.9); border:1px solid var(--border-card); padding:8px 12px; font-family:var(--font-mono); font-size:11.5px; color:var(--accent-blue); border-radius:4px;">
         set_real_ip_from 10.98.0.0/24;<br>
         real_ip_header CF-Connecting-IP;<br>
-        real_ip_recursive on;
+        real_ip_recursive on;<br>
+        geo $realip_remote_addr $via_cloudflare;<br>
+        proxy_hide_header X-Honeypot-*;
       </div>
 
       <ul class="cad-item-list">
-        <li><strong>Filtro de confianza explícito:</strong> Solo se aceptan cabeceras provenientes de la subred privada del túnel.</li>
+        <li><strong>Filtro de confianza explícito:</strong> Solo se aceptan cabeceras provenientes de la subred privada del túnel (<code>10.98.0.0/24</code>).</li>
         <li><strong>Inmutabilidad L7:</strong> Cloudflare sobreescribe <code>CF-Connecting-IP</code> con la IP pública del socket TCP antes de despachar.</li>
+        <li><strong>Ofuscación interna:</strong> <code>proxy_hide_header</code> elimina cabeceras técnicas para no delatar la lógica defensiva al crawler.</li>
       </ul>
 
       <div class="cad-callout-card">

@@ -19,7 +19,7 @@ window.PRESENTATION_SLIDES.push(`
         <line x1="50" y1="250" x2="590" y2="250" stroke="#263c70" stroke-width="1.2"/>
 
         <line x1="50" y1="60" x2="590" y2="60" stroke="#162444" stroke-width="1" stroke-dasharray="3 3"/>
-        <text x="42" y="64" fill="#94a3b8" font-family="'JetBrains Mono', monospace" font-size="10.5" text-anchor="end">1.5M</text>
+        <text x="42" y="64" fill="#94a3b8" font-family="'JetBrains Mono', monospace" font-size="10.5" text-anchor="end">1.0M</text>
 
         <line x1="50" y1="150" x2="590" y2="150" stroke="#162444" stroke-width="1" stroke-dasharray="3 3"/>
         <text x="42" y="154" fill="#94a3b8" font-family="'JetBrains Mono', monospace" font-size="10.5" text-anchor="end">500k</text>
@@ -28,10 +28,10 @@ window.PRESENTATION_SLIDES.push(`
         <path d="M 70 240 L 120 235 L 170 230 L 220 220 L 260 210 L 310 55 L 360 80 L 410 180 L 460 220 L 510 230 L 550 235 L 580 240" 
               fill="none" stroke="#38bdf8" stroke-width="2.5" class="wire-pulse-steady"/>
 
-        <!-- Pico GPTBot (24 Octubre) -->
+        <!-- Pico Diario 24 Octubre (1.059.733) -->
         <circle cx="310" cy="55" r="5" fill="#f59e0b" stroke="#fff" stroke-width="1.8"/>
         <rect x="235" y="8" width="150" height="24" rx="3" fill="#0f1932" stroke="#f59e0b" stroke-width="1.2"/>
-        <text x="310" y="24" fill="#f59e0b" font-family="'JetBrains Mono', monospace" font-size="10.5" font-weight="700" text-anchor="middle">Pico 24/10: 1,63M reqs</text>
+        <text x="310" y="24" fill="#f59e0b" font-family="'JetBrains Mono', monospace" font-size="10.5" font-weight="700" text-anchor="middle">Pico 24/10: 1,06M reqs</text>
 
         <!-- 207 Capturas Trampa -->
         <circle cx="260" cy="210" r="5" fill="#f43f5e" stroke="#fff" stroke-width="1.8"/>
@@ -62,21 +62,21 @@ window.PRESENTATION_SLIDES.push(`
 
       <ul class="cad-item-list">
         <li>
-          <strong>18–22 Oct (Descubrimiento & Despegue):</strong> Salida a DNS público. 297 consultas de Googlebot. El 21/10 05:30:30 UTC, <code>OAI-SearchBot</code> consulta <code>robots.txt</code> y 0,75s después <code>GPTBot</code> arranca su rastreo masivo.
+          <strong>18–22 Oct (Descubrimiento & Despegue):</strong> Salida a DNS. Seeding en GitHub y Hacker News (0 visitas por tokens semilla; descubrimiento orgánico por CT logs y raíz, con 1 Referer de HN y 51 de Google). El 21/10 05:30:30 UTC, <code>OAI-SearchBot</code> consulta <code>robots.txt</code> y 0,75s después arranca <code>GPTBot</code>.
         </li>
         <li>
           <strong>22–24 Oct (Incursión Hostil):</strong> Activación de 6 actores infractores camuflados como Chrome. 207 capturas en trampas antes de alcanzar la cota hoja.
         </li>
         <li>
-          <strong>24–25 Oct (Diluvio de IA):</strong> Ráfagas de <strong>ClaudeBot</strong> de hasta 38.787 req/h (~10,8 req/s) hasta recolectar 1,99M páginas el 25/10. Pico diario global de 1,63M reqs.
+          <strong>24–25 Oct (Diluvio de IA):</strong> Ráfagas de <strong>ClaudeBot</strong> de hasta 38.787 req/h (~10,8 req/s) hasta recolectar 1,99M páginas el 25/10. Pico diario global de 1.059.733 reqs el 24/10.
         </li>
         <li>
-          <strong>26–30 Oct (Cadencia Constante):</strong> <strong>GPTBot</strong> operó con ritmo estricto de ~2,00 req/s (7.141 req/h, CV = 0,068) hasta el corte final programado del 30/10 (17:57 UTC).
+          <strong>26–30 Oct (Cadencia Constante):</strong> <strong>GPTBot</strong> operó con ritmo estricto de ~2,00 req/s (7.184 req/h mediana; 7.140 req/h el 30/10 en 17,5 h con 125.144 reqs) hasta el corte final programado del 30/10 (17:57 UTC).
         </li>
       </ul>
 
       <div class="cad-callout-card">
-        <span style="color:var(--accent-amber); font-weight:700;">Incidencia DNS 27/10:</span> Interrupción de 8h 57m por expiración de delegación NS en registrador (107.149 reqs ese día); resuelta sin alterar la validez empírica.
+        <span style="color:var(--accent-amber); font-weight:700;">Incidencia Host 27/10:</span> Interrupción de 8h 57m por reposo/suspensión del equipo Windows 10 Pro (~64.000 reqs estimadas perdidas según cadencia de GPTBot); resuelta sin alterar la validez empírica.
       </div>
     </div>
   </div>

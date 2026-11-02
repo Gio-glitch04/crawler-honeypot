@@ -60,57 +60,49 @@ window.PRESENTATION_SLIDES.push(`
         <text x="260" y="36" fill="#10b981" font-family="'JetBrains Mono', monospace" font-size="11.5" font-weight="700" text-anchor="middle">MOTOR DJANGO RAM</text>
         <text x="260" y="54" fill="#fff" font-family="'Space Grotesk', sans-serif" font-size="10.5" text-anchor="middle">Recalcula HMAC(Key, datos)</text>
         <text x="260" y="70" fill="#cbd5e1" font-family="'Space Grotesk', sans-serif" font-size="10.5" text-anchor="middle">5 iteraciones en microsegundos</text>
-        <text x="260" y="86" fill="#10b981" font-family="'JetBrains Mono', monospace" font-size="10.5" font-weight="700" text-anchor="middle">✓ Técnica recuperada</text>
+        <text x="260" y="86" fill="#10b981" font-family="'JetBrains Mono', monospace" font-size="10" font-weight="700" text-anchor="middle">compare_digest() [Anti-Timing]</text>
 
         <!-- Canal Salida -->
-        <path d="M 345 55 L 380 55" stroke="#10b981" stroke-width="2.5" class="wire-pulse-fast"/>
+        <path d="M 345 55 L 395 55" stroke="#10b981" stroke-width="2.5" class="wire-pulse-steady"/>
 
-        <!-- Salida -->
-        <rect x="380" y="20" width="65" height="70" rx="3" fill="#152244" stroke="#10b981" stroke-width="1.2"/>
-        <text x="412" y="48" fill="#10b981" font-family="'JetBrains Mono', monospace" font-size="12" font-weight="800" text-anchor="middle">200 OK</text>
-        <text x="412" y="68" fill="#cbd5e1" font-family="'Space Grotesk', sans-serif" font-size="10.5" text-anchor="middle">Tarpit L7</text>
-
-        <circle r="3.5" fill="#38bdf8">
-          <animateMotion dur="2.2s" repeatCount="indefinite" path="M 70 55 L 260 55 L 412 55"/>
-        </circle>
+        <!-- Veredicto -->
+        <rect x="395" y="20" width="55" height="70" rx="3" fill="#111c35" stroke="#10b981" stroke-width="1.2"/>
+        <text x="422" y="44" fill="#10b981" font-family="'JetBrains Mono', monospace" font-size="11" font-weight="700" text-anchor="middle">200 OK</text>
+        <text x="422" y="60" fill="#94a3b8" font-family="'Space Grotesk', sans-serif" font-size="9" text-anchor="middle">Ó</text>
+        <text x="422" y="78" fill="#f43f5e" font-family="'JetBrains Mono', monospace" font-size="10" font-weight="700" text-anchor="middle">404 Err</text>
       </svg>
 
-      <ul class="cad-item-list">
-        <li><strong>Inmunidad DoS:</strong> Al no tocar disco ni bases de datos relacionales, absorbió 1,63M peticiones/día sin degradar latencia.</li>
-        <li><strong>Recuperación ciega:</strong> La URL no delata la técnica de ofuscación; el backend la deduce por HMAC en memoria.</li>
+      <ul class="cad-item-list" style="margin-top: 10px;">
+        <li><strong>Propiedades Matemáticas:</strong> 52 caracteres hexadecimales compactos: $32 + 8 + 2 + 10$.</li>
+        <li><strong>Resistencia a Colisiones:</strong> $6 / 2^{40} \approx 5,46 \times 10^{-12}$ de probabilidad de adivinar un token válido al azar.</li>
+        <li><strong>Truncamiento a 40 bits vs RFC 2104:</strong> Compromiso deliberado frente a los $\ge 80$ bits recomendados para preservar URLs compactas; vulnerarlo online exigiría $\approx 1,8 \times 10^{11}$ peticiones por la red.</li>
       </ul>
-
-      <div class="cad-callout-card">
-        <span style="color:var(--accent-emerald); font-weight:700;">Stateless Puro:</span> Cero costo de estado en el servidor; cada token se autovalida criptográficamente.
-      </div>
     </div>
 
-    <!-- COLUMNA DERECHA: JUSTIFICACIÓN MATEMÁTICA Y BLINDAJE -->
+    <!-- COLUMNA DERECHA: VENTAJAS ARQUITECTÓNICAS -->
     <div class="cad-box-panel">
       <div class="cad-box-title">
-        <span>JUSTIFICACIÓN MATEMÁTICA & SEGURIDAD</span>
-        <span class="cad-tag">CRIPTOANÁLISIS</span>
-      </div>
-
-      <!-- BANNER MATEMÁTICO LIMPIO CON UNICODE -->
-      <div class="math-proof-banner">
-        <div class="math-proof-formula">
-          <span>2⁴⁰ ≈ 1,0995 × 10¹² combinaciones</span>
-        </div>
-        <div class="math-proof-metric">
-          <div class="m-metric-val">348+ AÑOS</div>
-          <div class="m-metric-lbl">Tiempo de ruptura por fuerza bruta continua (a 100 req/s)</div>
-        </div>
+        <span>EFICIENCIA OPERATIVA FRENTE A BASES DE DATOS</span>
+        <span class="cad-tag">ALTO RENDIMIENTO</span>
       </div>
 
       <ul class="cad-item-list">
-        <li><strong>Eficiencia Wire:</strong> Limitar el HMAC a 40 bits ahorró gigabytes de transferencia en 5,4 millones de enlaces expuestos.</li>
-        <li><strong>Inmutabilidad:</strong> Contenedor con <code>read_only: true</code>; cero superficie para inyecciones SQL o persistencia malware.</li>
-        <li><strong>Clausura determinista:</strong> <span class="cad-tag">HONEYPOT_MAX_DEPTH=10</span>; nivel 11 entrega hojas sin enlaces salientes.</li>
+        <li>
+          <strong>Consumo Plano de Recursos:</strong> Procesó 3,56 millones de peticiones con una huella de memoria RAM estrictamente inferior a <strong>60 MB</strong>.
+        </li>
+        <li>
+          <strong>Inmunidad contra Agotamiento de I/O:</strong> Un crawler que solicita miles de páginas por minuto colapsaría una base de datos relacional por contención de bloqueos e I/O de disco.
+        </li>
+        <li>
+          <strong>Tiempo Constante de Verificación:</strong> La función <code>hmac.compare_digest</code> opera en tiempo constante, neutralizando cualquier intento de timing attack.
+        </li>
+        <li>
+          <strong>Auditoría Temporal Criptográfica:</strong> La marca de tiempo Epoch embebida permite calcular con exactitud la antigüedad del token en el cliente (<code>tok_age</code>).
+        </li>
       </ul>
 
       <div class="cad-callout-card">
-        <span style="color:var(--accent-blue); font-weight:700;">Seguridad Matemática:</span> Espacio de búsqueda impracticable para atacantes sin sobrecargar el payload HTTP.
+        <span style="color:var(--accent-emerald); font-weight:700;">Principio de Diseño:</span> La criptografía de clave simétrica reemplaza el almacenamiento persistente con costo computacional $O(1)$.
       </div>
     </div>
   </div>
