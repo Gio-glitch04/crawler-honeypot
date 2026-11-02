@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Investigación Honeypot RFC 9309 · Defensa Oral de Cátedra</title>
+  
+  <!-- Tipografía Técnica CAD -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- KaTeX para renderizado de fórmulas matemáticas -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+
+  <!-- Módulos de Estilos CAD Blueprint -->
+  <link rel="stylesheet" href="css/theme.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/animations.css">
+</head>
+<body>
+
+  <!-- CAPAS DE DIBUJO TÉCNICO CAD -->
+  <div class="cad-grid-layer"></div>
+  
+  <div class="cad-ruler-strip">
+    <div class="ruler-segment">000mm</div><div class="ruler-segment">120mm</div>
+    <div class="ruler-segment">240mm</div><div class="ruler-segment">360mm</div>
+    <div class="ruler-segment">480mm</div><div class="ruler-segment">600mm</div>
+    <div class="ruler-segment">720mm</div><div class="ruler-segment">840mm</div>
+    <div class="ruler-segment">960mm</div><div class="ruler-segment">1080mm</div>
+    <div class="ruler-segment">1200mm</div><div class="ruler-segment">1320mm</div>
+  </div>
+
+  <div class="cad-mark mark-tl"></div>
+  <div class="cad-mark mark-tr"></div>
+  <div class="cad-mark mark-bl"></div>
+  <div class="cad-mark mark-br"></div>
+
+  <!-- BARRA DE CONTROL PRINCIPAL (HUD DE INGENIERÍA) -->
+  <header class="cad-hud">
+    <div class="cad-hud-left">
+      <span class="drawing-id-badge">CAD-DWG: HP-9309-REV4</span>
+      <div class="project-header-label">
+        HONEYPOT RESEARCH DEFENSE <span>// INTERNETWORKING 2026</span>
+      </div>
+    </div>
+
+    <div class="cad-hud-right">
+      <button class="btn-hud-prompter" id="btnLaunchPrompter" title="Abrir Teleprompter en ventana independiente [P]">
+        <span>⧉</span> TELEPROMPTER DUAL
+      </button>
+
+      <div class="cad-timer-capsule" title="Tiempo de defensa reglamentario (20 minutos)">
+        <span style="font-size:11px; color:var(--ink-dim);">⏱</span>
+        <span class="cad-timer-clock" id="timerClock">20:00</span>
+        <button class="btn-hud-icon" id="btnTimerControl" title="Iniciar/Pausar cronómetro [Espacio]">▶</button>
+      </div>
+
+      <div style="display:flex; align-items:center; gap:6px;">
+        <button class="btn-hud-icon" id="btnPrevSlide" title="Diapositiva anterior [◀ / B]">◀</button>
+        <span class="slide-page-badge" id="slideBadge">01 / 17</span>
+        <button class="btn-hud-icon" id="btnNextSlide" title="Siguiente diapositiva [▶ / N]">▶</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ESCENARIO DINÁMICO DE DIAPOSITIVAS MODULARES -->
+  <main class="cad-stage" id="slidesContainer"></main>
+
+  <!-- NOTIFICACIÓN TOAST DE BROADCAST -->
+  <div class="cad-broadcast-alert" id="broadcastAlert">Sincronizado vía BroadcastChannel</div>
+
+  <!-- CAJETÍN DE ROTULACIÓN ISO CAD -->
+  <footer class="cad-stage-footer">
+    <div style="display:flex; align-items:center; gap:10px;">
+      <span>ATAJOS:</span>
+      <span><span class="key-spec-tag">ESPACIO</span> Crono</span>
+      <span><span class="key-spec-tag">◀ / ▶</span> Diapositiva</span>
+      <span><span class="key-spec-tag">P</span> Prompter</span>
+      <span><span class="key-spec-tag">F</span> Fullscreen</span>
+    </div>
+    <div style="display:flex; align-items:center; gap:10px;">
+      <span>SISTEMA: <strong>WSL2-DOCKER-CLOUDFLARE</strong></span>
+      <span style="color:var(--cad-border);">|</span>
+      <span>CANAL: <strong>honeypot_presentation_sync</strong></span>
+    </div>
+  </footer>
+
+  <!-- CARGA MODULAR DE LAS 17 DIAPOSITIVAS (COMPATIBLE 100% OFFLINE Y FILE://) -->
+  <script src="slides/slide-01.js"></script>
+  <script src="slides/slide-02.js"></script>
+  <script src="slides/slide-03.js"></script>
+  <script src="slides/slide-04.js"></script>
+  <script src="slides/slide-05.js"></script>
+  <script src="slides/slide-06.js"></script>
+  <script src="slides/slide-07.js"></script>
+  <script src="slides/slide-08.js"></script>
+  <script src="slides/slide-09.js"></script>
+  <script src="slides/slide-10.js"></script>
+  <script src="slides/slide-11.js"></script>
+  <script src="slides/slide-12.js"></script>
+  <script src="slides/slide-13.js"></script>
+  <script src="slides/slide-14.js"></script>
+  <script src="slides/slide-15.js"></script>
+  <script src="slides/slide-16.js"></script>
+  <script src="slides/slide-17.js"></script>
+
+  <!-- CONTROLADOR CENTRAL Y SINCRONIZACIÓN -->
+  <script src="js/presentation.js"></script>
+</body>
+</html>

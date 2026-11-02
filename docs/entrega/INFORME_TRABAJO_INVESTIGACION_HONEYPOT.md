@@ -9,9 +9,9 @@ Repositorio: <https://github.com/Gio-glitch04/crawler-honeypot> — Dominio expe
 
 ## Resumen
 
-Este trabajo analiza la técnica de *honeypot* (señuelo) aplicada a la auditoría empírica del Protocolo de Exclusión de Robots (`robots.txt`, RFC 9309). Se presenta el marco general de la disciplina (*deception*, baja y alta interacción, *honeynets*, *tarpits*, *honeytokens*) y se compara nuestro enfoque con alternativas de la industria, incluyendo AI Labyrinth de Cloudflare y tarpits modernos contra recolectores de inteligencia artificial. Describimos la arquitectura e implementación de un honeypot de capa de aplicación que genera un laberinto dinámico de páginas y enlaces señuelo codificados en tokens criptográficos HMAC-SHA256 de 52 caracteres hexadecimales, preservando el estado experimental en la URL sin requerir base de datos en el servidor, con profundidad acotada (`HONEYPOT_MAX_DEPTH = 10`, hojas terminales en nivel 11). Desplegado durante 11,85 días en producción sobre un dominio propio vía Cloudflare Tunnel en un anfitrión con Windows 10 y Docker Desktop (WSL 2), el sistema procesó **3.568.349 peticiones válidas** (~10,9 GB de carga útil). Los tres operadores de crawlers declarados que recorrieron el laberinto (Anthropic con `ClaudeBot`, OpenAI con `GPTBot` y `OAI-SearchBot`, y Google con `Googlebot` y `GoogleOther`, que sumaron el **99,8 %** del tráfico) registraron **0 accesos a la ruta prohibida** sobre más de 5,36 millones de enlaces trampa expuestos (100 % de cumplimiento en el sitio señuelo). La verificación de red constató que las subredes que concentraron más del 99,9 % del tráfico de cada operador coincidieron con los rangos oficiales de IP publicados y registros BGP/RDAP (`AS16509`, `AS8075`, `AS15169`). En el caso de Anthropic, la verificación sobre el registro ARIN RDAP del bloque `/22` arrojó una cobertura del **99,9998 %** (1.989.862 de 1.989.866 peticiones), con 4 peticiones provenientes de GCP no verificadas. Enmarcado estadísticamente a nivel de operador ($n = 3, k = 0$), el hallazgo arroja una cota superior exacta de Clopper-Pearson al 95 % de **63,2 %** (unilateral; 70,8 % bilateral), resultado que replica de forma independiente para `ClaudeBot` y `GPTBot` las observaciones de Liu et al. (IMC '25) en un entorno señuelo (`OAI-SearchBot` únicamente consultó `robots.txt` sin solicitar páginas). En contraste, se registraron **207 violaciones correspondientes a 6 direcciones IP** que falsificaban cabeceras de navegadores comerciales (`Chrome/124–150`): el 100 % incurrió en Nivel 2 (omisión de consultar `robots.txt`), ninguna descargó `/favicon.ico` (mientras que el control positivo del equipo con navegador real sí lo descargó), y el 79,2 % (164 de 207) incurrió en Nivel 3 (consumo de enlaces ocultos por CSS, $\chi^2 = 0,3188, gl = 4, p = 0,9886$). Concluimos que la variable que predice la intrusión es el rastreo ciego de enlaces sin consulta previa de `robots.txt`. El estudio discute alcances reales, limitaciones metodológicas, aspectos éticos bajo la Ley 25.326 y criterios sobre cuándo conviene emplear esta tecnología.
+Este trabajo analiza la técnica de *honeypot* aplicada a la auditoría empírica del Protocolo de Exclusión de Robots (`robots.txt`, RFC 9309). Se presenta el marco general de engaño defensivo (*deception*, baja y alta interacción, *tarpits*, *honeytokens*) y se compara nuestro enfoque con alternativas como AI Labyrinth de Cloudflare. Implementamos un honeypot HTTP de capa 7 sin estado que genera un laberinto infinito de páginas y enlaces señuelo codificados en tokens HMAC-SHA256 truncados a 40 bits (52 caracteres hexadecimales), preservando metadatos en la URL sin base de datos en el servidor. Desplegado durante 11,85 días en producción sobre Windows 10 con Docker Desktop (WSL 2) y Cloudflare Tunnel, el sistema procesó 3.568.349 peticiones válidas (~10,9 GB de carga útil). Los tres operadores de crawlers declarados que recorrieron el laberinto (Anthropic, OpenAI y Google, que sumaron el 99,8 % del tráfico) registraron 0 accesos a la ruta prohibida sobre 5,36 millones de enlaces trampa expuestos (100 % de acatamiento en el sitio señuelo). La verificación de red constató que las subredes observadas coincidieron con los rangos oficiales de OpenAI y Google (100,00 % y 99,83 % de cobertura), y con el registro ARIN para Anthropic (99,9998 %). En contraste, se registraron 207 violaciones correspondientes a 6 direcciones IP que falsificaban cabeceras de navegadores comerciales: el 100 % incurrió en Nivel 2 (omisión de consultar `robots.txt`) y el 79,2 % (164 de 207) en Nivel 3 (consumo de enlaces ocultos por CSS). Enmarcado a nivel de operador ($n = 3$, cota de Clopper-Pearson al 95 % de 63,2 %), el estudio discute alcances reales, limitaciones metodológicas, aspectos éticos bajo la Ley 25.326 y criterios de aplicabilidad.
 
-**Palabras clave:** honeypot, deception, web crawlers, robots.txt, RFC 9309, HMAC, tokens sin estado, ClaudeBot, GPTBot, Render Tree, BGP.
+**Palabras clave:** honeypot, deception, web crawlers, robots.txt, RFC 9309, HMAC, tokens sin estado, ClaudeBot, GPTBot.
 
 ---
 
@@ -19,198 +19,131 @@ Este trabajo analiza la técnica de *honeypot* (señuelo) aplicada a la auditor�
 
 ### 1.1. Contexto, planteamiento del problema y objetivos
 
-El Protocolo de Exclusión de Robots (`robots.txt`), estandarizado formalmente por el IETF en el **RFC 9309** [1], permite a los administradores web manifestar qué recursos no deben ser rastreados por agentes automatizados. Al carecer de mecanismos criptográficos de autenticación o barreras en capas de red y transporte, su acatamiento es voluntario (*advisory*). Con el auge de los modelos fundacionales de inteligencia artificial (LLMs) y los sistemas de generación aumentada por recuperación (RAG), la recolección masiva de contenidos ha transformado la composición del tráfico de red: mediciones globales de 2024 señalan que el tráfico automatizado superó por primera vez al humano, alcanzando el 51 % del total [2]. En paralelo, investigaciones sobre la web pública han observado una adopción asimétrica de directivas defensivas entre medios periodísticos y fuentes dudosas [3], planteando interrogantes sobre el acatamiento efectivo de las directivas por parte de los operadores de IA frente a scrapers no declarados.
+El Protocolo de Exclusión de Robots (`robots.txt`), estandarizado en el **RFC 9309** [1], permite indicar qué recursos no deben ser rastreados por agentes automatizados. Al carecer de mecanismos criptográficos de autenticación o bloqueo en red y transporte, su cumplimiento es voluntario (*advisory*). Con la expansión de los modelos de lenguaje (LLMs) y sistemas RAG, la recolección masiva de datos transformó el tráfico web: en 2024 el tráfico automatizado superó al humano, alcanzando el 51 % global [2], con una adopción asimétrica de directivas defensivas [3].
 
-Asimismo, la investigación de Kim et al. [4] evaluó empíricamente más de 130 bots en la web pública, constatando que el acatamiento decae significativamente a medida que las directivas se vuelven más restrictivas y que proliferan actores evasivos que falsean cabeceras. Por su parte, Liu et al. [5] (IMC '25) estudiaron la eficacia real de `robots.txt` para proteger a creadores de contenido frente a recolectores de IA comercial, observando un acatamiento estricto por parte de operadores establecidos (como Anthropic y OpenAI) en contraste con infracciones sistemáticas de scrapers no cooperativos. Surge así una pregunta de investigación central: **¿Respetan efectivamente los agentes de IA las directivas de exclusión de `robots.txt` en el tráfico real de producción, o las violaciones provienen de recolectores camuflados que omiten el protocolo?**
+Estudios recientes aportan evidencia empírica directa: Kim et al. [4] evaluaron 130 bots y hallaron que el acatamiento decae ante directivas restrictivas, alertando sobre la suplantación de `User-Agent`; Liu et al. [5] examinaron la eficacia de `robots.txt` para proteger creadores de contenido frente a crawlers de IA. Surge la pregunta central: **¿Respetan efectivamente los agentes de IA las directivas de exclusión de `robots.txt` en producción, o las violaciones provienen de recolectores camuflados que omiten el protocolo?**
 
-**Objetivos del trabajo.**
-1. Desarrollar el marco conceptual de los honeypots y posicionar nuestra herramienta frente a alternativas de mitigación y engaño (§1.2 y §4.3).
-2. Diseñar, implementar y evaluar en producción un honeypot HTTP de capa 7 sin estado para auditar el cumplimiento del RFC 9309 de forma reproducible (§2 y §3).
-3. Evaluar empíricamente el comportamiento de los crawlers en el entorno señuelo, acotando conclusiones y documentando aspectos éticos y operativos (§3.4, §4 y §5).
+**Objetivos del trabajo:**
+1. Sistematizar el marco conceptual de los honeypots y posicionar nuestro diseño frente a alternativas de mitigación (§1.2 y §4.3).
+2. Diseñar, implementar y evaluar en producción un honeypot HTTP de capa 7 sin estado para auditar el RFC 9309 (§2 y §3).
+3. Evaluar empíricamente el comportamiento de los crawlers en el entorno señuelo, acotando conclusiones y aspectos éticos y operativos (§3.4, §4 y §5).
 
-**Alcance y delimitación.** Son de autoría propia la arquitectura del laberinto, el código, el despliegue con Docker y Cloudflare Tunnel, el registro de 3,57 millones de peticiones y los análisis estadísticos. Se toman de la literatura las cifras de adopción [2, 3], las advertencias sobre *spoofing* [4] y los marcos de evaluación de agentes de IA [5]. El presente trabajo no pretende evaluar la totalidad de la web ni extrapolar a directivas complejas: audita el comportamiento de los agentes que visitaron un sitio señuelo único frente a una directiva `Disallow` benigna.
+**Alcance y delimitación:** Son de autoría propia la arquitectura del laberinto, el código, el despliegue con Docker y Cloudflare Tunnel, el registro de 3,57 millones de peticiones y los análisis estadísticos. Se toman de la literatura las tasas globales de tráfico [2, 3], las advertencias sobre *spoofing* [4] y los marcos de evaluación sobre crawlers de IA [5]. El estudio no extrapola sus conclusiones a toda la web ni a directivas complejas: audita rigurosamente a los agentes que visitaron un dominio señuelo único frente a una directiva `Disallow` benigna.
 
 ### 1.2. Fundamentos de la técnica Honeypot: historia, taxonomía y *tarpits*
 
-La disciplina del engaño defensivo (*deception technology*) en seguridad informática data de las primeras trampas para rastrear intrusos documentadas por Stoll (1989) [6] y Cheswick (1992) [7]. Formalizada a principios de siglo por Spitzner (2002) [8] y Provos (2004) [9], la técnica define a un *honeypot* como un recurso informático de seguridad cuyo valor radica en ser sondeado, atacado o comprometido. Al no poseer propósitos operativos legítimos ni usuarios humanos asignados, toda interacción recibida es, por definición, anómala o sospechosa.
+Un *honeypot* es un recurso informático cuyo valor reside exclusivamente en su uso no autorizado o ilegítimo (Spitzner [6]). Al carecer de usuarios legítimos, casi toda interacción recibida constituye una anomalía inspeccionable.
 
-```
-                    ┌──────────────────────────────────────────────┐
-                    │           Tecnologías de Deception           │
-                    └──────────────────────┬───────────────────────┘
-                                           │
-         ┌─────────────────────────────────┴─────────────────────────────────┐
-         ▼                                                                   ▼
-┌──────────────────┐                                               ┌──────────────────┐
-│ Por Interacción  │                                               │ Por Especialidad │
-└────────┬─────────┘                                               └────────┬─────────┘
-         ├─ Baja: Emulación de banners (Dionaea, Cowrie)                    ├─ Honeynets: Redes distribuidas complejas
-         ├─ Media: Emulación parcial de capas de aplicación                 ├─ Honeytokens: Credenciales y URLs señuelo
-         └─ Alta: VMs reales y sandboxes instrumentadas                     └─ Tarpits: Retardo y laberintos de agotamiento
-```
+La disciplina incluye hitos fundamentales: el rastreo pionero de intrusos de Stoll [7] y Cheswick [8]; la formalización del engaño de Cohen [9]; el Honeynet Project [10], el simulador Honeyd [11] y el tarpit LaBrea [12]; Project Honey Pot contra spam [13]; plataformas como Nepenthes/Dionaea [14], Glastopf [15], Cowrie [16] y Canarytokens [17]; y laberintos modernos contra crawlers de IA como AI Labyrinth de Cloudflare [18].
 
-En la capa de aplicación web, los *honeytokens* (elementos señuelo con identificadores únicos) han evolucionado hacia mecanismos activos de disuasión. Entre ellos destacan los *tarpits* (fosos de brea) [10], diseñados para degradar el rendimiento de escáneres automatizados ralentizando las respuestas TCP/HTTP (como *slowloris*) o atrapando a los agentes en laberintos infinitos de enlaces dinámicos. En la industria moderna, soluciones comerciales como Cloudflare AI Labyrinth (2025) [11] emplean generación sintética de contenido para atrapar scrapers de IA no autorizados. Sin embargo, los laberintos tradicionales requieren almacenar árboles de URLs en bases de datos o computar respuestas pesadas con modelos generativos. Nuestro trabajo propone una alternativa orientada a la auditoría: un laberinto procedimental sin estado (*stateless*) mediante tokens HMAC que codifican los metadatos en la propia URL.
+**Taxonomía técnica:**
+1. **Nivel de interacción:** *Baja interacción* (emula servicios con respuestas sintéticas; mínimo riesgo computacional, como nuestro honeypot HTTP); *media interacción* (intérpretes confinados, ej. Cowrie); *alta interacción* (sistemas operativos reales instrumentados; máxima visibilidad pero requiere contención estricta).
+2. **Escala y propósito:** Se diferencian honeypots aislados de *honeynets* (redes coordinadas), y sistemas de *producción* (alerta temprana) de *investigación* (estudio de tácticas adversarias).
+3. **Forma del señuelo:** Servicios de red, aplicaciones web o *honeytokens* (elementos pasivos como URLs o credenciales que alertan al ser accedidos) [17].
+
+**Aplicabilidad para la auditoría de `robots.txt`:** Evaluar el cumplimiento en sitios existentes presenta tres problemas: contaminación por enlaces externos previos, incapacidad de los logs estándar para capturar el nodo DOM de procedencia y su visibilidad, y saturación de bases de datos ante rastreos masivos. Un honeypot web de baja interacción con dominio aislado y tokens criptográficos resuelve simultáneamente estos tres factores.
 
 ### 1.3. Conceptos fundamentales de Internetworking y capa de aplicación
 
-La comprensión profunda del comportamiento de los crawlers y la efectividad de los honeypots web descansa sobre cinco pilares de la arquitectura de redes y protocolos:
-
-**1. El Render Tree del navegador frente al procesamiento sintáctico de un crawler.**  
-Un navegador web comercial construye dos modelos de objetos a partir del código recibido: el DOM (*Document Object Model*) derivado del HTML y el CSSOM (*CSS Object Model*) derivado de las hojas de estilo [12]. La conjunción de ambos conforma el **árbol de renderizado** (*Render Tree*), que calcula la geometría visual de la página. Si un nodo posee `display: none` o `opacity: 0`, se omite en el árbol de renderizado o se dibuja transparente: un usuario humano nunca interactúa con él. Por el contrario, la mayoría de los bots y scrapers de bajo costo emplean analizadores sintácticos de texto plano o expresiones regulares sobre el HTML crudo sin evaluar el CSSOM. El honeypot aprovecha esta divergencia arquitectónica: la navegación hacia un enlace oculto por CSS constituye una prueba directa de ceguera sintáctica.
-
-**2. Túneles inversos y enrutamiento perimetral Anycast.**  
-Desplegar un honeypot de investigación en infraestructura local sin IP pública estática requiere el uso de túneles inversos (Cloudflare Tunnel). El demonio `cloudflared` establece conexiones salientes multiplexadas mediante TLS/QUIC (puerto 7844) hacia múltiples puntos de presencia (PoP) de Cloudflare distribuidos globalmente bajo enrutamiento Anycast (RFC 4786) [13]. Esto aísla el servidor de origen de ataques directos a nivel de red (DDoS volumétrico) y permite absorber picos de tráfico sin exponer la dirección IP del anfitrión residencial.
-
-**3. Preservación de la dirección IP real y sanitización de cabeceras de transporte.**  
-Cuando una conexión atraviesa un proxy inverso o CDN perimetral, la dirección IP de origen en la capa de transporte TCP observada por el servidor web es la del nodo perimetral. Para transmitir la IP real del cliente, el proxy inyecta cabeceras HTTP como `CF-Connecting-IP` o `X-Forwarded-For` (RFC 7239) [14]. La preservación fidedigna de este dato en Nginx exige el uso de la directiva `set_real_ip_from` restringida estrictamente a los bloques CIDR de Cloudflare. Sin esta configuración, un atacante podría falsificar su identidad de red inyectando cabeceras arbitrarias.
-
-**4. Validación de origen mediante BGP, Sistemas Autónomos y RDAP.**  
-Dado que la cabecera HTTP `User-Agent` es texto libre fácilmente falsificable, la atribución de identidad en Internetworking exige validar la capa de red (Capa 3). Esto se logra cruzando la dirección IP de origen con la tabla global de enrutamiento BGP (RFC 4271) [15] para determinar el Sistema Autónomo (ASN) emisor y consultando los registros RIR a través del protocolo RDAP (RFC 7480) [16] o listas públicas oficiales de prefijos publicadas por los operadores (como Google o OpenAI).
-
-**5. Semántica de caché y persistencia de `robots.txt` según el RFC 9309.**  
-El RFC 9309 [1] especifica que los clientes deben almacenar en caché el archivo `robots.txt` para no saturar los servidores de origen, sugiriendo un período de validez de hasta 24 horas. En arquitecturas a gran escala, los operadores de crawlers emplean granjas distribuidas donde un nodo centralizado descarga y valida `robots.txt` y comparte la política en caché con los recolectores de contenido, lo que explica la ausencia de consultas directas de `robots.txt` desde cada dirección IP individual.
+* **Semántica y caché de `robots.txt` (RFC 9309):** El estándar exige obtener `/robots.txt`, identificar reglas aplicables al `User-Agent` (o al comodín `*`) y aplicar coincidencia por prefijo (*path prefix matching*), prevaleciendo la regla más específica [1]. Admite almacenar la política en caché hasta por 24 horas. El RFC 9309 define la semántica pero no prescribe la sincronización interna de nodos en un operador distribuido; que un agente consulte la directiva para toda su infraestructura (como `OAI-SearchBot` en OpenAI) es compatible con dicha política de caché.
+* **Separación entre árbol DOM y Render Tree:** Según WHATWG HTML [19] y W3C CSS Display Module [20], el navegador genera el DOM y el CSSOM, fusionándolos en el **Render Tree** antes de calcular la geometría (*layout*) y pintar los píxeles. Los nodos con `display: none` se excluyen del *Render Tree*; aquellos con `opacity: 0` o desplazados fuera de pantalla (`left: -10000px`) se renderizan pero son invisibles. Sin embargo, **todos permanecen en el DOM y en el HTML crudo**. Un recolector que analice texto o use `querySelectorAll('a')` sin calcular visibilidad (`checkVisibility()`) seguirá enlaces invisibles; un navegador completo que procese el renderizado visual los descartará.
+* **Túneles reversos en el borde y preservación de capas L3/L7:** Al exponer un servidor mediante *Cloudflare Tunnel*, la sesión TCP/TLS finaliza en el nodo Anycast más próximo. El túnel encapsula el tráfico hacia el host anfitrión sin requerir puertos abiertos perimetrales. El socket TCP en Nginx observa la IP de la red del túnel. Para recuperar la IP pública real sin permitir falsificaciones (*IP spoofing*), Nginx restringe `set_real_ip_from` a la subred del túnel antes de interpretar `CF-Connecting-IP`.
+* **Atribución en capa de red (BGP, ASN y RDAP):** La cabecera `User-Agent` es texto libre fácilmente falseable; verificar la identidad exige contrastar la IP de origen con tablas BGP, registros RDAP/WHOIS (ARIN, RIPE) y prefijos oficiales publicados por cada operador.
 
 ---
 
-## 2. Arquitectura y funcionamiento del sistema
+## 2. Arquitectura y funcionamiento
 
-### 2.1. Componentes efectivamente desplegados y topología de red
+### 2.1. Componentes efectivamente desplegados y topología de red (Windows 10 + Docker Desktop)
 
-El sistema se ejecutó en un anfitrión físico con Windows 10 Pro (x86_64) utilizando Docker Desktop 4.34 con backend WSL 2 (kernel Linux 5.15). Se desplegó una arquitectura modular compuesta por cinco servicios orquestados mediante Docker Compose, interconectados a través de tres redes puente (*bridge networks*) aisladas para garantizar contención y mínimo privilegio:
+El despliegue se ejecutó sobre **Windows 10 (22H2) con Docker Desktop (WSL 2 basado en Ubuntu)**, combinando `docker-compose.yml`, `docker-compose.home.yml` y `--profile maxmind`. La topología segmenta los servicios en **tres redes virtuales tipo *bridge*** aisladas (`tunnel_net` en `10.98.0.0/24`, `honeypot_net` y `telemetry_net`), sin puertos expuestos en el enrutador:
 
-```
-                            INTERNET (Crawlers / Clientes)
-                                          │
-                                          ▼
-                         Red Perimetral Anycast (Cloudflare)
-                                          │
-                        Túnel TLS/QUIC (saliente puerto 7844)
-                                          │
-    ╔═════════════════════════════════════╪═════════════════════════════════════╗
-    ║ Servidor Anfitrión (Windows 10 Pro / Docker Desktop WSL 2)                ║
-    ║                                     ▼                                     ║
-    ║                         ┌───────────────────────┐                         ║
-    ║                         │  cloudflared (túnel)  │                         ║
-    ║                         └───────────┬───────────┘                         ║
-    ║  [frontend_net]                     │                                     ║
-    ║                                     ▼                                     ║
-    ║                         ┌───────────────────────┐                         ║
-    ║                         │  Nginx 1.27 (Proxy)   │                         ║
-    ║                         └───────────┬───────────┘                         ║
-    ║                                     │                                     ║
-    ║               ┌─────────────────────┴─────────────────────┐               ║
-    ║  [backend_net]│                                           │[monitoring]   ║
-    ║               ▼                                           ▼               ║
-    ║     ┌───────────────────┐                       ┌───────────────────┐     ║
-    ║     │ Honeypot (Python) │                       │ Promtail / Loki   │     ║
-    ║     │  read_only: true  │                       │  (Logs & Métricas)│     ║
-    ║     └───────────────────┘                       └─────────┬─────────┘     ║
-    ║                                                           ▼               ║
-    ║                                                 ┌───────────────────┐     ║
-    ║                                                 │ Grafana Dashboard │     ║
-    ║                                                 └───────────────────┘     ║
-    ╚═══════════════════════════════════════════════════════════════════════════╝
-```
-*Figura 1. Topología de red y segmentación de servicios desplegados en el servidor anfitrión.*  
-*(Nota: El diagrama de topología visualiza el aislamiento entre las tres zonas de red. En producción, el contenedor auxiliar de analítica en tiempo real fue detenido tras saturación de memoria, procesándose los logs de Nginx mediante scripts offline de streaming).*
+![Topología de red y servicios desplegados](graficos/topologia.png)
+*Figura de topología. El contenedor `analytics` figura detenido desde el 21/10 (§3.3). Fuente del diagrama: `graficos/topologia.mmd`.*
 
-- **`cloudflared` (`cloudflare/cloudflared:latest`):** Conector del túnel que mantiene sesiones seguras hacia Cloudflare y reenvía el tráfico a Nginx en `frontend_net`.
-- **`nginx` (`nginx:1.27-alpine`):** Proxy inverso de alto rendimiento. Aplica la restauración de la IP real mediante `set_real_ip_from`, sirve `/robots.txt` estático, emite los logs estructurados en JSON y suprime cabeceras de depuración interna.
-- **`honeypot` (`python:3.11-slim`):** Aplicación web Flask/Gunicorn que implementa la verificación criptográfica HMAC, la generación procedural de enlaces y las trampas de visibilidad CSS. Corre con la directiva `read_only: true` y un `tmpfs` efímero en `/tmp`.
-- **`promtail` y `loki` (`grafana/loki:3.0.0`):** Pipeline de telemetría que ingiere los logs planos de Nginx en streaming hacia un almacén de series temporales.
-- **`grafana` (`grafana/grafana:11.0.0`):** Tablero visual de métricas en tiempo real.
+Roles de cada servicio:
+1. **`cloudflared` (`cloudflare/cloudflared:2025.9.1`):** Conectado a `tunnel_net` (`10.98.0.0/24`). Establece túneles salientes autenticados hacia Cloudflare Anycast y reenvía tráfico HTTP a `nginx-proxy:80`.
+2. **`home-certs` (`python:3.12-slim`):** Contenedor efímero sin red (`network_mode: none`) que genera certificados autofirmados para Nginx antes del arranque.
+3. **`nginx-proxy` (`nginx:1.29-alpine`):** Puente entre `tunnel_net` y `honeypot_net`. Aplica `set_real_ip_from 10.98.0.0/24` y toma `CF-Connecting-IP`, garantizando la IP real y fijando `via_cloudflare="1"`. Registra en JSON las cabeceras internas devueltas por Django y las suprime hacia el cliente con `proxy_hide_header`.
+4. **`honeypot-app` (Django 5.1 / Gunicorn en `python:3.12-slim`):** Ejecutado sin privilegios y sistema de solo lectura (`read_only: true`, con `/tmp` en *tmpfs*). Genera el laberinto y valida los tokens.
+5. **Observabilidad (`telemetry_net`):** `promtail:3.5.0` transmite `honeypot_access.json` hacia `loki:3.5.0`, visualizado vía `grafana:12.0.0` en `127.0.0.1:3000`. El servicio `geoipupdate:v7.1.0` mantiene al día `GeoLite2-ASN.mmdb`.
 
-### 2.2. Aislamiento y recuperación de la dirección IP real en Nginx
+### 2.2. Aislamiento y recuperación de la dirección IP real
 
-Para asegurar que cada registro contenga la dirección IP pública del crawler y no la del túnel local (`127.0.0.1` o `172.x.x.x`), Nginx fue configurado con el módulo `ngx_http_realip_module`:
+Para impedir la inyección arbitraria de la cabecera `CF-Connecting-IP`, Nginx restringe la directiva `set_real_ip_from` a la subred del túnel (`10.98.0.0/24`) [21]:
 
 ```nginx
-# nginx/conf.d/honeypot.conf
-set_real_ip_from 172.16.0.0/12;
-set_real_ip_from 10.0.0.0/8;
+# Fragmento de nginx/nginx.conf y conf.d/honeypot.conf
+include /etc/nginx/snippets/cloudflare_realip.conf;  # set_real_ip_from 10.98.0.0/24;
 real_ip_header CF-Connecting-IP;
-real_ip_recursive on;
 
-log_format json_analytics escape=json '{'
-  '"time_local":"$time_iso8601",'
-  '"client_ip":"$remote_addr",'
-  '"request_method":"$request_method",'
-  '"request_uri":"$request_uri",'
-  '"status":$status,'
-  '"body_bytes_sent":$body_bytes_sent,'
-  '"http_referer":"$http_referer",'
-  '"http_user_agent":"$http_user_agent"'
-'}';
+geo $realip_remote_addr $via_cloudflare {
+    default 0;
+    include /etc/nginx/snippets/cloudflare_geo.conf; # 1 si proviene de Cloudflare
+}
 
-access_log /var/log/nginx/access.log json_analytics buffer=64k flush=5s;
+# En el bloque location: supresión de diagnóstico interno
+proxy_hide_header X-Honeypot-Route;
+proxy_hide_header X-Honeypot-Technique;
+proxy_hide_header X-Honeypot-Token-Issued;
+proxy_hide_header X-Honeypot-Depth;
 ```
 
-Asimismo, se eliminaron del flujo de salida las cabeceras internas emitidas por el backend (`proxy_hide_header X-Honeypot-Token`, `proxy_hide_header X-Honeypot-Depth`) para evitar cualquier fuga de diagnóstico que delatara la naturaleza artificial del sitio.
+Si una petición no procede del túnel, `$via_cloudflare` vale `0` y Nginx descarta cualquier `CF-Connecting-IP` inyectada. Las cabeceras `X-Honeypot-*` se asientan atómicamente en el log JSON y se ocultan al cliente.
 
 ### 2.3. Construcción del token criptográfico sin estado (HMAC-SHA256)
 
-El diseño del honeypot resuelve el desafío del almacenamiento de estado: mantener un grafo de millones de páginas exigiría terabytes de base de datos y un elevado costo de I/O. Nuestro sistema preserva el estado directamente en el componente de ruta de la URL mediante un token criptográfico de 52 caracteres hexadecimales:
+Cada enlace emitido hacia `/public/<token>` o `/archivo-interno/<token>` incorpora un identificador de **52 caracteres hexadecimales** (208 bits) [22]:
 
-$$	ext{Token} = 	ext{seed}_{8	ext{h}} \mathbin{\Vert} 	ext{depth}_{2	ext{h}} \mathbin{\Vert} 	ext{variant}_{2	ext{h}} \mathbin{\Vert} 	ext{timestamp}_{8	ext{h}} \mathbin{\Vert} 	ext{session}_{22	ext{h}} \mathbin{\Vert} 	ext{mac}_{10	ext{h}}$$
+$$\text{Token (52 hex)} = \underbrace{\text{UUID4}}_{32\text{ hex (128 b)}} \;\|\; \underbrace{t_{\text{emisión}}}_{8\text{ hex (32 b)}} \;\|\; \underbrace{d}_{2\text{ hex (8 b)}} \;\|\; \underbrace{\sigma}_{10\text{ hex (40 b)}}$$
 
-El bloque $	ext{mac}_{10	ext{h}}$ consiste en los primeros 40 bits (10 caracteres hexadecimales) de un HMAC-SHA256 calculado sobre los 42 caracteres iniciales del payload utilizando una clave secreta (`SECRET_KEY`) conocida únicamente por el servidor:
+donde $t_{\text{emisión}}$ es el timestamp Unix, $d \in [0, 255]$ es la profundidad y $\sigma$ son los primeros 40 bits de la firma:
+
+$$\sigma = \text{HMAC-SHA256}_{K}\big(\text{UUID4} \;\|\; t_{\text{emisión}} \;\|\; d \;\|\; \text{técnica}\big)[0:10]$$
+
+La `técnica` forma parte del mensaje autenticado pero **no viaja explícita en la URL**. La rutina `decode()` prueba la firma contra las técnicas válidas con `hmac.compare_digest()`:
 
 ```python
-# honeypot/trap/tokens.py
-import hmac
-import hashlib
-
-def verify_token(token_str: str, secret_key: bytes) -> tuple[bool, dict]:
-    if len(token_str) != 52:
-        return False, {}
-    payload = token_str[:42]
-    expected_mac = hmac.new(
-        secret_key, payload.encode("ascii"), hashlib.sha256
-    ).hexdigest()[:10]
-    
-    # Comparacion en tiempo constante para evitar ataques de temporizacion
-    if not hmac.compare_digest(token_str[42:], expected_mac):
-        return False, {}
-        
-    depth = int(payload[8:10], 16)
-    variant = int(payload[10:12], 16)
-    ts = int(payload[12:20], 16)
-    return True, {"depth": depth, "variant": variant, "timestamp": ts}
+# Fragmento del núcleo de verificación en honeypot/trap/tokens.py
+def decode(token_id: str) -> Token:
+    token_id = token_id.lower()
+    if len(token_id) != 52 or any(c not in "0123456789abcdef" for c in token_id):
+        return Token(token_id, "invalid", None, None)
+    uid, ts_hex, depth_hex, sig = token_id[:32], token_id[32:40], token_id[40:42], token_id[42:]
+    for technique in ALL_TECHNIQUES:  # 5 variantes de trampa + 1 pública
+        if hmac.compare_digest(sig, _sign(uid, ts_hex, depth_hex, technique)):
+            return Token(token_id, technique, int(ts_hex, 16), int(depth_hex, 16))
+    return Token(token_id, "invalid", None, None)
 ```
 
-**Justificación del truncamiento a 40 bits:** Aunque el RFC 2104 [20] recomienda no truncar a menos de 80 bits para firmas criptográficas de alta persistencia, en este diseño el token no constituye una credencial de autenticación interactiva frente a un oráculo adverso, sino un identificador efímero embebido en URLs públicas. Un truncamiento a 40 bits (espacio de $2^{40} pprox 1,099 	imes 10^{12}$ valores) otorga una probabilidad de acierto por intento a ciegas de:
+Esto recupera técnica, profundidad e instante en tiempo $O(1)$ sin disco, con resistencia a colisiones accidentales de $6 / 2^{40} \approx 5,46 \times 10^{-12}$.
 
-$$P(	ext{éxito}) = rac{1}{2^{40}} pprox 9,09 	imes 10^{-13}$$
-
-Incluso considerando las 6 direcciones IP infractoras observadas emitiendo un total de peticiones arbitrarias, la probabilidad acumulada de forjar accidentalmente un enlace válido es de:
-
-$$rac{6}{2^{40}} pprox 5,46 	imes 10^{-12}$$
-
-Adivinar una sola URL válida requeriría saturar los enlaces de red con cientos de miles de millones de peticiones que resultarían en errores HTTP 404 instantáneos. Esta optimización ahorra 20 bytes por enlace en la carga útil HTTP servida a través de millones de hipervínculos.
-
-**Control de profundidad máxima:** Para impedir que los crawlers consuman recursos ilimitados, se configuró `HONEYPOT_MAX_DEPTH = 10`. Toda página solicitada con nivel $d < 10$ genera enlaces hacia páginas de nivel $d + 1$. Al alcanzarse $d = 10$, los enlaces generados apuntan a nivel 11, el cual devuelve páginas terminales ("hojas") que no contienen ningún hipervínculo saliente, extinguiendo el recorrido de forma natural.
+**Truncamiento a 40 bits:** El RFC 2104 [22] recomienda no truncar por debajo de 80 bits para evitar colisiones forjadas activas. En nuestro diseño se adoptaron 40 bits para mantener la URL en 52 caracteres: el token no custodia secretos, sino que etiqueta enlaces propios. Forjar un token requeriría $\sim 1,8 \times 10^{11}$ peticiones en línea, inviable en nuestro tráfico (§4.5).
 
 ### 2.4. Laberinto dinámico, técnicas de ocultamiento CSS y taxonomía de violaciones
 
-En cada nodo no terminal del laberinto, el honeypot genera dinámicamente cinco hipervínculos salientes ($b = 5$) que conducen al siguiente nivel: uno con renderizado estándar y cuatro modificados con técnicas de ocultamiento CSS [12]:
+Cada página ($d \le 10$) renderiza metadatos simulados e inserta **10 hiperenlaces**:
+- **5 enlaces públicos** hacia `/public/<token>`.
+- **5 enlaces trampa** hacia `/archivo-interno/<token>` (`random.shuffle`), correspondientes a cinco variantes:
+  1. `visible`: Renderizado en claro dentro de un párrafo (control no oculto).
+  2. `display_none_inline`: En `<div style="display:none">`.
+  3. `display_none_class`: En `<div class="<rnd>">` con clase `.<rnd>{display:none}` en `<style>`.
+  4. `opacity_0`: En `<div class="<rnd>">` con `opacity:0; pointer-events:none; height:0`.
+  5. `offscreen`: Posicionado fuera de pantalla (`left:-10000px; top:-10000px`).
 
-1. **`visible`:** Renderizado por defecto en el flujo normal del documento HTML.
-2. **`display: none` (inline):** Elemento retirado explícitamente mediante atributo `style="display: none;"`.
-3. **`offscreen`:** Posicionado fuera de la ventana gráfica mediante `style="position: absolute; left: -9999px;"`.
-4. **`display: none` (clase CSS):** Enlace asociado a una regla de clase declarada dentro de la etiqueta `<style>` en el encabezado.
-5. **`opacity: 0`:** Elemento totalmente transparente e inhabilitado para punteros mediante `style="opacity: 0; pointer-events: none;"`.
+Los nombres de clase CSS se regeneran pseudoaleatoriamente (`secrets.token_hex(4)`), neutralizando filtros estáticos. A profundidad $d = 10$, se emite una página hoja desprovista de enlaces ($d = 11$), acotando la exploración del bot.
 
-En el archivo `/robots.txt`, se expone la ruta señuelo bajo una directiva benigna estandarizada:
-
-```
+El archivo `/robots.txt` servido fue:
+```text
 User-agent: *
 Disallow: /archivo-interno/
 ```
+Esta directiva representa la condición más benigna posible: restringe solo un prefijo señuelo, dejando el resto del árbol habilitado.
 
-**Taxonomía rigurosa de violaciones en tres niveles:**
-- **Nivel 1 (Violación directa de exclusión):** El cliente consulta formalmente `/robots.txt` y, con posterioridad, emite peticiones hacia la ruta prohibida `/archivo-interno/*`.
-- **Nivel 2 (Rastreo no cooperativo a ciegas):** El cliente recorre el sitio y accede a rutas prohibidas sin haber solicitado previamente el archivo `/robots.txt`.
-- **Nivel 3 (Evasión activa de presentación):** El cliente consume enlaces provistos de directivas CSS de invisibilidad (`display: none`, `offscreen`, `opacity: 0`), evidenciando el uso de analizadores sintácticos de texto desprovistos de motor de renderizado CSSOM.
+**Taxonomía de violaciones:**
+- **Nivel 1 (Violación Directa):** Descarga `/robots.txt` y luego accede a `/archivo-interno/*` (desobediencia consciente).
+- **Nivel 2 (Violación por Omisión):** Accede a `/archivo-interno/*` sin haber consultado `/robots.txt`.
+- **Nivel 3 (Extracción Ciega / Sin Renderizado CSS):** Accede a la trampa mediante alguna modalidad oculta (`display_none_inline`, `display_none_class`, `opacity_0`, `offscreen`). Refleja análisis léxico sin computación visual de Render Tree.
 
 ---
 
@@ -218,322 +151,350 @@ Disallow: /archivo-interno/
 
 ### 3.1. Simulación local, despliegue en producción y siembra
 
-El entorno se validó inicialmente en local mediante `docker-compose -f docker-compose.local.yml up -d`, verificando que la invocación sintética de `curl` respetara la generación procedural de enlaces y que los accesos a `/archivo-interno/` registraran el incremento métrico esperado.
+**Simulación local:** Previo al despliegue, se validó el stack en un entorno cerrado (`127.0.0.1`) con `docker-compose.local.yml`. El arnés `local/simulate.py` ejecutó seis clientes automatizados: GPTBot y Bytespider simulados cayeron en la trampa generando violaciones Nivel 1 y 2 (con Nivel 3), mientras que Googlebot y ClaudeBot simulados respetaron las rutas públicas, sin fugas de cabeceras `X-Honeypot-*`.
 
-Para el despliegue en producción, se registró el dominio `definitivamente-no-hay-trabas.com.ar` y se configuró el túnel perimetral en Cloudflare. Con el fin de evaluar las rutas de descubrimiento, se generaron tokens específicos de siembra (*seed tokens*) distribuidos en pruebas internas. Durante los 11,85 días de operación continua, se registraron **0 accesos con tokens de semilla**. Este hallazgo es **consistente con un descubrimiento orgánico de la raíz** a través de los registros de *Certificate Transparency* (CT logs emitidos automáticamente por Let's Encrypt / Cloudflare al crear el certificado TLS) o mediante la mención del dominio en el repositorio público del proyecto en GitHub.
+```powershell
+# Puesta en producción con túnel saliente
+docker compose -f docker-compose.yml -f docker-compose.home.yml --profile maxmind up -d --build
+docker compose logs cloudflared --tail 20  # Confirmación de estado "HEALTHY"
+```
+
+**Parámetros de borde en Cloudflare:** Se desactivaron intencionalmente *Block AI Bots*, *AI Crawl Control*, *Managed robots.txt*, *AI Labyrinth*, *Bot Fight Mode* y la optimización de HTML, fijando *Bypass Cache* para derivar todo el tráfico al origen. Las reglas perimetrales base de Capa 3/4 y L7 bloquearon 53 escáneres antes del túnel.
+
+**Siembra activa de URLs y descubrimiento:** El 18/10/2026 se generaron URLs semilla públicas con `manage.py seed_urls` y se publicaron activamente en un repositorio público de **GitHub** y en **Hacker News**, además de foros técnicos. Sin embargo, en los registros, **las peticiones con tokens de semilla específicos registraron exactamente 0 accesos directos**, evidenciando que ningún crawler ingresó directamente siguiendo dichos enlaces. El rastreo comenzó orgánicamente mediante el descubrimiento de la raíz `/` y `/robots.txt` a través de los registros de *Certificate Transparency* (CT logs tras emitirse el certificado TLS) y la indexación inicial del dominio, registrándose únicamente 1 petición con `Referer: https://news.ycombinator.com/` y 51 de Google sin token de semilla.
+
+**Ventana experimental:** Del 18/10/2026 21:31:02 UTC al 30/10/2026 17:57:05 UTC (11 días, 20 horas y 26 minutos). El log crudo acumuló 3.568.406 líneas JSON (3,45 GB en disco).
+
+**Verificación operativa:** La inyección de enlaces y supresión de cabeceras se validaron por PowerShell:
+```powershell
+# Verificar robots.txt, 5 enlaces trampa y supresión de cabeceras internas
+(curl.exe -s https://definitivamente-no-hay-trabas.com.ar/robots.txt) -match "Disallow: /archivo-interno/"
+(curl.exe -s https://definitivamente-no-hay-trabas.com.ar/ | Select-String '/archivo-interno/').Count
+curl.exe -sI https://definitivamente-no-hay-trabas.com.ar/ | Select-String x-honeypot
+```
 
 ### 3.2. Evidencia concreta: registros crudos, secuencia de captura y panel de Grafana
 
-A las pocas horas del despliegue, el primer agente indexador en arribar al dominio fue `ClaudeBot` (Anthropic). La traza cruda de Nginx documenta la secuencia exacta de exploración:
+La siguiente traza real de Nginx ilustra la interacción del origen infractor **`154.28.229.0/24`** el **21 de octubre de 2026 a las 03:51 UTC**. Tras una descarga de la portada a las `03:51:32.371`, transcurren apenas **221 ms** hasta que solicita enlaces públicos y trampas en paralelo a razón de ~5 req/s sin haber consultado `/robots.txt`:
 
+```text
+03:51:20.358  GET /                                   route=home
+03:51:32.371  GET /                                   route=home
+03:51:32.592  GET /public/1f79...                     route=public  link_depth=1  (221 ms tras segundo GET /)
+03:51:32.789  GET /                                   route=home
+03:51:32.977  GET /archivo-interno/...                route=trap    technique=visible              link_depth=1
+03:51:33.168  GET /public/...                         route=public  link_depth=1
+03:51:33.634  GET /archivo-interno/...                route=trap    technique=offscreen            link_depth=1
+03:51:33.816  GET /public/...                         route=public  link_depth=1
+03:51:34.013  GET /public/...                         route=public  link_depth=1
+03:51:34.194  GET /archivo-interno/...                route=trap    technique=display_none_inline  link_depth=1
+03:51:34.377  GET /public/...                         route=public  link_depth=1
+03:51:34.581  GET /archivo-interno/...                route=trap    technique=opacity_0            link_depth=1
+03:51:34.763  GET /archivo-interno/...                route=trap    technique=display_none_class   link_depth=1
+03:51:34.947  GET /public/...                         route=public  link_depth=2
 ```
-2026-10-19T07:11:46+00:00 216.73.217.x GET /robots.txt HTTP/1.1 200 116 "-" "Mozilla/5.0 (compatible; ClaudeBot/1.0; +claudebot@anthropic.com)"
-2026-10-19T07:11:47+00:00 216.73.217.x GET / HTTP/1.1 200 1488 "-" "Mozilla/5.0 (compatible; ClaudeBot/1.0; +claudebot@anthropic.com)"
-2026-10-19T07:11:47+00:00 216.73.217.x GET / HTTP/1.1 200 1488 "-" "Mozilla/5.0 (compatible; ClaudeBot/1.0; +claudebot@anthropic.com)"
-2026-10-19T07:11:47.452+00:00 216.73.217.x GET /laberinto/f83e8b01010068f44d18... HTTP/1.1 200 1624 "-" "Mozilla/5.0 (compatible; ClaudeBot/1.0; +claudebot@anthropic.com)"
+
+La latencia del origen (`request_time`) registró mediana (**p50**) de **2 ms** y percentil 99 (**p99**) de **3 a 4 ms**. En telemetría, Grafana indexó eventos vía Loki con LogQL [23]:
+
+```logql
+sum(count_over_time({job="honeypot", route="trap"}[$__range]))
+sum by (technique) (count_over_time({job="honeypot", route="trap"}[$__range]))
 ```
 
-Obsérvese la precisión temporal: `ClaudeBot` descarga `/robots.txt`, confirma la inexistencia de restricciones sobre la raíz `/`, realiza dos peticiones concurrentes sobre `/` y, **exactamente 221 ms tras la segunda petición a la portada**, emite su primer acceso hacia un nodo del laberinto. A lo largo de los días subsiguientes, consumió 1,99 millones de páginas del laberinto sin emitir jamás una petición hacia `/archivo-interno/`.
+La **Figura 1** ilustra el estado del panel en un corte intermedio (2,95 M de peticiones). En el panel se observan 213 accesos brutos a `/trap/`; al sustraer los 6 accesos de prueba académica del equipo sobre `opacity_0`, se obtienen exactamente los **207 accesos netos** (y 39 en `opacity_0`) del dataset limpio. La métrica conserva la etiqueta `/trap/` por la nomenclatura interna del dashboard (`route="trap"`), vinculada a `/archivo-interno/`.
 
-**Reconciliación métrica de Grafana:** El tablero visual en tiempo real registraba 213 accesos totales y 45 en la técnica `opacity_0`. Tras la auditoría detallada de las direcciones IP de origen, se determinó que 6 solicitudes correspondieron a pruebas de verificación manual efectuadas por los autores desde una conexión residencial (`181.4.69.0/24`). Al depurar estas pruebas internas, la cifra neta de violaciones producidas por actores externos quedó establecida en **207 accesos totales** y **39 en `opacity_0`** (ver Figura 4).
-
-**El argumento definitivo del Favicon:** Una observación crítica de Internetworking valida que los 6 actores infractores no eran humanos. Al visitar un sitio mediante navegadores gráficos reales (como Chrome), el navegador solicita automáticamente el recurso `/favicon.ico` para representarlo en la pestaña de la interfaz. En nuestro experimento, la visita manual de control positivo del equipo de investigación desde navegador Chrome (`181.4.69.0/24`) emitió inmediatamente la solicitud `GET /favicon.ico`. En contraste, sobre las 207 solicitudes generadas por los 6 actores infractores que reportaban cabeceras de Chrome comercial, **ninguno solicitó `/favicon.ico`**. Esto confirma empíricamente que se trataba de scripts automatizados de recolección (*headless scrapers*) que parseaban hipervínculos sin interacción de usuario.
+![Dashboard de Grafana en producción](graficos/grafana-dashboard-produccion.jpg)
+*Figura 1. Tablero de Grafana en producción en un corte intermedio (2,95 M de peticiones), exhibiendo el perfil temporal de rastreo y la distribución de violaciones brutas en `/trap/`.*
 
 ### 3.3. Depuración del conjunto de datos y lecciones operativas
 
-Durante la ventana experimental de 11,85 días (del 18/10 al 30/10 de 2026), el servidor procesó **3.568.349 peticiones brutas**. La depuración reveló que 3.568.344 correspondieron a transacciones válidas servidas por Nginx y el honeypot, mientras que 5 solicitudes resultaron en errores HTTP 4xx (413 Payload Too Large y 400 Bad Request) provocados por escáneres genéricos de vulnerabilidades externas que remitieron cargas malformadas.
+**Depuración del conjunto de datos:** Se auditaron y removieron 57 solicitudes atribuibles a verificaciones del despliegue:
+- `honeypot-selftest/1.0`: 15 peticiones de validación funcional.
+- Subred de control del equipo `45.191.81.0/24` (Argentina): 8 accesos manuales con Opera.
+- Subred de pruebas del equipo `186.124.199.0/24` (Argentina): 24 solicitudes con `curl -A` de diversos bots.
+- Subred de prueba del equipo `181.4.69.0/24` (Argentina, 20/10 23:22 UTC): 8 solicitudes con navegador Chrome (solicitud de `/favicon.ico`, cabecera `Referer` válida y 6 clics sobre enlaces `opacity_0`). Se confirmó formalmente por los autores que correspondió a una prueba interna de verificación y revisión docente desde Argentina. El uso de DevTools para activar enlaces con `opacity:0` (invisibles al renderizado normal) es consistente con una auditoría para comprobar las trampas, ratificando su exclusión del conjunto de crawlers externos.
+- Peticiones locales (`via_cloudflare = 0`): 2 controles de salud internos.
 
-Se registraron tres incidencias operativas de relevancia:
-1. **Hueco de captura del 27/10:** Una interrupción temporal de 8 horas y 57 minutos en la resolución DNS (por expiración de delegación NS en el registrador de dominio) redujo el volumen observado ese día a 107.149 peticiones. La conectividad se restableció íntegramente sin alterar la validez del estudio.
-2. **Caída del pipeline de analítica:** La intensidad de las ráfagas concurrentes de `ClaudeBot` saturó la memoria del contenedor `analytics` y bloqueó la base de datos SQLite en producción. La telemetría definitiva se procesó mediante scripts fuera de línea (*streaming offline*) sobre los logs planos de Nginx, ratificando la robustez de almacenar logs en texto plano rotados frente a bases de datos relacionales en entornos de alto tráfico.
-3. **Cadencia constante de GPTBot:** El 30/10, antes del corte programado de captura (17:57:05 UTC, totalizando 17,95 horas operativas), `GPTBot` emitió 128.201 peticiones, lo que representa exactamente una tasa de **7.141 req/h ($pprox 1,98	ext{ req/s}$)**, confirmando la operación ininterrumpida de su algoritmo de control de tasa por cubeta de fichas (*token bucket*).
+El dataset depurado final comprendió **3.568.349 peticiones válidas**.
+
+**Incidencias operativas resueltas:**
+1. *Detención de `analytics`:* El procesamiento batch colapsó al escalar el volumen (GPTBot con 132k req/día el 21/10 y ClaudeBot con 887k req/día el 24/10). La consulta masiva a Loki agotó la memoria del contenedor, resolviéndose el cómputo final mediante scripts de lectura en streaming sobre el log exportado.
+2. *Interrupción nocturna:* Una interrupción del anfitrión el 27/10 ocasionó un vacío de captura de 8 horas y 57 minutos (~64.000 peticiones estimadas de GPTBot no registradas a ~7.180 req/h).
+3. *Crecimiento de registros:* El archivo JSON acumuló 3,45 GB en disco (~291 MB diarios), requiriendo esquemas de rotación atómica (`logrotate`) y compresión `gzip`.
 
 ### 3.4. Resultados empíricos obtenidos
 
-#### 3.4.1. Volumen global y panorama de actividad
-La Tabla 1 consolida la totalidad del tráfico procesado por el honeypot según la categoría y familia del agente.
+#### 3.4.1. Distribución general del tráfico y consulta delegada
+El tráfico se distribuyó sobre 3.560.629 visitas públicas (`/public/`, 99,78 %), 6.203 respuestas `404 Not Found` (0,17 %), 776 solicitudes a la raíz `/`, 529 descargas de `/robots.txt`, 207 accesos a `/archivo-interno/` y 5 errores de cliente (4 HTTP 413 y 1 HTTP 400), totalizando con precisión:
+$$3.560.629 + 6.203 + 776 + 529 + 207 + 5 = \mathbf{3.568.349}$$
 
-**Tabla 1. Panorama de actividad consolidado por familia de agente clasificada.**
+**Tabla 1. Panorama de actividad por familia de agente clasificada.**
 
 | Familia | Categoría | Peticiones | % Total | Subredes `/24` | Datos (GB) | `robots.txt` | Accesos a Trampa |
 |---|---|---:|---:|---:|---:|---:|---:|
-| **ClaudeBot** (Anthropic) | IA | 1.989.866 | 55,77 % | 3 | 6,11 GB | 155 | **0** |
+| **ClaudeBot** (Anthropic) | IA | 1.989.866 | 55,77 % | 4 | 6,11 GB | 155 | **0** |
 | **GPTBot** (OpenAI) | IA | 1.558.875 | 43,69 % | 4 | 4,72 GB | 0 * | **0** |
-| **GoogleOther** (Google) | I+D / IA [21] | 10.702 | 0,30 % | 4 * | 0,04 GB | 0 * | **0** |
+| **GoogleOther** (Google) | I+D / IA [24] | 10.702 | 0,30 % | 5 | 0,04 GB | 0 * | **0** |
 | **Navegadores** (Camuflados) | Sin marca | 7.036 | 0,20 % | Múltiples | 0,004 GB | 12 | **207** |
-| **Googlebot** (Google) | Buscador | 1.532 | 0,04 % | 4 * | 0,003 GB | 297 | **0** |
+| **Googlebot** (Google) | Buscador | 1.532 | 0,04 % | 4 | 0,003 GB | 297 | **0** |
 | **OAI-SearchBot** (OpenAI) | IA / Búsqueda | 49 | <0,01 % | 3 | <0,001 GB | 49 | **0** |
 | **Applebot** (Apple) | Buscador | 2 | <0,01 % | 1 | <0,001 GB | 2 | **0** |
 | **Herramientas / Escáneres / Otros** | Varios | 287 | <0,01 % | Múltiples | <0,001 GB | 14 | **0** |
 | **TOTAL** | — | **3.568.349** | **100,00 %** | — | **~10,9 GB** | **529** | **207** |
 
-*\* Consulta de `robots.txt` delegada por operador (ver §3.4.3). Las subredes de Googlebot y GoogleOther corresponden a 4 prefijos /24 compartidos en AS15169.*
-
-#### 3.4.2. Dinámicas de rastreo de ClaudeBot y GPTBot
-Los dos principales operadores de IA presentaron dinámicas temporales diametralmente opuestas:
-- **`ClaudeBot`:** Operó mediante colas por lotes (*batch*). La latencia entre la generación del enlace y su consumo (`tok_age`) exhibió una mediana de **5,0 horas** con un piso rígido de 1 hora. Emitió ráfagas de hasta **38.787 req/h** (~10,8 req/s) sin cabecera `Referer`. Tras recolectar 1,99 millones de páginas en 50 horas, detuvo su rastreo el 25/10.
-- **`GPTBot`:** Operó mediante transmisión continua (*streaming*), consumiendo el 50 % de los enlaces dentro de los **8,9 segundos** posteriores a su emisión. Mantuvo una cadencia rigurosa de **2,00 req/s** (coeficiente de variación CV = 0,068) con cabecera `Referer` válida en el 100 % de los casos, continuando su indexación hasta el cierre del experimento.
+*\* Sin consultas directas de `robots.txt`; compatible con consulta centralizada por operador (§3.4.3). La columna `/24` proviene de `bots.py` y no coincide uno a uno con la Tabla 2. El tráfico procedió de al menos 1.000 IPs distintas. La serie temporal completa se detalla en el Anexo A.*
 
 ![Evolución diaria del volumen de tráfico por familia](graficos/serie-diaria.png)
-*Figura 2. Volumen diario de peticiones por familia (UTC), evidenciando las ráfagas de ClaudeBot y la tasa constante de GPTBot.*
+*Figura 2. Volumen diario de peticiones por familia (UTC), evidenciando el pico de ráfagas de ClaudeBot y la cadencia determinística de GPTBot.*
 
-Ambos agentes alcanzaron la profundidad máxima ($d = 10$). Debido a la expansión exponencial, entre el 68 % y el 72 % de sus peticiones recayeron sobre hojas terminales sin enlaces salientes ($d = 11$, ver Figura 3 y Anexo C).
+#### 3.4.2. Dinámicas de rastreo de ClaudeBot y GPTBot
+- **ClaudeBot (Anthropic):** Consumo por lotes. Mediana de edad de token (`tok_age`) de **5,0 h** (piso de 1 h), sin cabecera `Referer`. Ráfagas de hasta **38.787 req/h** (~10,8 req/s), disminuyendo desde el 25/10.
+- **GPTBot (OpenAI):** Consumo continuo en flujo. Mediana de **8,9 s** entre emisión y pedido y `Referer` en el 100 % de las solicitudes. Tasa horaria constante (mediana de **7.184 req/h** ≈ 2,0 req/s, CV = 0,068), compatible con *token bucket*. El 30/10 acumuló 128.201 peticiones en 17,95 h (7.140 req/h ≈ 1,98 req/s).
+
+Ambos alcanzaron la profundidad máxima ($d = 10$): entre el 68 % y el 72 % de sus peticiones correspondieron a nodos hoja sin enlaces ($d = 11$; Figura 3 y Anexo C). La ramificación efectiva ($b \approx 3,2$ en ClaudeBot y $\approx 3,6$ en GPTBot, frente a 5 teórico) refleja enlaces no visitados retenidos en las colas de los operadores.
 
 ![Distribución de solicitudes por nivel de profundidad](graficos/profundidad.png)
-*Figura 3. Solicitudes por nivel de profundidad en escala logarítmica frente a la ramificación teórica b = 5.*
+*Figura 3. Solicitudes por nivel de profundidad en escala logarítmica frente a la ramificación teórica.*
 
-#### 3.4.3. Consulta centralizada de `robots.txt` y verificación de rangos de red
-Un análisis superficial por User-Agent sugeriría que `GPTBot` (1,56 millones de peticiones) y `GoogleOther` (10.702 peticiones) rastrearon el sitio sin consultar `robots.txt`. Sin embargo, el análisis temporal y de red demostró una arquitectura de consulta delegada por operador:
-- **OpenAI:** El 21/10 a las 05:30:30 UTC, `OAI-SearchBot` descargó `/robots.txt`. Exactamente **0,75 segundos después**, desde la misma subred IP (`74.7.242.0/24`), `GPTBot` inició la navegación masiva del laberinto, compartiendo la política almacenada en caché.
-- **Google:** `Googlebot` descargó `/robots.txt` 297 veces desde subredes coincidentes con las empleadas por `GoogleOther`.
+#### 3.4.3. Consulta centralizada de `robots.txt` y verificación de rangos IP
+Un análisis puramente literal de User-Agent sugeriría que `GPTBot` (1,56 millones de peticiones) y `GoogleOther` (10.702 peticiones) rastrearon sin consultar `robots.txt`. Sin embargo, los registros temporales y de red son **compatibles con** una consulta centralizada compartida:
+- **OpenAI:** El 21/10 a las 05:30:30.494 UTC, `OAI-SearchBot` descargó `/robots.txt`. Apenas **749 ms después**, `GPTBot` inició la descarga masiva desde el mismo Sistema Autónomo, refrescando la directiva cada 360 minutos (49 descargas) sin solicitar HTML. Esto concuerda con una directiva compartida en caché por el operador.
+- **Google:** `Googlebot` realizó 297 consultas a `/robots.txt`; `GoogleOther` comparte con él sus IPs principales y la subred `66.249.73.0/24`, coherente con una infraestructura común.
 
-**Tabla 2. Cobertura de tráfico de crawlers declarados en rangos de red oficiales.**
+**Validación contra prefijos publicados y registro ARIN:** Contrastamos las subredes de origen observadas contra los endpoints oficiales y listas de prefijos mediante [`scripts/verificar_rangos_ip.py`](https://github.com/Gio-glitch04/crawler-honeypot/blob/main/scripts/verificar_rangos_ip.py) [24, 25, 26, 27]:
 
-| Operador | Subredes observadas predominantes | Sistema Autónomo (BGP / ASN) | Fuente oficial de validación | Peticiones en rango | Cobertura |
+**Tabla 2. Subredes observadas y cobertura verificada por operador** (generada con `scripts/generar_tablas.py` a partir de `data/verificacion_rangos.csv`).
+
+| Operador | Subredes observadas (peticiones) | AS (BGP) | Fuente de verificación | Verificadas / total | Cobertura |
 |---|---|---|---|---:|---:|
-| **Anthropic** (`ClaudeBot`) | `216.73.217.0/24` (1.590.538), `216.73.216.0/24` (399.324); residual `34.162.0.0/16` (4) | AS16509 (Amazon AWS-ANTHROPIC / ARIN `216.73.216.0/22`); GCP AS396982 | Registro ARIN (`216.73.216.0/22`) [24] | 1.989.862 / 1.989.866 | **99,9998 %** * |
-| **OpenAI** (`GPTBot`, `OAI-SearchBot`) | `74.7.242.0/24` (1.557.329), `132.196.86.0/24` (751), `172.182.207.0/24` (410), `172.182.202.0/24` (385); `OAI-SearchBot`: `74.7.175.0/24` (38), `74.7.230.0/24` (9), `51.8.102.0/24` (2) | AS8075 (Microsoft Corporation / Azure) | `openai.com/gptbot.json` [22] y `searchbot.json` [23] | 1.558.924 / 1.558.924 | **100,00 %** |
-| **Google** (`GoogleOther`, `Googlebot`) | `66.249.73.0/24` (12.071), `192.178.6.0/24` (94), `66.249.69.0/24` (50), `66.249.70.0/24` (19) (4 subredes en AS15169) | AS15169 (Google LLC) | `developers.google.com/.../googlebot.json` [21] y `special-crawlers.json` | 12.234 / 12.234 | **100,00 %** |
+| **Anthropic** | `216.73.217.0/24` (1.590.538); `216.73.216.0/24` (399.324); `34.162.0.0/16` (4) | AS16509, AS396982 | Registro ARIN `216.73.216.0/22` [27] (Anthropic no publica lista de prefijos) | 1.989.862 / 1.989.866 | **99,9998 %** |
+| **OpenAI** | `74.7.242.0/24` (1.557.329); `132.196.86.0/24` (751); `172.182.207.0/24` (410); `172.182.202.0/24` (385); `74.7.175.0/24` (38, OAI-SearchBot); `74.7.230.0/24` (9, OAI-SearchBot); `51.8.102.0/24` (2, OAI-SearchBot) | AS8075 | `gptbot.json` [25] y `searchbot.json` [26] | 1.558.924 / 1.558.924 | **100,00 %** |
+| **Google** | `66.249.73.0/24` (12.119); `192.178.6.0/24` (94); otros /24 de 66.249.x (sin desglose) (21) | AS15169 | `googlebot.json` y `special-crawlers.json` [24] | 12.213 / 12.234 | **99,8283 %** |
 
-*\* Cobertura según método: Anthropic no publica un archivo JSON de rangos IP oficiales; la verificación descansa en la titularidad del bloque /22 asignado a Anthropic en ARIN RDAP (AS16509). Las 4 solicitudes provenientes del bloque de Google Cloud Platform (34.162.0.0/16) quedan fuera de dicho bloque y no verificadas.*
+*Notas.* (i) Anthropic no publica lista oficial de prefijos JSON; la verificación descansa en la titularidad del bloque `216.73.216.0/22` en ARIN (`NET-216-73-216-0-1`). Las 4 peticiones desde `34.162.0.0/16` (Google Cloud) quedan fuera de ese bloque y **no están verificadas**. (ii) Para OpenAI y Google, un `/24` cuenta como verificado si se solapa con un prefijo publicado (`/25`, `/27`). (iii) En Google, 21 peticiones ocurrieron en otros `/24` de `66.249.x` cuyo desglose no se conserva en los agregados y se computan como no verificadas (cobertura 99,83 %).
 
-#### 3.4.4. Cumplimiento del RFC 9309 y caracterización de violaciones
-La Tabla 3 detalla la tasa observada de cumplimiento en la ruta prohibida `/archivo-interno/`.
+#### 3.4.4. Evaluación estadística y análisis de las violaciones
+Dado que la decisión de acatar `robots.txt` responde a una política centralizada por organización y no a eventos independientes por enlace, la unidad de análisis válida es el **operador**:
 
 **Tabla 3. Cumplimiento de exclusión por operador observado.**
 
-| Operador | Crawlers activos | Páginas con enlaces | Enlaces trampa expuestos | Trampas seguidas | Tasa de infracción |
+| Operador | Crawlers activos | Páginas con enlaces | Enlaces trampa expuestos | Trampas seguidas | Tasa observada |
 |---|---|---:|---:|---:|---:|
 | **Anthropic** | ClaudeBot | 628.124 | 3.140.620 | 0 | 0,00 % |
 | **OpenAI** | GPTBot, OAI-SearchBot | 436.250 | 2.181.250 | 0 | 0,00 % |
 | **Google** | GoogleOther, Googlebot | 8.690 | 43.450 | 0 | 0,00 % |
 | **TOTAL** | — | **1.073.064** | **5.365.320** | **0** | **0,00 %** |
 
-A nivel de operador ($n = 3, k = 0$), el acatamiento fue del 100 %. Estadísticamente, la cota superior unilateral exacta de Clopper-Pearson al 95 % de confianza para la proporción de operadores infractores es:
+A nivel muestral, **3 de 3 operadores declarados acataron plenamente el protocolo en este sitio señuelo**. Con $n = 3$ y $k = 0$, la cota superior unilateral exacta de Clopper-Pearson al 95 % de confianza para la proporción de operadores infractores es $1 - 0,05^{1/3} \approx 63,2\%$ (70,8 % bilateral) [28]. Tratadas descriptivamente a nivel de enlaces expuestos, las cotas individuales arrojan $9,54 \times 10^{-7}$ para ClaudeBot y $1,37 \times 10^{-6}$ para GPTBot (detalladas en el Anexo D).
 
-$$	ext{Cota}_{95\%} = 1 - 0,05^{1/3} pprox 63,2\% \quad (70,8\% 	ext{ bilateral})$$
+**Validez de la variante visible:** Las variantes trampa ocultas por CSS introducen factores de confusión si un bot descarta elementos no visibles. La evidencia limpia radica en la variante `visible`, expuesta 1.073.064 veces ante los tres operadores con 0 accesos registrados, contrastando con el seguimiento masivo de enlaces visibles hacia `/public/`.
 
-En agudo contraste, se registraron **207 violaciones protagonizadas por 6 direcciones IP** que simulaban cabeceras de navegadores Chrome comerciales sobre Windows, Linux y Mac (Tabla 4).
+**Análisis de las violaciones a la ruta trampa:** Se capturaron **207 accesos a la ruta prohibida `/archivo-interno/`**, originados en su totalidad por **6 direcciones IP** con cabeceras de navegadores de escritorio comerciales (`Chrome/124–150`).
 
-**Tabla 4. Perfil forense de los actores infractores.**
+**Tabla 4. Perfil sintetizado de los 6 orígenes IP que accedieron a `/archivo-interno/`.**
 
-| Actor | Subred IP (/24) | PoP / País | Peticiones | A Trampa | Errores 404 | User-Agent declarado | Cadencia (p50) | Prof. |
-|---|---|---|---:|---:|---:|---|---:|---:|
-| **A1** | `154.28.229.0/24` | IAD / EE. UU. | 90 | 43 | 0 | Chrome/131 (Linux) | 178 ms | 2 |
-| **A2** | `103.196.9.0/24` | BOS / EE. UU. | 111 | 53 | 55 | Chrome/130–131 (Linux) | 5 ms | 2 |
-| **C** | `158.69.55.0/24` | YYZ / Canadá | 200 | 98 | 100 | Chrome/124 (Win10) | 13 ms | 3 |
-| **B1** | `93.123.109.0/24` | AMS / P. Bajos | 334 | 4 | 315 | Chrome/150 (Win10) | 1 ms | 1 |
-| **B2** | `45.138.12.0/24` | WAW / Polonia | 297 | 4 | 285 | Chrome/150 (Win10) | 88 ms | 1 |
-| **D** | `45.138.12.0/24` | WAW / Polonia | 14 | 5 | 0 | Chrome/133 (Win/Mac) | 111 ms | 1 |
+| Actor | Subred IP (/24) | Peticiones | Accesos a Trampa | Perfil observado y clasificación conductual |
+| :--- | :--- | ---: | ---: | :--- |
+| **A1** | `154.28.229.0/24` | 90 | **43** | `Chrome/131` Linux/macOS, `en-US`; barrido rápido hasta prof. 2 |
+| **A2** | `103.196.9.0/24` | 111 | **53** | `Chrome/130–131` Linux, `en-US`; idéntico perfil y cadencia que A1 |
+| **C** | `158.69.55.0/24` | 200 | **98** | `Chrome/124` Win10, sin idioma; 2 sesiones de 100 reqs exactas |
+| **B1** | `93.123.109.0/24` | 334 | **4** | `Chrome/150` Win10, `fr-FR`; sondeos `.git` (315 respuestas 404) |
+| **B2** | `45.138.12.0/24` | 297 | **4** | `Chrome/150` Win10, `fr-FR`; idéntico diccionario y cabeceras que B1 |
+| **D** | `45.138.12.0/24` | 14 | **5** | `Chrome/133` Linux/Win; visitas aisladas espaciadas en 7 días |
 
-El 100 % de estos actores omitió consultar `/robots.txt` (**Nivel 2**). Respecto a la técnica de ocultamiento, 43 accesos ingresaron por la variante `visible` y 164 por técnicas ocultas por CSS, determinando que **164 de 207 solicitudes (79,2 %) constituyeron infracciones de Nivel 3**.
+*(Nota: Desglose forense de 13 columnas en el Anexo B. B2 y D comparten la misma subred `/24` con perfiles temporales distintos).*
 
-![Distribución de accesos a la ruta trampa según técnica CSS](graficos/trampa-tecnicas.png)
-*Figura 4. Accesos a la ruta trampa según variante de ocultamiento CSS frente al valor esperado bajo consumo equiprobable (41,4).*
+Ninguno de estos actores solicitó `/robots.txt` (**100 % Nivel 2**). Respecto a la presentación, 43 accesos ingresaron por `visible` y 164 por modalidades ocultas, determinando que **164 de 207 solicitudes (79,2 %) constituyeron infracciones de Nivel 3**.
 
-La prueba de bondad de ajuste de Chi-cuadrado sobre las 5 variantes (43 en `visible`, 43 en `display: none inline`, 42 en `offscreen`, 40 en `display: none clase`, 39 en `opacity: 0`) arrojó:
+**Distribución por técnica CSS:** La distribución observada (43 en `visible`, 43 en `display_none_inline`, 42 en `offscreen`, 40 en `display_none_class`, 39 en `opacity_0`) arrojó una bondad de ajuste $\chi^2 = 0,3188$ ($\text{gl} = 4, p = 0,9886$). Un extractor que recopila indiscriminadamente atributos `href` converge a la uniformidad por diseño de la plantilla. Las 207 observaciones no son independientes (proceden de 6 IPs); este ajuste es consistente con extracción sin renderizado visual.
 
-$$\chi^2 = 0,3188, \quad gl = 4, \quad p = 0,9886$$
+![Accesos a la trampa por técnica de ocultamiento](graficos/trampa-tecnicas.png)
+*Figura 4. Accesos a la ruta prohibida por variante técnica frente a la frecuencia uniforme esperada.*
 
-Dado que $p > 0,05$, no se rechaza la hipótesis nula de equiprobabilidad: los scrapers consumieron los enlaces ocultos con frecuencias estadísticamente indistinguibles de una selección aleatoria uniforme, confirmando la ausencia total de interpretación CSS.
+**Caracterización técnica:** El Grupo B combinó sondeos de directorios Git (`/.git/config`) y endpoints RSC (`/_next/rsc`) con la recolección de enlaces de portada. Chrome/150 era la versión estable vigente en la fecha del ensayo [29], mientras que los perfiles C (Chrome/124), A (Chrome/130–131) y D (Chrome/133) exhibían cadenas desactualizadas, típicas de scripts con cabeceras codificadas estáticamente. El indicador empírico más determinante de automatización es que **ninguno de los 6 orígenes solicitó `/favicon.ico`**, recurso pedido por omisión por un navegador real en una portada. Como control positivo, la visita del equipo con Chrome real (subred `181.4.69.0/24`, §3.3) sí lo solicitó (`GPTBot` lo pidió una vez, ratificando que la omisión es un indicio complementario). No existe evidencia que vincule a estos 6 actores con centros de LLMs; se trata de escáneres y extractores no cooperativos.
 
 ---
 
 ## 4. Análisis crítico
 
 ### 4.1. Ventajas y limitaciones de la técnica
-
-**Ventajas principales:**
-1. **Ausencia total de estado en servidor:** Al calcularse la firma HMAC sobre la marcha, el honeypot genera grafos arbitrariamente profundos con un consumo de memoria plano inferior a 60 MB, inmune a ataques de denegación de servicio por agotamiento de almacenamiento.
-2. **Atribución de Nivel 3 sin falsos positivos:** La combinación de una directiva `Disallow` en `robots.txt` con enlaces invisibles por CSS permite discriminar de forma determinística entre usuarios legítimos, crawlers cooperativos y scrapers ciegos.
-3. **Bajo costo computacional:** La verificación HMAC-SHA256 en Python insume menos de 15 microsegundos por petición, permitiendo despachar miles de solicitudes por segundo en hardware modesto.
-
-**Limitaciones metodológicas y de diseño:**
-1. **Dependencia de la sintaxis relativa:** El honeypot requiere que el scraper extraiga y siga enlaces en formato relativo (`/laberinto/<token>`). Scrapers diseñados para extraer únicamente texto sin navegar hipervínculos no son auditados.
-2. **Censura muestral por terminación:** Al acotar la profundidad a $d = 10$, los crawlers que consumen por lotes no alcanzaron a visitar la totalidad de los nodos generados, censurando la observación de ramas profundas.
-3. **Truncamiento HMAC frente al estándar:** Como se analizó en §2.3, los 40 bits de firma son óptimos para mitigar el sondeo a ciegas en la web pero no cumplen la recomendación formal de 80 bits del RFC 2104 para firmas criptográficas de alta seguridad.
+**Ventajas:** Alta relación señal/ruido (toda interacción en la ruta prohibida es anómala [6]); escalabilidad sin estado (HMAC-SHA256 procesó 3,57 millones de transacciones con latencias de 2 ms sin base de datos por petición); y observabilidad del protocolo (revela frecuencias de refresco, procesamiento por lotes y gestión de frontera).  
+**Limitaciones:** Detectabilidad del entorno sintético ante navegadores *headless* con evaluación de layout (`checkVisibility()`); alcance observacional pasivo restringido a quienes visitan el señuelo; y riesgo de agotamiento de cuotas por host en los crawlers.
 
 ### 4.2. Casos reales documentados en la industria
+1. **Project Honey Pot (http:BL):** Páginas trampa para identificar IPs de spammers mediante listas DNS dinámicas [13].
+2. **Cloudflare vs. Perplexity (2025):** Demostración mediante señuelos de que ciertos proveedores eludían `robots.txt` vía agentes secundarios [30].
+3. **AI Labyrinth de Cloudflare (2025):** Laberintos infinitos generados por modelos en el borde para agotar cuotas de scrapers hostiles [18, 31].
+4. **T-Pot (Deutsche Telekom Security):** Plataforma modular de honeypots en producción alimentando portales globales de amenazas [32].
+5. **Canarytokens (Thinkst):** Honeytokens en código y credenciales que alertan ante aperturas no autorizadas [17].
 
-El empleo de honeypots de capa de aplicación contra la recolección no autorizada cuenta con antecedentes relevantes en la industria:
-- **Project Honeypot y http:BL (2004–presente) [25]:** Pioneros en la inserción de enlaces trampa invisibles en sitios web para recolectar direcciones IP de spammers y alimentar listas de bloqueo por reputación DNS.
-- **AI Labyrinth de Cloudflare (2025) [11]:** Solución comercial orientada a engañar a recolectores de IA mediante páginas generadas sintéticamente por LLMs perimetrales, diseñada para degradar la calidad de los modelos de entrenamiento que consumen datos del laberinto.
-- **Spidertrap y Nepenthes/Dionaea [26]:** Herramientas de código abierto que generan laberintos dinámicos para ralentizar indexadores maliciosos mediante consumo deliberado de sus recursos de red.
-
-### 4.3. Comparación técnica con herramientas afines
-
-La Tabla 5 compara nuestro diseño con las principales tecnologías de mitigación y engaño.
+### 4.3. Comparación con herramientas afines
 
 **Tabla 5. Comparativa técnica de alternativas frente a la auditoría de crawlers.**
 
-| Enfoque | Objetivo primordial | Telemetría / Atribución | Ventaja | Limitación |
+| Enfoque | Objetivo primordial | Telemetría / Atribución | Ventaja distintiva | Limitación metodológica |
 |---|---|---|---|---|
-| **Honeypot HMAC (Este trabajo)** | Auditoría científica de `robots.txt` | Atribución exacta de nivel 1, 2 y 3; sin estado | Consumo nulo de base de datos; reproducible | No mitiga activamente el scraping agresivo |
-| **Cloudflare AI Labyrinth [11]** | Contaminación de datos de IA | Detección perimetral y envenenamiento sintético | Genera contenido creíble mediante LLMs | Alto costo computacional de inferencia; propietario |
-| **Tarpits clásicos (Spidertrap) [26]** | Agotamiento de recursos del bot | Registro básico de URLs visitadas | Atrapa al bot en ciclos infinitos | Requiere estado en servidor; riesgo de bucles SEO |
-| **WAF comercial (Cloudflare / AWS)** | Bloqueo perimetral reactivo | Clasificación por firmas y reputación IP | Protección activa inmediata en Capa 7 | Reglas de caja negra; falsos positivos con usuarios |
+| **Nuestro Honeypot L7** | **Auditar cumplimiento empírico** de directivas | Nivel exacto, profundidad, latencia y técnica CSS | Sin estado, reproducible, no discriminatorio | Baja interacción; no detecta headless con layout |
+| **AI Labyrinth** (Cloudflare) [18, 31] | **Mitigar / Disuadir** mediante laberinto de texto IA | Eventos agregados (*Served* / *Crawls*) en consola | Nativo en CDN; disponible en plan gratuito | Propietario; aplica trampas según clasificación previa |
+| **Nepenthes** (Tarpit IA actual) [33] | **Atrapar y agotar** crawlers infractores | Registro de solicitudes en laberinto determinista | Respuestas lentas deliberadas y polución de datos | Diseñado como contramedida agresiva, no auditoría |
+| **Tarpits clásicos** (LaBrea) [12] | Retener gusanos de red en Capa 4 | Persistencia de sockets TCP | Consumo despreciable de recursos del host | Inaplicable a la lógica semántica de HTTP y robots.txt |
+| **Honeytokens** (Canarytokens) [17] | Detección puntual de filtraciones | Alerta unitaria por apertura de recurso | Despliegue veloz y cero falsos positivos | Alerta atómica; no mide profundidad ni dinámicas |
+| **Mecanismos PoW** (Turnstile [34], Anubis [35]) | **Prevención activa** de scraping | Desafíos criptográficos resueltos en cliente | Eleva el costo computacional del scraper | Barrera de bloqueo; no mide cumplimiento voluntario |
 
 ### 4.4. Relación con la literatura previa
-
-Nuestros resultados enriquecen y matizan las conclusiones de las investigaciones empíricas contemporáneas:
-1. **Replicación independiente de Liu et al. (IMC '25) [5]:** Evaluaron la eficacia de `robots.txt` sobre sitios reales y concluyeron que los agentes de OpenAI y Anthropic acatan rigurosamente las directivas de exclusión de contenidos. Nuestro experimento confirma este hallazgo en un entorno señuelo bajo condiciones de tráfico real para `ClaudeBot` y `GPTBot` (quienes sumaron 3,55 millones de peticiones y 0 violaciones).
-2. **Coexistencia de agentes según Kim et al. [4]:** Demostraron que el tráfico web presenta una marcada bifurcación entre crawlers declarados que operan en rangos oficiales y actores no cooperativos con cabeceras falsificadas. Las 207 violaciones registradas en nuestro honeypot provienen con exactitud de este segundo grupo.
+Nuestros resultados dialogan directamente con trabajos contemporáneos:
+- **Kim et al. (IMC 2025) [4]:** Evaluaron 130 bots durante 40 días, concluyendo que el cumplimiento decae ante directivas más restrictivas y advirtiendo sobre el falseamiento de User-Agents. La ausencia de violaciones de los tres operadores observados en nuestro trabajo coincide con su hallazgo de que las directivas benignas son respetadas por los grandes proveedores.
+- **Liu et al. (IMC 2025) [5]:** Evaluaron herramientas defensivas y rastreo de IA desde la perspectiva de creadores de contenido, observando que los principales agentes respetan las directivas explícitas de exclusión, resultado que nuestro estudio corrobora de forma independiente en un entorno de producción para ClaudeBot y GPTBot.
+- **Agentes no cooperativos (Bytespider):** En la literatura [4, 5] se identifica a Bytespider (ByteDance) como un agente frecuentemente no cooperativo que desatiende restricciones de exclusión. Aunque en nuestra simulación local Bytespider incurrió en violaciones Nivel 1 y 2, en el despliegue en producción no se registró tráfico de dicho operador, una limitación comentada en §4.5.
 
 ### 4.5. Amenazas a la validez
-
-**Amenazas a la validez interna:**
-- **Directiva única benigna:** El sitio evaluó exclusivamente una directiva `Disallow: /archivo-interno/` sin comodines complejos (`*`, `$`) ni reglas contradictorias (`Allow`). No puede descartarse que directivas más complejas induzcan fallas de interpretación en los analizadores de los crawlers.
-- **Interrupción del 27/10:** La caída de 8,9 horas en el DNS redujo la exposición de ese día, si bien no afectó la tasa observada de cumplimiento en los 11 días restantes.
-
-**Amenazas a la validez externa:**
-- **Sitio señuelo único:** Al tratarse de un dominio creado *ex profeso* sin contenido periodístico ni transaccional de alto valor, no atrajo a recolectores especializados en scraping comercial agresivo, como `Bytespider` (ByteDance) [5], cuya ausencia en nuestro conjunto de datos limita la generalización a actores no cooperativos avanzados.
-- **Ventana de 12 días:** Aunque se capturaron 3,57 millones de peticiones, el período no captura cambios evolutivos a largo plazo en las políticas de indexación de los operadores.
+- **Directiva única y benigna:** La regla ensayada (`Disallow: /archivo-interno/`) fue la más permisiva posible; la literatura muestra mayor desobediencia al restringir la raíz (`Disallow: /`) [4].
+- **Sitio web único y aislado:** Dominio nuevo sin tráfico humano previo ni reputación SEO.
+- **Ventana temporal de 12 días:** Crawlers periódicos o no observados en este lapso (como Bytespider, CCBot o PerplexityBot) no pudieron ser caracterizados.
+- **No independencia de observaciones:** Los 207 accesos trampa proceden de 6 direcciones IP; computar cada enlace individual constituiría pseudorreplicación.
+- **Truncamiento HMAC a 40 bits:** Menor a los 80 bits recomendados por el RFC 2104 [22], compensado operativamente por la inviabilidad de ataques en línea ($\sim 1,8 \times 10^{11}$ peticiones).
 
 ### 4.6. Consideraciones éticas, privacidad y reproducibilidad
-
-**Marco normativo y privacidad de datos:**  
-El experimento se diseñó observando los principios del *Menlo Report* [27] sobre ética en investigación de TIC y la **Ley N.º 25.326 de Protección de los Datos Personales de la República Argentina** [28]. No se involucraron usuarios humanos reales ni se capturaron datos personales sensibles. Las direcciones IP públicas de terceros recopiladas en los logs constituyen información técnica de red; con el fin de proteger la privacidad, todas las direcciones IP de terceros han sido **enmascaradas estrictamente a prefijos `/24`** en las tablas y reportes públicos. Las direcciones IP del equipo de investigación se identificaron explícitamente para permitir la depuración. Los registros crudos completos se encuentran bajo custodia local cifrada y no son distribuidos públicamente.
-
-**Reproducibilidad:**  
-El código fuente íntegro del honeypot, los archivos de orquestación Docker Compose y los datos agregados diarios (`serie_temporal_diaria.csv`) se encuentran disponibles en el repositorio público de GitHub. Dichos agregados permiten reproducir las tablas de volumen y estadística descriptiva de este informe mediante el script `scripts/estadisticas_y_graficos.py`.
+- **Minimización de datos y Ley 25.326:** Conforme a la legislación argentina de protección de datos personales [36], todas las IPs públicas en reportes se anonimizan a nivel `/24`. No se recolectaron cookies, credenciales ni datos personales; el 100 % del tráfico provino de procesos automáticos. Los registros originales se preservan cifrados para fines académicos.
+- **Impacto sobre crawlers:** El laberinto no utilizó técnicas de polución maliciosa (*data poisoning*) y acotó la profundidad a $d \le 10$ para contener el consumo de recursos de los operadores.
+- **Reproducibilidad:** El repositorio público incluye el código del honeypot, esquemas de Docker Compose, CSVs canónicos en `data/` y scripts de procesamiento: [`scripts/generar_tablas.py`](https://github.com/Gio-glitch04/crawler-honeypot/blob/main/scripts/generar_tablas.py), [`scripts/verificar_rangos_ip.py`](https://github.com/Gio-glitch04/crawler-honeypot/blob/main/scripts/verificar_rangos_ip.py) y [`scripts/estadisticas_y_graficos.py`](https://github.com/Gio-glitch04/crawler-honeypot/blob/main/scripts/estadisticas_y_graficos.py). El procesamiento final fuera de línea se realizó mediante un script de lectura en streaming en Python sobre `honeypot_access.json.tar.gz` (extrayendo marcas temporales, IP, User-Agent, URI y código de respuesta HTTP para poblar las series canónicas en `data/`), complementado por las herramientas analíticas del repositorio.
 
 ---
 
-## 5. Conclusiones y recomendaciones
+## 5. Conclusiones y trabajos futuros
 
 ### 5.1. Cuándo conviene (y cuándo no) implementar esta tecnología
-
-**Cuándo conviene:**
-1. **Auditoría de observabilidad:** En entornos corporativos o educativos para medir empíricamente qué porcentaje del tráfico automatizado respeta las directivas declaradas.
-2. **Detección temprana y alimentación de listas de bloqueo:** Como trampa perimetral en subdominios aislados para identificar direcciones IP de scrapers no cooperativos que consumen enlaces ocultos y bloquearlos en el cortafuegos.
-3. **Protección de rutas de alto costo:** Para aislar endpoints costosos (como búsquedas complejas o APIs de exportación) detectando accesos no humanos antes de que saturen los servidores.
-
-**Cuándo no conviene:**
-1. **Sitios web con dependencia crítica de SEO:** Implementar trampas de visibilidad CSS en portales de noticias o comercio electrónico puede ser penalizado por los motores de búsqueda legítimos bajo sospechas de *cloaking* (técnica prohibida de optimización engañosa).
-2. **Entornos con clientes de accesibilidad estricta:** La manipulación de enlaces invisibles sin atributos semánticos adecuados puede confundir a lectores de pantalla utilizados por personas con discapacidad visual.
+**Cuándo conviene:** En investigación y auditoría técnica para discriminar tráfico cooperativo de scrapers camuflados; en infraestructuras de contenido crítico como sondas internas para alimentar listas de bloqueo; y para medir empíricamente cadencia, ancho de banda y colas de crawlers masivos.  
+**Cuándo no conviene:** Como sustituto de defensas perimetrales activas (un honeypot documenta pero no bloquea); sin aislamiento de dominio o límite de profundidad (riesgo de auto-DoS ante millones de descargas); y ante scrapers headless avanzados con evaluación visual de layout.
 
 ### 5.2. Conclusiones del estudio
-
-1. **Acatamiento estricto de los operadores de IA declarados:** Anthropic (`ClaudeBot`), OpenAI (`GPTBot`, `OAI-SearchBot`) y Google (`Googlebot`, `GoogleOther`) respetaron en un 100 % la directiva de exclusión en el sitio señuelo (0 accesos a la ruta trampa sobre 5,36 millones de enlaces expuestos), con orígenes de red validados en más del 99,9 % mediante registros BGP y RDAP oficiales (incluyendo el registro ARIN RDAP del bloque `/22` de Anthropic).
-2. **Las violaciones provienen exclusivamente de scrapers encubiertos:** Las 207 violaciones registradas fueron cometidas por 6 direcciones IP que falsificaban User-Agents de Chrome comercial. El 100 % de ellas omitió consultar `robots.txt` y ninguna descargó `/favicon.ico`, consumiendo enlaces ocultos por CSS de manera uniforme ($\chi^2 = 0,3188, p = 0,9886$).
-3. **Viabilidad de la arquitectura sin estado:** El empleo de tokens criptográficos HMAC de 52 caracteres permitió gestionar 3,57 millones de transacciones con un consumo plano de recursos, demostrando que la disciplina de *deception* puede aplicarse a escala de producción sin sobrecargar la infraestructura de red.
+1. **Acatamiento estricto de agentes declarados:** ClaudeBot, GPTBot/OAI-SearchBot y Googlebot/GoogleOther respetaron el 100 % de las directivas en el sitio señuelo, con correspondencia verificada contra los prefijos publicados de OpenAI y Google y contra el registro ARIN para Anthropic.
+2. **Origen de las infracciones:** El 100 % de las 207 violaciones provino de 6 actores que ocultaban su identidad tras navegadores comerciales, con 100 % Nivel 2 (omisión de consultar `robots.txt`) y 79,2 % Nivel 3 (extracción ciega sin renderizado CSS).
+3. **Alcance estadístico del estándar:** Con $n = 3$ operadores, la cota de Clopper-Pearson al 95 % es del $63,2 \%$, lo que demuestra que el tamaño muestral de operadores no permite generalizar al conjunto de la web ni ante directivas restrictivas. El protocolo carece de utilidad defensiva contra recolectores no declarados.
+4. **Eficiencia del diseño sin estado:** Los tokens HMAC de 52 caracteres absorbieron 3,57 millones de transacciones con latencia mediana de 2 ms sin interactuar con base de datos por petición.
 
 ### 5.3. Trabajos futuros
-
-1. **Evaluación de directivas avanzadas y comodines:** Extender el estudio a directivas `Allow` concurrentes y patrones con expresiones regulares estandarizadas en el RFC 9309.
-2. **Honeypots adaptativos con tarpits dinámicos:** Incorporar respuestas de latencia variable que degraden el ancho de banda del recolector únicamente cuando se constate una violación de Nivel 2 o Nivel 3.
-3. **Despliegue multi-región:** Evaluar si la ubicación geográfica y la latencia del túnel perimetral influyen en la asignación de cuotas de rastreo por parte de los operadores de IA.
+1. **Políticas de exclusión restrictivas:** Evaluar directivas restrictivas (`Disallow: /`) y reglas diferenciadas por User-Agent [4].
+2. **Ampliación de siembra y atribución:** Extender la difusión hacia repositorios adicionales (Hugging Face, Reddit) para evaluar latencias de indexación y atraer bots ausentes (`Bytespider`, `CCBot`, `PerplexityBot`).
+3. **Inspección de Capa 4:** Implementar terminación TLS o Client Hints (`Sec-CH-UA`) para obtener huellas digitales JA4 independientes de cabeceras HTTP.
+4. **Trampas DOM avanzadas:** Incorporar trampas en comentarios HTML, inyecciones JavaScript y sitemaps XML.
 
 ---
 
-## 6. Referencias bibliográficas
+## 6. Bibliografía
 
-1. Koster, M., Illyes, H., & Zeller, M. (2022). *Robots Exclusion Protocol*. RFC 9309, Internet Engineering Task Force (IETF). DOI: [10.17487/RFC9309](https://doi.org/10.17487/RFC9309).
-2. Imperva Threat Research (2024). *2024 Imperva Bad Bot Report: Automated Traffic Reaches New Heights*. Thales Group. Disponible en: <https://www.imperva.com/resources/resource-library/reports/bad-bot-report/>.
-3. Steinacker, L., Meese, J., & Hurcombe, E. (2024). *AI Crawlers and the News: Assessing the Asymmetric Adoption of Robots.txt Directives*. En *Digital Journalism*, pp. 1–21. DOI: [10.1080/21670811.2024.2389145](https://doi.org/10.1080/21670811.2024.2389145).
-4. Kim, D., Park, S., & Lee, K. (2024). *Empirical Analysis of Robots.txt Adherence Across 130 Web Crawlers*. En *Proceedings of the 2024 ACM Web Conference (WWW '24)*, pp. 1120–1131.
-5. Liu, Y., Zhang, X., & Wang, H. (2025). *Evaluating Robots.txt Efficacy in Protecting Content Creators From AI Crawlers*. En *Proceedings of the ACM Internet Measurement Conference (IMC '25)*, pp. 78–99. DOI: [10.1145/3730567.3732913](https://doi.org/10.1145/3730567.3732913).
-6. Stoll, C. (1989). *The Cuckoo's Egg: Tracking a Spy Through the Maze of Computer Espionage*. Doubleday, Nueva York.
-7. Cheswick, B. (1992). *An Evening with Berferd In Which a Hacker is Lured into a Sandbox*. En *Proceedings of the Winter USENIX Conference*, San Francisco, CA.
-8. Spitzner, L. (2002). *Honeypots: Tracking Hackers*. Addison-Wesley Longman Publishing Co., Inc.
-9. Provos, N. (2004). *A Virtual Honeypot Framework*. En *Proceedings of the 13th USENIX Security Symposium*, San Diego, CA.
-10. Bae, H., Choi, J., & Kim, Y. (2024). *Tarpits Revisited: Application-Layer Delay Tactics Against Automated Web Scraping*. En *IEEE Transactions on Dependable and Secure Computing*, 21(3), pp. 1450–1463.
-11. Cloudflare Research (2025). *AI Labyrinth: Deception-Based Defense Mechanisms Against Unauthorized AI Scraping*. Cloudflare Blog. Disponible en: <https://blog.cloudflare.com/>.
-12. World Wide Web Consortium (W3C) (2023). *CSS Display Module Level 3 / CSS Object Model (CSSOM)*. W3C Recommendation. Disponible en: <https://www.w3.org/TR/css-display-3/>.
-13. Abley, J., & Lindqvist, K. (2006). *Operation of Anycast Services*. RFC 4786, IETF. DOI: [10.17487/RFC4786](https://doi.org/10.17487/RFC4786).
-14. Petersson, A., & Nilsson, M. (2014). *Forwarded HTTP Extension*. RFC 7239, IETF. DOI: [10.17487/RFC7239](https://doi.org/10.17487/RFC7239).
-15. Rekhter, Y., Li, T., & Hares, S. (2006). *A Border Gateway Protocol 4 (BGP-4)*. RFC 4271, IETF. DOI: [10.17487/RFC4271](https://doi.org/10.17487/RFC4271).
-16. Hollenbeck, S., & Kong, N. (2015). *Registration Data Access Protocol (RDAP)*. RFC 7480, IETF. DOI: [10.17487/RFC7480](https://doi.org/10.17487/RFC7480).
-17. Krawczyk, H., Bellare, M., & Canetti, R. (1997). *HMAC: Keyed-Hashing for Message Authentication*. RFC 2104, IETF. DOI: [10.17487/RFC2104](https://doi.org/10.17487/RFC2104).
-18. Google Search Central (2026). *Googlebot and Special Crawlers IP Ranges*. Google LLC. Disponible en: <https://developers.google.com/static/search/apis/ipranges/googlebot.json>.
-19. OpenAI (2026). *GPTBot IP Ranges*. OpenAI Platform Documentation. Disponible en: <https://openai.com/gptbot.json>.
-20. OpenAI (2026). *OAI-SearchBot IP Ranges*. OpenAI Documentation. Disponible en: <https://openai.com/searchbot.json>.
-21. Anthropic (2026). *ClaudeBot Crawling and Network Identity*. Anthropic Documentation. Disponible en: <https://docs.anthropic.com/en/docs/crawling/claudebot>.
-22. Clopper, C. J., & Pearson, E. S. (1934). *The Use of Confidence or Fiducial Limits Illustrated in the Case of the Binomial*. En *Biometrika*, 26(4), pp. 404–413. DOI: [10.2307/2331986](https://doi.org/10.2307/2331986).
-23. Project Honeypot (2026). *http:BL API Documentation and Distributed Crawler Tracking*. Disponible en: <https://www.projecthoneypot.org/httpbl_api.php>.
-24. Baeza-Yates, R., & Ribeiro-Neto, B. (2011). *Modern Information Retrieval: The Concepts and Technology Behind Search*. 2da Edición, Addison-Wesley.
-25. U.S. Department of Homeland Security (2012). *The Menlo Report: Ethical Principles Guiding Information and Communication Technology Research*. Disponible en: <https://www.dhs.gov/publication/menlo-report>.
-26. Honorable Congreso de la Nación Argentina (2000). *Ley N.º 25.326: Protección de los Datos Personales*. Boletín Oficial de la República Argentina.
-27. Unión Europea (2016). *Reglamento (UE) 2016/679 del Parlamento Europeo y del Consejo (RGPD)*. Diario Oficial de la Unión Europea.
-28. Fielding, R., Nottingham, M., & Reschke, J. (2022). *HTTP Semantics*. RFC 9110, IETF. DOI: [10.17487/RFC9110](https://doi.org/10.17487/RFC9110).
+1. Koster, M., Illyes, G., Zeller, H., & Sassman, L. (2022). *Robots Exclusion Protocol*. RFC 9309, Standards Track. DOI: [10.17487/RFC9309](https://doi.org/10.17487/RFC9309).
+2. Imperva (2025). *2025 Bad Bot Report: Automated Traffic Surpasses Human Web Activity*. Disponible en: <https://www.imperva.com/resources/resource-library/reports/2025-bad-bot-report/>.
+3. Steinacker-Olsztyn, N., Gosain, D., & Dao, H. (2025). *Is Misinformation More Open? A Study of robots.txt Gatekeeping on the Web*. arXiv:2510.10315.
+4. Kim, T., Bock, K., Luo, C., Liswood, A., Poroslay, C., & Wenger, E. (2025). *Scrapers Selectively Respect robots.txt Directives: Evidence from a Large-Scale Empirical Study*. En *Proc. ACM Internet Measurement Conference (IMC '25)*, Madison, WI. arXiv:2505.21733.
+5. Liu, E., Luo, E., Shan, S., Voelker, G. M., Zhao, B. Y., & Savage, S. (2025). *Somesite I Used To Crawl: Awareness, Agency and Efficacy in Protecting Content Creators From AI Crawlers*. En *Proc. ACM IMC '25*, pp. 78–99. DOI: [10.1145/3730567.3732913](https://doi.org/10.1145/3730567.3732913).
+6. Spitzner, L. (2002). *Honeypots: Tracking Hackers*. Addison-Wesley Professional.
+7. Stoll, C. (1989). *The Cuckoo's Egg: Tracking a Spy Through the Maze of Computer Espionage*. Doubleday.
+8. Cheswick, B. (1992). An Evening with Berferd in Which a Cracker is Lured, Endured, and Studied. *Proc. USENIX Winter Conference*, San Francisco, CA.
+9. Cohen, F. (1998). A Note on the Role of Deception in Information Protection. *Computers & Security*, 17(6), 483–506.
+10. The Honeynet Project (2004). *Know Your Enemy: Revealing the Security Tools, Tactics, and Motives of the Blackhat Community* (2nd Edition). Addison-Wesley.
+11. Provos, N. (2004). A Virtual Honeypot Framework. *Proc. 13th USENIX Security Symposium*, San Diego, CA.
+12. Liston, T. (2001). *LaBrea: "Sticky" Honeypot and Tarpit*. SourceForge Open Source Repository: <https://labrea.sourceforge.io/>.
+13. Unspam Technologies (2004). *Project Honey Pot and http:BL API Specification*. Disponible en: <https://www.projecthoneypot.org/>.
+14. Baecher, P., Koetter, M., Holz, T., Dornseif, M., & Freiling, F. (2006). The Nepenthes Platform: An Efficient Approach to Collect Malware. *Recent Advances in Intrusion Detection (RAID)*, LNCS 4219, Springer.
+15. Rist, L. et al. (2010). *Glastopf: A Low-Interaction Web Application Honeypot*. The Honeynet Project. <https://github.com/mushorg/glastopf>.
+16. Oosterhof, M. (2015). *Cowrie SSH/Telnet Honeypot Architecture and Implementation*. <https://docs.cowrie.org/>.
+17. Thinkst Applied Research (2016). *Canarytokens: Open-Source Deception Markers*. Documentación técnica: <https://docs.canarytokens.org/>.
+18. Cloudflare, Inc. (2025). *Trapping Misbehaving Bots in an AI Labyrinth*. Blog oficial: <https://blog.cloudflare.com/ai-labyrinth/>.
+19. WHATWG (2025). *HTML Living Standard — Section 3: Semantics and DOM Tree, Section 4.6: Links*. <https://html.spec.whatwg.org/>.
+20. W3C (2024). *CSS Display Module Level 3 — W3C Working Draft*. World Wide Web Consortium. <https://www.w3.org/TR/css-display-3/>.
+21. Nginx Software (2024). *Module ngx_http_realip_module and ngx_http_geo_module Documentation*. <https://nginx.org/en/docs/http/ngx_http_realip_module.html>.
+22. Krawczyk, H., Bellare, M., & Canetti, R. (1997). *HMAC: Keyed-Hashing for Message Authentication*. RFC 2104. DOI: [10.17487/RFC2104](https://doi.org/10.17487/RFC2104).
+23. Grafana Labs (2024). *Grafana Loki v3.5 & LogQL Query Language Reference Guide*. <https://grafana.com/docs/loki/latest/>.
+24. Google LLC (2025). *Google Crawlers and User-Agents Overview & IP JSON Ranges (`googlebot.json`)*. Google Search Central: <https://developers.google.com/search/docs/crawling-indexing/overview-google-crawlers>.
+25. OpenAI (2025). *Overview of OpenAI Crawlers and GPTBot Published IP Ranges (`gptbot.json`)*. <https://openai.com/gptbot.json>.
+26. OpenAI (2025). *OAI-SearchBot Official IP Ranges (`searchbot.json`)*. <https://openai.com/searchbot.json>.
+27. Anthropic, PBC (2025). *Anthropic Web Crawlers: ClaudeBot Overview and IP Verification via ARIN RDAP (AS16509)*. Anthropic Help Center: <https://support.anthropic.com/en/articles/8896518>.
+28. Clopper, C. J., & Pearson, E. S. (1934). The use of confidence or fiducial limits illustrated in the case of the binomial. *Biometrika*, 26(4), 404–413.
+29. The Chromium Project (2026). *Chrome Stable Channel Release Schedule (M149–M150)*. Chromium Dash: <https://chromiumdash.appspot.com/schedule>.
+30. Cloudflare, Inc. (2025). *Perplexity is using stealth, undeclared crawlers to evade website no-crawl directives*. Cloudflare Blog. <https://blog.cloudflare.com/perplexity-is-using-stealth-undeclared-crawlers-to-evade-website-no-crawl-directives/>.
+31. Cloudflare, Inc. (2025). *AI Labyrinth Configuration and Telemetry Reference*. Cloudflare Developer Docs: <https://developers.cloudflare.com/bots/additional-configurations/ai-labyrinth/>.
+32. Deutsche Telekom Security (2024). *T-Pot Multi-Honeypot Platform & Sicherheitstacho Public Sensor Feeds*. Repositorio: <https://github.com/telekom-security/tpotce> y portal: <https://www.sicherheitstacho.eu/>.
+33. Aaron / zadzmo.org (2024). *Nepenthes: An Infinite Maze Tarpit to Catch AI Scrapers*. Documentación del proyecto: <https://zadzmo.org/code/nepenthes/>.
+34. Cloudflare, Inc. (2024). *Cloudflare Turnstile Technical Documentation*. <https://developers.cloudflare.com/turnstile/>.
+35. Techaro HQ (2024). *Anubis: Web AI Firewall Utility via Cryptographic Proof-of-Work*. <https://github.com/TecharoHQ/anubis>.
+36. Honorable Congreso de la Nación Argentina (2000). *Ley N.º 25.326: Protección de los Datos Personales*. Boletín Oficial de la República Argentina.
 
 ---
 
 # Anexos
 
-## Anexo A. Serie diaria completa de peticiones por familia (UTC)
+## Anexo A. Serie temporal diaria completa de peticiones por familia (UTC)
 
-La siguiente tabla refleja los datos exactos consolidados en el archivo canónico `data/serie_temporal_diaria.csv` del repositorio.
-
-| Fecha (UTC) | ClaudeBot | GPTBot | GoogleOther | Googlebot | Navegadores | Resto | Total Día |
+| Fecha (UTC) | ClaudeBot | GPTBot | GoogleOther | Googlebot | Navegadores | Resto | Total día |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| **18/10/2026** | 0 | 0 | 0 | 0 | 90 | 69 | 159 |
-| **19/10/2026** | 6 | 0 | 25 | 12 | 568 | 23 | 634 |
-| **20/10/2026** | 32.597 | 0 | 9.067 | 779 | 279 | 20 | 42.742 |
-| **21/10/2026** | 42.700 | 132.805 | 1.609 | 619 | 1.021 | 17 | 178.771 |
-| **22/10/2026** | 40.198 | 162.594 | 1 | 14 | 402 | 29 | 203.238 |
-| **23/10/2026** | 523.098 | 172.256 | 0 | 9 | 1.368 | 21 | 696.752 |
-| **24/10/2026** | 887.244 | 171.489 | 0 | 41 | 905 | 54 | 1.059.733 |
-| **25/10/2026** | 463.997 | 172.139 | 0 | 0 | 869 | 18 | 637.023 |
-| **26/10/2026** | 24 | 171.730 | 0 | 44 | 688 | 44 | 172.530 |
-| **27/10/2026** † | 2 | 107.097 | 0 | 0 | 35 | 15 | 107.149 |
-| **28/10/2026** | 0 | 169.894 | 0 | 10 | 24 | 8 | 169.936 |
-| **29/10/2026** | 0 | 170.670 | 0 | 2 | 283 | 6 | 170.961 |
-| **30/10/2026** ‡ | 0 | 128.201 | 0 | 2 | 504 | 14 | 128.721 |
-| **TOTAL** | **1.989.866** | **1.558.875** | **10.702** | **1.532** | **7.036** | **338** | **3.568.349** |
+| **18/10/2026** | 0 | 0 | 0 | 0 | 90 | 69 | **159** |
+| **19/10/2026** | 6 | 0 | 25 | 12 | 568 | 23 | **634** |
+| **20/10/2026** | 32.597 | 0 | 9.067 | 779 | 279 | 20 | **42.742** |
+| **21/10/2026** | 42.700 | 132.805 | 1.609 | 619 | 1.021 | 17 | **178.771** |
+| **22/10/2026** | 40.198 | 162.594 | 1 | 14 | 402 | 29 | **203.238** |
+| **23/10/2026** | 523.098 | 172.256 | 0 | 9 | 1.368 | 21 | **696.752** |
+| **24/10/2026** | 887.244 | 171.489 | 0 | 41 | 905 | 54 | **1.059.733** |
+| **25/10/2026** | 463.997 | 172.139 | 0 | 0 | 869 | 18 | **637.023** |
+| **26/10/2026** | 24 | 171.730 | 0 | 44 | 688 | 44 | **172.530** |
+| **27/10/2026** † | 2 | 107.097 | 0 | 0 | 35 | 15 | **107.149** |
+| **28/10/2026** | 0 | 169.894 | 0 | 10 | 24 | 8 | **169.936** |
+| **29/10/2026** | 0 | 170.670 | 0 | 2 | 283 | 6 | **170.961** |
+| **30/10/2026** ‡ | 0 | 128.201 | 0 | 2 | 504 | 14 | **128.721** |
+| **Total** | **1.989.866** | **1.558.875** | **10.702** | **1.532** | **7.036** | **338** | **3.568.349** |
 
-*† Ventana afectada por interrupción de DNS de 8 h 57 min. ‡ Corte programado de captura a las 17:57:05 UTC (17,95 h operativas).*
+*† Ventana afectada por corte operativo de 8 h 57 min. ‡ Corte de exportación final a las 17:57:05 UTC.*
 
 ## Anexo B. Detalle forense individual de los 6 actores infractores
 
-Todos los actores que violaron el protocolo exhibieron cabeceras falsificadas simulando navegadores Google Chrome comerciales. En cumplimiento de la política de privacidad, las direcciones IP se presentan anonimizadas con máscara `/24`:
+| Actor | Subred IP (/24) | PoP CF / País | Pet. Totales | Trampa | Públicas | Errores 404 | User-Agent | `Accept-Language` | `Referer` | T. Arribo (p50) | Edad Token (p50) | Prof. |
+|---|---|---|---:|---:|---:|---:|---|---|---:|---:|---:|---:|
+| **C** | `158.69.55.0/24` | `YYZ` / CA | 200 | 98 | 100 | 0 | Chrome/124 (Win10) | *(Ausente)* | 0 % | 13 ms | 1,8 s | 3 |
+| **A2** | `103.196.9.0/24` | `BOS` / US | 111 | 53 | 55 | 0 | Chrome/130–131 (Linux) | `en-US,en;q=0.9` | 0 % | 5 ms | 4,3 s | 2 |
+| **A1** | `154.28.229.0/24` | `IAD` / US | 90 | 43 | 44 | 0 | Chrome/131 (Linux) | `en-US,en;q=0.9` | 0 % | 178 ms | 8,9 s | 2 |
+| **D** | `45.138.12.0/24` | `WAW` / PL | 14 | 5 | 5 | 0 | Chrome/133 (Win/Mac) | `en-US,en;q=0.9` | 0 % | 111 ms | 15,4 h | 1 |
+| **B2** | `45.138.12.0/24` | `WAW` / PL | 297 | 4 | 5 | 285 | Chrome/150 (Win10) | `fr-FR,fr;q=0.9...` | 93 % | 88 ms | 3,1 s | 1 |
+| **B1** | `93.123.109.0/24` | `AMS` / NL | 334 | 4 | 5 | 315 | Chrome/150 (Win10) | `fr-FR,fr;q=0.9...` | 83 % | 1 ms | 3,7 s | 1 |
 
-1. **Actor A1 (`154.28.229.0/24`):** Originado en centros de datos de Ashburn (IAD, Virginia, EE. UU.). Emitió 90 peticiones, de las cuales 43 accedieron a la ruta trampa (profundidad máxima $d = 2$). Reportó `User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36`. Cadencia p50 de 178 ms. Sin consulta previa de `robots.txt` y sin petición de `/favicon.ico`.
-2. **Actor A2 (`103.196.9.0/24`):** PoP Boston (BOS, EE. UU.). Emitió 111 solicitudes (53 a trampa, 55 errores 404 por mutación de URLs). Alternó cadenas de Chrome 130 y 131 sobre Linux con ráfagas ultrarrápidas (mediana de 5 ms entre peticiones). Omitió `robots.txt` y `/favicon.ico`.
-3. **Actor C (`158.69.55.0/24`):** PoP Montreal/Toronto (YYZ, Canadá / OVH Hosting). Realizó 200 solicitudes (98 a trampa, 100 errores 404, alcanzando profundidad $d = 3$). Falsificó `Chrome/124.0.0.0 (Windows NT 10.0; Win64; x64)`. Cadencia de 13 ms. Omitió `robots.txt` y `/favicon.ico`.
-4. **Actor B1 (`93.123.109.0/24`):** PoP Ámsterdam (AMS, Países Bajos). 334 peticiones (4 a trampa, 315 errores 404 por sondeo ciego en nivel $d = 1$). Declaró `Chrome/150.0.0.0 (Windows NT 10.0)`. Cadencia agresiva de 1 ms. Omitió `robots.txt` y `/favicon.ico`.
-5. **Actor B2 (`45.138.12.0/24`):** PoP Varsovia (WAW, Polonia). 297 peticiones (4 a trampa, 285 errores 404 en nivel $d = 1$). Declaró `Chrome/150.0.0.0`. Cadencia p50 de 88 ms. Omitió `robots.txt` y `/favicon.ico`.
-6. **Actor D (`45.138.12.0/24`):** Mismo prefijo `/24` de hosting en Varsovia. 14 peticiones (5 a trampa, 0 errores 404, profundidad $d = 1$). Alternó firmas de Chrome 133 sobre Windows y macOS. Cadencia p50 de 111 ms. Omitió `robots.txt` y `/favicon.ico`.
+> *Aclaración ética:* Las direcciones IP se presentan con el último octeto enmascarado (`/24`) conforme a la política de minimización de datos personales (Ley 25.326).
 
-*Control Positivo del Equipo de Investigación:* Durante el período experimental, los autores realizaron visitas de control desde la IP residencial `181.4.69.0/24` empleando Google Chrome de escritorio bajo Windows 10. En el 100 % de las visitas, el navegador descargó automáticamente `GET /favicon.ico` tras procesar la raíz `/`, generando 6 clics de verificación sobre enlaces `opacity: 0` que fueron depurados del conteo final de violaciones externas.
+## Anexo C. Exploración en profundidad del laberinto y tráfico hostil (404)
 
-## Anexo C. Distribución empírica por nivel de profundidad
+**Peticiones por nivel de profundidad en el laberinto ($d+1$):**
 
-La Tabla 6 detalla las peticiones cursadas por los dos agentes principales en cada nivel del laberinto ($d = 2$ a $d = 11$).
+| Nivel ($d+1$) | ClaudeBot | GPTBot | GoogleOther | Googlebot |
+|---:|---:|---:|---:|---:|
+| **Nivel 2** | 10 | 8 | 17 | 4 |
+| **Nivel 3** | 49 | 33 | 75 | 3 |
+| **Nivel 4** | 223 | 122 | 220 | 3 |
+| **Nivel 5** | 943 | 451 | 514 | 2 |
+| **Nivel 6** | 3.680 | 1.710 | 899 | 4 |
+| **Nivel 7** | 12.865 | 6.317 | 1.281 | 9 |
+| **Nivel 8** | 42.283 | 23.328 | 1.670 | 7 |
+| **Nivel 9** | 136.519 | 86.003 | 1.913 | 6 |
+| **Nivel 10** | 431.550 | 318.276 | 2.052 | 4 |
+| **Nivel 11 (Nodos hoja)** | **1.361.483** | **1.122.624** | **2.059** | **1.185** |
 
-**Tabla 6. Distribución de peticiones por nivel de profundidad.**
+**Distribución de sondeos hostiles (6.203 respuestas 404):**
+- Búsqueda de variables de entorno y secretos (`.env`, `/laravel/.env`): 3.259 peticiones.
+- Archivos de configuración (`.yml`, `.json`, `config`): 915 peticiones.
+- Scripts PHP y rutas WordPress (`phpinfo.php`, `/wp-login.php`): 995 peticiones.
+- Credenciales de proveedores Cloud (`/.aws/credentials`, `.s3cfg`, `gcloud`): 223 peticiones.
+- Volcados y copias de seguridad (`.bak`, `.sql`, `.zip`, `.tar`): 193 peticiones.
+- Exposición de repositorios de control de versiones (`/.git/config`, `/.git/HEAD`): 167 peticiones.
+Destaca una red distribuida de 29 direcciones IP en Google Cloud (`AS396982`) que ejecutaron exactamente 271 peticiones idénticas de diccionario cada una.
 
-| Nivel de profundidad ($d$) | ClaudeBot | GPTBot | Factor de ramificación empírico |
-|---:|---:|---:|---:|
-| **2** | 10 | 8 | — |
-| **3** | 49 | 33 | $pprox 4,5$ |
-| **4** | 223 | 122 | $pprox 4,1$ |
-| **5** | 943 | 451 | $pprox 3,9$ |
-| **6** | 3.680 | 1.710 | $pprox 3,8$ |
-| **7** | 12.865 | 6.317 | $pprox 3,6$ |
-| **8** | 42.283 | 23.328 | $pprox 3,5$ |
-| **9** | 136.519 | 86.003 | $pprox 3,4$ |
-| **10** | 431.550 | 318.276 | $pprox 3,3$ |
-| **11 (Hojas terminales)** | **1.361.483** | **1.122.624** | Hojas sin enlaces salientes |
-| **Total en laberinto** | **1.989.606** | **1.558.872** | — |
+## Anexo D. Cotas superiores de Clopper-Pearson al 95 % ($k = 0$)
 
-Obsérvese que las hojas terminales en nivel 11 concentraron el 68,4 % del tráfico de `ClaudeBot` y el 72,0 % de `GPTBot`, confirmando que el mecanismo de poda por profundidad máxima evitó la proliferación infinita de solicitudes.
-
-## Anexo D. Marco estadístico de Clopper-Pearson y comparación metodológica
-
-Para evaluar proporciones binomiales extremas con cero eventos observados ($k = 0$) sobre un total de $n$ ensayos, el estimador puntual clásico $\hat{p} = k / n = 0$ resulta insuficiente por carecer de noción de incertidumbre muestral.
-
-El intervalo de confianza exacto de Clopper-Pearson [22] se basa en la distribución binomial acumulada sin recurrir a la aproximación normal. Para el caso particular de $k = 0$, la cota superior del intervalo al nivel de confianza $1 - lpha$ se deriva analíticamente resolviendo:
-
-$$P(K = 0 \mid p) = (1 - p)^n = lpha \implies p_{	ext{superior}} = 1 - lpha^{1/n}$$
-
-**Diferencia entre formulación unilateral y bilateral:**
-- **Cota unilateral al 95 % ($lpha = 0,05$):** Corresponde a la hipótesis de interés en auditoría de seguridad ("garantizar con un 95 % de certeza que la tasa real de infracción no supera este valor"):
-  $$p_{	ext{unilateral}} = 1 - 0,05^{1/n}$$
-  Para $n = 3$ operadores: $1 - 0,05^{1/3} = 1 - 0,3684 = 63,16\% pprox 63,2\%$.
-- **Cota bilateral al 95 % ($lpha / 2 = 0,025$):** Distribuye el error simétricamente en ambas colas de la distribución:
-  $$p_{	ext{bilateral}} = 1 - 0,025^{1/n}$$
-  Para $n = 3$ operadores: $1 - 0,025^{1/3} = 1 - 0,2924 = 70,76\% pprox 70,8\%$.
-
-**Discusión sobre pseudorreplicación muestral:**  
-Si se consideraran individualmente los 5,36 millones de enlaces trampa expuestos como ensayos independientes ($n = 5.365.320, k = 0$), la cota de Clopper-Pearson arrojaría valores infinitesimales del orden de $5,5 	imes 10^{-7}$. Sin embargo, en Internetworking las peticiones emitidas por un mismo crawler responden a una política algorítmica centralizada compartida por todas las instancias del operador: las observaciones a nivel de enlace no son estadísticamente independientes. Tratar cada hipervínculo como un ensayo independiente incurriría en **pseudorreplicación**. Por esta razón, el presente trabajo enmarca rigurosamente la conclusión estadística a nivel de operador ($n = 3, k = 0$), reportando la cota exacta de 63,2 % y reservando los valores a nivel de enlace con fines meramente descriptivos de la carga de tráfico absorbida.
+| Agrupamiento | Exposiciones ($n$) | Unilateral ($1 - 0,05^{1/n} \approx 3/n$) | Bilateral ($1 - 0,025^{1/n} \approx 3,69/n$) | Interpretación metodológica |
+| :--- | ---: | ---: | ---: | :--- |
+| **Operadores de IA observados (Unidad válida)** | **3** | **0,6316** (63,2 %) | **0,7076** (70,8 %) | **Unidad de análisis válida:** no permite generalizar al universo |
+| ClaudeBot (Todas las trampas) | 3.140.620 | $9,54 \times 10^{-7}$ | $1,18 \times 10^{-6}$ | Métrica de exposición hipervincular (pseudorreplicación) |
+| GPTBot (Todas las trampas) | 2.181.250 | $1,37 \times 10^{-6}$ | $1,69 \times 10^{-6}$ | Métrica de exposición hipervincular (pseudorreplicación) |
+| GoogleOther (Todas las trampas) | 43.215 | $6,93 \times 10^{-5}$ | $8,54 \times 10^{-5}$ | Métrica de exposición hipervincular (pseudorreplicación) |
+| Googlebot (Todas las trampas) | 235 | $1,27 \times 10^{-2}$ | $1,56 \times 10^{-2}$ | Métrica de exposición hipervincular (pseudorreplicación) |
+| ClaudeBot (Solo variante visible) | 628.124 | $4,77 \times 10^{-6}$ | $5,87 \times 10^{-6}$ | Control limpio frente a exclusión de visibilidad |
+| GPTBot (Solo variante visible) | 436.250 | $6,87 \times 10^{-6}$ | $8,46 \times 10^{-6}$ | Control limpio frente a exclusión de visibilidad |
+| Googlebot (Solo variante visible) | 47 | $6,18 \times 10^{-2}$ | $7,55 \times 10^{-2}$ | Control limpio frente a exclusión de visibilidad |
+| Subtotal IA declarada (Solo variante visible) | 1.073.017 | $2,79 \times 10^{-6}$ | $3,44 \times 10^{-6}$ | Control limpio frente a exclusión de visibilidad |
+| **Total agentes declarados (Solo variante visible)** | **1.073.064** | **$2,79 \times 10^{-6}$** | **$3,44 \times 10^{-6}$** | **Control limpio frente a exclusión de visibilidad** |

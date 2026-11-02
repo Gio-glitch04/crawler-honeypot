@@ -1,87 +1,97 @@
+"""Verifica las subredes observadas contra las fuentes de cada operador.
+
+Entrada : data/subredes_por_operador.csv (unica fuente de conteos; transcripcion de la
+          corrida sobre el log exportado el 30/10/2026, el log crudo no se publica).
+Salida  : data/verificacion_rangos.csv (una fila por subred) y resumen por operador.
+
+Fuentes:
+  OpenAI / Google : listas JSON oficiales (un /24 coincide si se solapa con un prefijo publicado).
+  Anthropic       : NO publica lista de prefijos; se usa pertenencia al bloque ARIN 216.73.216.0/22.
+  BGP / ASN       : RIPE Stat (network-info), si hay red disponible.
+Uso: python scripts/verificar_rangos_ip.py
+"""
+import csv
 import ipaddress
 import json
+import os
 import urllib.request
 
-urls = {
-    "gptbot.json": "https://openai.com/gptbot.json",
-    "searchbot.json": "https://openai.com/searchbot.json",
-    "googlebot.json": (
-        "https://developers.google.com/static/search/apis/ipranges/googlebot.json"
-    ),
-    "special-crawlers.json": (
-        "https://developers.google.com/static/search/apis/ipranges/special-crawlers.json"
-    ),
-}
+ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
+IN_CSV = os.path.join(ROOT, "data", "subredes_por_operador.csv")
+OUT_CSV = os.path.join(ROOT, "data", "verificacion_rangos.csv")
 
-# Subredes reales documentadas en informe-tecnico-honeypot.md (§5.1, §5.2, §5.3)
-observed_subnets = {
-    "ClaudeBot": [
-        ("216.73.217.0/24", 1590538),
-        ("216.73.216.0/24", 399324),
-        ("34.162.0.0/16", 4),
+URLS = {
+    "OpenAI": [
+        "https://openai.com/gptbot.json",
+        "https://openai.com/searchbot.json",
     ],
-    "GPTBot": [
-        ("74.7.242.0/24", 1557329),
-        ("132.196.86.0/24", 751),
-        ("172.182.207.0/24", 410),
-        ("172.182.202.0/24", 385),
-    ],
-    "OAI-SearchBot": [
-        ("74.7.175.0/24", 38),
-        ("74.7.230.0/24", 9),
-        ("51.8.102.0/24", 2),
-    ],
-    "Googlebot/GoogleOther": [
-        ("66.249.73.0/24", 12071),
-        ("192.178.6.0/24", 94),
-        ("66.249.69.0/24", 50),
-        ("66.249.70.0/24", 19),
+    "Google": [
+        "https://developers.google.com/static/search/apis/ipranges/googlebot.json",
+        "https://developers.google.com/static/search/apis/ipranges/special-crawlers.json",
     ],
 }
+ARIN_ANTHROPIC = ipaddress.ip_network("216.73.216.0/22")
 
-fetched = {}
-for name, url in urls.items():
+
+def get_json(url, timeout=10):
     req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
-    with urllib.request.urlopen(req, timeout=10) as r:
-        data = json.loads(r.read().decode())
-        prefixes = [
-            p.get("ipv4Prefix")
-            for p in data.get("prefixes", [])
-            if p.get("ipv4Prefix")
-        ]
-        fetched[name] = (
-            data.get("creationTime"),
-            [ipaddress.ip_network(p) for p in prefixes],
-        )
-        print(
-            f"[OK] {name}: creationTime={data.get('creationTime')}, {len(prefixes)} prefijos IPv4"
-        )
+    with urllib.request.urlopen(req, timeout=timeout) as r:
+        return json.loads(r.read().decode())
 
-print("\n--- Cruce contra subredes observadas en el log y BGP ASN (RIPE Stat) ---")
-for bot, items in observed_subnets.items():
-    print(f"\nBot: {bot}")
-    for cidr, reqs in items:
-        net = ipaddress.ip_network(cidr)
-        sample_ip = str(net.network_address + 1)
-        bgp_prefix, asns = "N/A", []
-        for attempt in range(2):
-            try:
-                ripe_url = f"https://stat.ripe.net/data/network-info/data.json?resource={sample_ip}"
-                req = urllib.request.Request(
-                    ripe_url, headers={"User-Agent": "Mozilla/5.0"}
-                )
-                with urllib.request.urlopen(req, timeout=5) as r:
-                    ripe_data = json.loads(r.read().decode()).get("data", {})
-                    bgp_prefix = ripe_data.get("prefix")
-                    asns = ripe_data.get("asns")
-                break
-            except Exception:
-                pass
-        matched_in = []
-        for name, (ct, official_nets) in fetched.items():
-            for onet in official_nets:
-                if net.subnet_of(onet) or onet.subnet_of(net):
-                    matched_in.append(f"{name}:{onet}")
-        print(
-            f"  {cidr:18s} ({reqs:7d} reqs) | BGP: {str(bgp_prefix):18s} AS{asns} | JSON: {matched_in}"
-        )
+
+official = {}
+for op, urls in URLS.items():
+    official[op] = []
+    for u in urls:
+        try:
+            d = get_json(u)
+            pref = [ipaddress.ip_network(p["ipv4Prefix"]) for p in d.get("prefixes", []) if p.get("ipv4Prefix")]
+            official[op] += pref
+            print(f"[OK] {u}: creationTime={d.get('creationTime')}, {len(pref)} prefijos IPv4")
+        except Exception as e:  # sin red o fuente caida
+            print(f"[ERROR] {u}: {e}")
+
+
+def bgp(cidr):
+    sample = str(ipaddress.ip_network(cidr).network_address + 1)
+    try:
+        d = get_json(f"https://stat.ripe.net/data/network-info/data.json?resource={sample}", timeout=8)["data"]
+        return d.get("prefix") or "", ",".join(f"AS{a}" for a in d.get("asns", []))
+    except Exception:
+        return "", ""
+
+
+rows_out = []
+with open(IN_CSV, newline="", encoding="utf-8") as f:
+    for r in csv.DictReader(f):
+        verificado, metodo, prefijo_oficial = "no", "", ""
+        if r["verificable"] == "si":
+            net = ipaddress.ip_network(r["cidr"])
+            if r["operador"] == "Anthropic":
+                metodo = "ARIN /22"
+                if net.subnet_of(ARIN_ANTHROPIC):
+                    verificado, prefijo_oficial = "si", str(ARIN_ANTHROPIC)
+            else:
+                metodo = "JSON oficial"
+                for o in official.get(r["operador"], []):
+                    if net.subnet_of(o) or o.subnet_of(net):
+                        verificado, prefijo_oficial = "si", str(o)
+                        break
+            bgp_prefix, asn = bgp(r["cidr"])
+        else:
+            bgp_prefix, asn = "", ""
+        rows_out.append({**r, "metodo": metodo, "verificado": verificado,
+                         "prefijo_oficial": prefijo_oficial, "bgp_prefix": bgp_prefix, "asn": asn})
+        print(f"{r['operador']:10s} {r['cidr'][:38]:38s} {int(r['peticiones']):>9,d}  verificado={verificado} {prefijo_oficial} {bgp_prefix} {asn}")
+
+with open(OUT_CSV, "w", newline="", encoding="utf-8") as f:
+    w = csv.DictWriter(f, fieldnames=list(rows_out[0].keys()))
+    w.writeheader()
+    w.writerows(rows_out)
+
+print("\n--- Resumen por operador ---")
+for op in dict.fromkeys(r["operador"] for r in rows_out):
+    tot = sum(int(r["peticiones"]) for r in rows_out if r["operador"] == op)
+    ver = sum(int(r["peticiones"]) for r in rows_out if r["operador"] == op and r["verificado"] == "si")
+    print(f"{op:10s} {ver:>9,d} / {tot:>9,d} = {100*ver/tot:.4f} %")
+print("escrito:", os.path.abspath(OUT_CSV))
