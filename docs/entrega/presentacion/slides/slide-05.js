@@ -32,14 +32,14 @@ window.PRESENTATION_SLIDES.push(`
         <!-- L6: PRESENTACIÓN -->
         <rect x="10" y="58" width="430" height="42" rx="4" fill="#152244" stroke="#a78bfa" stroke-width="1.2"/>
         <text x="24" y="76" fill="#a78bfa" font-family="'JetBrains Mono', monospace" font-size="12" font-weight="700">L6 · PRESENTACIÓN</text>
-        <text x="24" y="92" fill="#f1f5f9" font-family="'Space Grotesk', sans-serif" font-size="11">TLS 1.3 en Edge, Logs JSON Nginx, HMAC Base64URL</text>
+        <text x="24" y="92" fill="#f1f5f9" font-family="'Space Grotesk', sans-serif" font-size="11">TLS terminado en el borde, Logs JSON Nginx, tokens HMAC en hex</text>
         <rect x="450" y="58" width="160" height="42" rx="4" fill="#101932" stroke="#a78bfa" stroke-width="1.2"/>
         <text x="530" y="84" fill="#a78bfa" font-family="'JetBrains Mono', monospace" font-size="11.5" font-weight="700" text-anchor="middle">Cloudflare Edge</text>
 
         <!-- L5: SESIÓN -->
         <rect x="10" y="106" width="430" height="42" rx="4" fill="#152244" stroke="#f472b6" stroke-width="1.2"/>
         <text x="24" y="124" fill="#f472b6" font-family="'JetBrains Mono', monospace" font-size="12" font-weight="700">L5 · SESIÓN</text>
-        <text x="24" y="140" fill="#f1f5f9" font-family="'Space Grotesk', sans-serif" font-size="11">Túnel Argo QUIC multiplexado, HTTP Keep-Alive</text>
+        <text x="24" y="140" fill="#f1f5f9" font-family="'Space Grotesk', sans-serif" font-size="11">Túnel cloudflared saliente (QUIC por defecto), HTTP Keep-Alive</text>
         <rect x="450" y="106" width="160" height="42" rx="4" fill="#101932" stroke="#f472b6" stroke-width="1.2"/>
         <text x="530" y="132" fill="#f472b6" font-family="'JetBrains Mono', monospace" font-size="11.5" font-weight="700" text-anchor="middle">cloudflared Tunnel</text>
 
@@ -67,9 +67,9 @@ window.PRESENTATION_SLIDES.push(`
         <!-- L1: FÍSICA -->
         <rect x="10" y="298" width="430" height="42" rx="4" fill="#152244" stroke="#94a3b8" stroke-width="1.2"/>
         <text x="24" y="316" fill="#94a3b8" font-family="'JetBrains Mono', monospace" font-size="12" font-weight="700">L1 · FÍSICA</text>
-        <text x="24" y="332" fill="#f1f5f9" font-family="'Space Grotesk', sans-serif" font-size="11">Host físico Windows 10 Pro, NIC Ethernet, Fibra óptica</text>
+        <text x="24" y="332" fill="#f1f5f9" font-family="'Space Grotesk', sans-serif" font-size="11">PC de escritorio con Windows 10, conexión hogareña</text>
         <rect x="450" y="298" width="160" height="42" rx="4" fill="#101932" stroke="#94a3b8" stroke-width="1.2"/>
-        <text x="530" y="324" fill="#94a3b8" font-family="'JetBrains Mono', monospace" font-size="11.5" font-weight="700" text-anchor="middle">Hardware & Fibra</text>
+        <text x="530" y="324" fill="#94a3b8" font-family="'JetBrains Mono', monospace" font-size="11.5" font-weight="700" text-anchor="middle">PC hogareña</text>
       </svg>
       <div class="cad-caption-bar">
         <span class="cad-caption-tag"><strong>Eje Central:</strong> Desacople entre transporte L4 y semántica HTTP en L7</span>
@@ -85,13 +85,13 @@ window.PRESENTATION_SLIDES.push(`
 
       <ul class="cad-item-list">
         <li>
-          <strong>Capas Superiores (L6-L7):</strong> El experimento evalúa semántica web en L7 (RFC 9309, cabeceras HTTP, parsers CSSOM). En L6, TLS 1.3 se termina en el Edge, absorbiendo ataques DDoS pero impidiendo fingerprinting TLS (JA3) en el origen.
+          <strong>Capas Superiores (L6-L7):</strong> El experimento evalúa semántica web en L7 (RFC 9309, cabeceras HTTP, parsers CSSOM). En L6, TLS se termina en el borde de Cloudflare, lo que protege el origen pero impide la huella TLS (JA3/JA4) del visitante.
         </li>
         <li>
-          <strong>Transporte y Sesión (L4-L5):</strong> Cero puertos abiertos en el router residencial. <code>cloudflared</code> mantiene 4 conexiones UDP multiplexadas salientes por protocolo QUIC contra el borde Anycast.
+          <strong>Transporte y Sesión (L4-L5):</strong> Cero puertos abiertos en el router residencial. La PC abre desde adentro las conexiones salientes de <code>cloudflared</code> hacia el borde Anycast (QUIC por defecto).
         </li>
         <li>
-          <strong>Red y Enlace (L1-L3):</strong> 3 subredes bridge aisladas RFC 1918 (10.98.0.0/24, etc.) sobre host físico Windows 10 con Docker Desktop y kernel WSL2 (Linux 5.15).
+          <strong>Red y Enlace (L1-L3):</strong> 3 redes bridge aisladas (<code>tunnel_net</code> en 10.98.0.0/24; las otras con rango asignado por Docker) sobre Windows 10 con Docker Desktop (WSL 2).
         </li>
       </ul>
 

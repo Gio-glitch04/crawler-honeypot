@@ -15,7 +15,7 @@ window.PRESENTATION_SLIDES.push(`
     <!-- PANEL 1: LAS 5 VARIANTES DE ENLACES TRAMPA -->
     <div class="cad-box-panel">
       <div class="cad-box-title">
-        <span>5 TÉCNICAS DE INVISIBILIZACIÓN CSS</span>
+        <span>5 VARIANTES: 1 CONTROL + 4 OCULTAS</span>
         <span class="cad-tag">OFUSCACIÓN</span>
       </div>
 
@@ -30,15 +30,15 @@ window.PRESENTATION_SLIDES.push(`
         </div>
         <div class="cad-spec-pill">
           <div class="cad-spec-pill-title">3. NONE CLASS</div>
-          <div class="cad-spec-pill-val" style="color:var(--accent-emerald); font-size:11.5px;">class="._k8f2a" dinámico</div>
+          <div class="cad-spec-pill-val" style="color:var(--accent-emerald); font-size:11.5px;">clase dinámica {display:none}</div>
         </div>
         <div class="cad-spec-pill">
           <div class="cad-spec-pill-title">4. OPACITY ZERO</div>
-          <div class="cad-spec-pill-val" style="color:var(--accent-rose); font-size:11.5px;">opacity:0; pointer-events:none</div>
+          <div class="cad-spec-pill-val" style="color:var(--accent-rose); font-size:11.5px;">clase dinámica {opacity:0}</div>
         </div>
         <div class="cad-spec-pill" style="grid-column: span 2;">
           <div class="cad-spec-pill-title">5. OFFSCREEN (Fuera de Pantalla)</div>
-          <div class="cad-spec-pill-val" style="color:var(--text-primary); font-size:11.5px;">position:absolute; left:-9999px; top:-9999px</div>
+          <div class="cad-spec-pill-val" style="color:var(--text-primary); font-size:11.5px;">position:absolute; left:-10000px; width:1px; height:1px; overflow:hidden</div>
         </div>
       </div>
 
@@ -48,7 +48,7 @@ window.PRESENTATION_SLIDES.push(`
       </ul>
 
       <div class="cad-callout-card">
-        <span style="color:var(--accent-blue); font-weight:700;">Invisibilidad Garantizada:</span> Ningún usuario humano con navegador visual es capaz de activar involuntariamente estas trampas.
+        <span style="color:var(--accent-blue); font-weight:700;">Arnés de Pruebas:</span> Antes de producción, un simulador en red local imitó a GPTBot, ClaudeBot, Googlebot, Bytespider, un Googlebot falso y un script de Python.
       </div>
     </div>
 
@@ -62,7 +62,7 @@ window.PRESENTATION_SLIDES.push(`
       <div style="display:flex; flex-direction:column; gap:8px;">
         <div style="background:rgba(10, 15, 28, 0.9); border-left:3px solid var(--accent-amber); padding:8px 10px; border-radius:3px;">
           <div style="font-family:var(--font-mono); font-size:12px; font-weight:700; color:var(--accent-amber);">NIVEL 1: Violación Simple</div>
-          <div style="font-size:12px; color:var(--text-secondary); margin-top:2px;">El agente consulta <code>robots.txt</code> pero desobedece la regla e ingresa a la ruta prohibida. (0 casos en bots declarados).</div>
+          <div style="font-size:12px; color:var(--text-secondary); margin-top:2px;">El agente consulta <code>robots.txt</code> pero desobedece la regla e ingresa a la ruta prohibida. (0 casos en todo el experimento).</div>
         </div>
 
         <div style="background:rgba(10, 15, 28, 0.9); border-left:3px solid var(--accent-rose); padding:8px 10px; border-radius:3px;">
@@ -72,7 +72,7 @@ window.PRESENTATION_SLIDES.push(`
 
         <div style="background:rgba(10, 15, 28, 0.9); border-left:3px solid #e11d48; padding:8px 10px; border-radius:3px;">
           <div style="font-family:var(--font-mono); font-size:12px; font-weight:700; color:#f43f5e;">NIVEL 3: Ceguera Visual CSS (164 / 207 = 79,2 %)</div>
-          <div style="font-size:12px; color:var(--text-secondary); margin-top:2px;">Consumo de enlaces invisibles por CSS; demuestra ausencia total de motor de renderizado gráfico (layout/paint).</div>
+          <div style="font-size:12px; color:var(--text-secondary); margin-top:2px;">Se suma a cualquiera de los otros: entra por un enlace invisible, señal de que no mira la página como un navegador.</div>
         </div>
       </div>
 

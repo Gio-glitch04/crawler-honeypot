@@ -14,9 +14,9 @@ window.PRESENTATION_SLIDES.push(`
   <div class="grid-halves">
     <!-- CAPTURA REAL DEL DASHBOARD DE PRODUCCIÓN -->
     <div class="cad-visual-container">
-      <img src="assets/dashboard.png" alt="Dashboard de Producción en Grafana" style="max-height:280px; margin:auto; border-radius:4px;">
+      <img src="assets/Grafana.jpeg" alt="Dashboard de Producción en Grafana" style="max-height:280px; margin:auto; border-radius:4px;">
       <div class="cad-caption-bar">
-        <span class="cad-caption-tag"><strong>Panel:</strong> Grafana 10.4 + Loki 3.5.0</span>
+        <span class="cad-caption-tag"><strong>Panel:</strong> Grafana 12.0.0 + Loki 3.5.0</span>
         <span class="cad-caption-tag"><strong>Formato:</strong> JSON Estructurado Nginx</span>
       </div>
     </div>
@@ -30,13 +30,13 @@ window.PRESENTATION_SLIDES.push(`
 
       <ul class="cad-item-list">
         <li>
-          <strong>Nginx Log JSON en Memoria:</strong> Registro de <code>time_local</code>, <code>remote_addr</code> restituida, <code>status</code>, <code>body_bytes_sent</code>, <code>http_referer</code> y <code>http_user_agent</code>.
+          <strong>Nginx Log JSON en Disco:</strong> Registro de <code>time_local</code>, <code>remote_addr</code> restituida, <code>status</code>, <code>body_bytes_sent</code>, <code>http_referer</code> y <code>http_user_agent</code>.
         </li>
         <li>
-          <strong>Reconciliación de Accesos a Trampa:</strong> El dashboard registra <strong>213 accesos brutos</strong> a <code>/trap/</code> y 45 a <code>opacity_0</code>. Al depurar 6 pruebas manuales interactivas del equipo de cátedra, se obtienen los <strong>207 accesos netos</strong> y <strong>39 en opacity_0</strong> documentados en el informe.
+          <strong>Reconciliación de Accesos a Trampa:</strong> El dashboard registra <strong>213 accesos brutos</strong> a <code>/trap/</code> y 45 a <code>opacity_0</code>. Al quitar 6 clics de prueba del propio equipo (<code>181.4.69.0/24</code>, con favicon) quedan los <strong>207 accesos netos</strong> y <strong>39 en opacity_0</strong> del informe. Las 7 IPs del panel = 6 infractores + nuestra prueba.
         </li>
         <li>
-          <strong>Incidencia de Ingesta (21/10):</strong> Loki sufrió OOM por el volumen masivo de ráfagas; la telemetría final canónica se procesó mediante streaming offline en Python directo sobre <code>honeypot_access.json.tar.gz</code>.
+          <strong>Incidencia de Ingesta (21/10):</strong> El contenedor <code>analytics</code> se detuvo ante el volumen de ráfagas; las cifras finales se calcularon en streaming offline en Python sobre el log completo exportado de Nginx.
         </li>
       </ul>
 

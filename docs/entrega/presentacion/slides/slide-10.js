@@ -62,21 +62,21 @@ window.PRESENTATION_SLIDES.push(`
 
       <ul class="cad-item-list">
         <li>
-          <strong>18–22 Oct (Descubrimiento & Despegue):</strong> Salida a DNS. Seeding en GitHub y Hacker News (0 visitas por tokens semilla; descubrimiento orgánico por CT logs y raíz, con 1 Referer de HN y 51 de Google). El 21/10 05:30:30 UTC, <code>OAI-SearchBot</code> consulta <code>robots.txt</code> y 0,75s después arranca <code>GPTBot</code>.
+          <strong>18–22 Oct (Descubrimiento & Despegue):</strong> Salida a DNS. Seeding en GitHub y Hacker News (0 visitas por tokens semilla; descubrimiento orgánico por CT logs y raíz, con 1 Referer de HN y 51 de Google). El 21/10 05:30:30 UTC, <code>OAI-SearchBot</code> consulta <code>robots.txt</code> y 749 ms después arranca <code>GPTBot</code>.
         </li>
         <li>
-          <strong>22–24 Oct (Incursión Hostil):</strong> Activación de 6 actores infractores camuflados como Chrome. 207 capturas en trampas antes de alcanzar la cota hoja.
+          <strong>19–26 Oct (Infractores):</strong> 6 actores camuflados como Chrome entran 207 veces a la trampa; ninguno pasa del nivel 3 del laberinto.
         </li>
         <li>
-          <strong>24–25 Oct (Diluvio de IA):</strong> Ráfagas de <strong>ClaudeBot</strong> de hasta 38.787 req/h (~10,8 req/s) hasta recolectar 1,99M páginas el 25/10. Pico diario global de 1.059.733 reqs el 24/10.
+          <strong>24–25 Oct (Diluvio de IA):</strong> Ráfagas de <strong>ClaudeBot</strong> de hasta 38.787 req/h (~10,8 req/s). Pico diario global de 1.059.733 reqs el 24/10; el 25/10 ClaudeBot se retira sin haber tocado la trampa.
         </li>
         <li>
-          <strong>26–30 Oct (Cadencia Constante):</strong> <strong>GPTBot</strong> operó con ritmo estricto de ~2,00 req/s (7.184 req/h mediana; 7.140 req/h el 30/10 en 17,5 h con 125.144 reqs) hasta el corte final programado del 30/10 (17:57 UTC).
+          <strong>26–30 Oct (Cadencia Constante):</strong> <strong>GPTBot</strong> operó con ritmo estricto de ~2,00 req/s (7.184 req/h mediana) hasta el corte final programado del 30/10 (17:57 UTC).
         </li>
       </ul>
 
       <div class="cad-callout-card">
-        <span style="color:var(--accent-amber); font-weight:700;">Incidencia Host 27/10:</span> Interrupción de 8h 57m por reposo/suspensión del equipo Windows 10 Pro (~64.000 reqs estimadas perdidas según cadencia de GPTBot); resuelta sin alterar la validez empírica.
+        <span style="color:var(--accent-amber); font-weight:700;">Incidencia Host 27/10:</span> 8 h 57 min sin registro (03:03–12:00 UTC; ~64.000 reqs de GPTBot estimadas perdidas según su cadencia). Causa no confirmada; declarada en el informe.
       </div>
     </div>
   </div>
