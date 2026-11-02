@@ -83,16 +83,16 @@ window.PRESENTATION_SLIDES.push(`
 
       <ul class="cad-item-list">
         <li>
-          <strong>Equiprobabilidad de Captura:</strong> Con $p = 0,9886$, no se rechaza la hipótesis nula de uniformidad. Los scrapers eligen enlaces al azar sobre el DOM crudo sin computar el Render Tree.
+          <strong>Equiprobabilidad de Captura:</strong> Con $p = 0{,}9886$, no se rechaza la hipótesis nula de uniformidad. Los scrapers siguen todos los <code>href</code> del DOM crudo sin computar el Render Tree (6 IPs: describe, no demuestra).
         </li>
         <li>
           <strong>Ceguera Visual de Scrapers:</strong> El 79,2 % de las infracciones (164 de 207) recayó en enlaces invisibles por reglas CSS (Nivel 3).
         </li>
         <li>
-          <strong>Marco Estadístico de Operador:</strong> A nivel de operador ($n = 3, k = 0$), la cota superior exacta de Clopper-Pearson al 95 % es $1 - 0,05^{1/3} \approx 63,2 \%$ (70,8 % bilateral). Cotas de $10^{-6}$ por enlace asumen independencia y constituyen pseudorreplicación.
+          <strong>Marco Estadístico de Operador:</strong> A nivel de operador ($n = 3, k = 0$), la cota superior exacta de Clopper-Pearson al 95 % es $1 - 0{,}05^{1/3} \\approx 63{,}2\\,\\%$ (70,8 % bilateral). Cotas de $10^{-6}$ por enlace asumen independencia y constituyen pseudorreplicación.
         </li>
         <li>
-          <strong>Control Visible sin Falsos Positivos:</strong> 1.073.064 enlaces visibles fueron expuestos a crawlers de IA sin un solo acceso accidental a la ruta prohibida.
+          <strong>Control Visible sin Falsos Positivos:</strong> 1.073.064 enlaces trampa visibles fueron expuestos a los crawlers declarados sin un solo acceso accidental a la ruta prohibida.
         </li>
       </ul>
 

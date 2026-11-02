@@ -35,7 +35,7 @@ window.PRESENTATION_SLIDES.push(`
       </svg>
 
       <ul class="cad-item-list">
-        <li><strong>Problema L4:</strong> Nginx solo ve la IP interna del contenedor del túnel (<code>10.98.0.2</code>).</li>
+        <li><strong>Problema L4:</strong> Nginx solo ve la IP interna del contenedor del túnel (una dirección de <code>10.98.0.0/24</code>).</li>
         <li><strong>Riesgo de falsificación:</strong> Si se confía ciegamente en <code>X-Forwarded-For</code>, un bot puede inyectar IPs legítimas para evadir bloqueos y adulterar la telemetría.</li>
         <li><strong>Contaminación forense:</strong> Los registros terminan atribuyendo actividad maliciosa a entidades inocentes como Googlebot.</li>
       </ul>
@@ -70,9 +70,9 @@ window.PRESENTATION_SLIDES.push(`
       <div style="background:rgba(10, 15, 28, 0.9); border:1px solid var(--border-card); padding:8px 12px; font-family:var(--font-mono); font-size:11.5px; color:var(--accent-blue); border-radius:4px;">
         set_real_ip_from 10.98.0.0/24;<br>
         real_ip_header CF-Connecting-IP;<br>
-        real_ip_recursive on;<br>
-        geo $realip_remote_addr $via_cloudflare;<br>
-        proxy_hide_header X-Honeypot-*;
+        geo <span>$</span>realip_remote_addr <span>$</span>via_cloudflare { … }<br>
+        proxy_hide_header X-Honeypot-Route;<br>
+        proxy_hide_header X-Honeypot-Depth; # y 2 más
       </div>
 
       <ul class="cad-item-list">

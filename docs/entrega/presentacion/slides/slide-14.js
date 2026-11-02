@@ -23,74 +23,74 @@ window.PRESENTATION_SLIDES.push(`
         <tr style="border-bottom:1px solid var(--border-card); color:var(--accent-blue);">
           <th style="padding:5px 6px;">ID</th>
           <th style="padding:5px 6px;">SUBRED /24</th>
-          <th style="padding:5px 6px;">ASN / ISP</th>
+          <th style="padding:5px 6px;">POP CLOUDFLARE</th>
           <th style="padding:5px 6px;">PAÍS</th>
           <th style="padding:5px 6px;">USER-AGENT DECLARADO</th>
-          <th style="padding:5px 6px; text-align:right;">REQS</th>
+          <th style="padding:5px 6px; text-align:right;">TRAMPA</th>
           <th style="padding:5px 6px; text-align:right;">%</th>
-          <th style="padding:5px 6px;">NIVEL</th>
+          <th style="padding:5px 6px;">PROF. MÁX.</th>
         </tr>
       </thead>
       <tbody>
         <tr style="border-bottom:1px solid rgba(38,60,112,0.3);">
-          <td style="padding:5px 6px; font-weight:700; color:#fff;">A1</td>
-          <td style="padding:5px 6px; color:var(--accent-blue);">206.189.155.0/24</td>
-          <td style="padding:5px 6px;">AS14061 DigitalOcean</td>
-          <td style="padding:5px 6px;">US</td>
-          <td style="padding:5px 6px; color:var(--text-secondary);">Python-requests/2.31</td>
-          <td style="padding:5px 6px; text-align:right; font-weight:700; color:var(--accent-amber);">100</td>
-          <td style="padding:5px 6px; text-align:right;">48,31 %</td>
-          <td style="padding:5px 6px;"><span class="cad-tag" style="color:var(--accent-rose); border-color:var(--accent-rose); font-size:9.5px; padding:1px 4px;">N2 + N3</span></td>
+          <td style="padding:5px 6px; font-weight:700; color:#fff;">C</td>
+          <td style="padding:5px 6px; color:var(--accent-blue);">158.69.55.0/24</td>
+          <td style="padding:5px 6px;">YYZ (Toronto)</td>
+          <td style="padding:5px 6px;">CA</td>
+          <td style="padding:5px 6px; color:var(--accent-rose);">Chrome/124 Win10, sin idioma</td>
+          <td style="padding:5px 6px; text-align:right; font-weight:700; color:var(--accent-amber);">98</td>
+          <td style="padding:5px 6px; text-align:right;">47,34 %</td>
+          <td style="padding:5px 6px;"><span class="cad-tag" style="color:var(--accent-rose); border-color:var(--accent-rose); font-size:9.5px; padding:1px 4px;">NIV. 3</span></td>
         </tr>
         <tr style="border-bottom:1px solid rgba(38,60,112,0.3);">
           <td style="padding:5px 6px; font-weight:700; color:#fff;">A2</td>
-          <td style="padding:5px 6px; color:var(--accent-blue);">64.226.120.0/24</td>
-          <td style="padding:5px 6px;">AS14061 DigitalOcean</td>
-          <td style="padding:5px 6px;">NL</td>
-          <td style="padding:5px 6px; color:var(--text-secondary);">Python-requests/2.31</td>
-          <td style="padding:5px 6px; text-align:right; font-weight:700; color:var(--accent-amber);">7</td>
-          <td style="padding:5px 6px; text-align:right;">3,38 %</td>
-          <td style="padding:5px 6px;"><span class="cad-tag" style="color:var(--accent-rose); border-color:var(--accent-rose); font-size:9.5px; padding:1px 4px;">N2 + N3</span></td>
+          <td style="padding:5px 6px; color:var(--accent-blue);">103.196.9.0/24</td>
+          <td style="padding:5px 6px;">BOS (Boston)</td>
+          <td style="padding:5px 6px;">US</td>
+          <td style="padding:5px 6px; color:var(--accent-rose);">Chrome/130–131 Linux en-US</td>
+          <td style="padding:5px 6px; text-align:right; font-weight:700; color:var(--accent-amber);">53</td>
+          <td style="padding:5px 6px; text-align:right;">25,60 %</td>
+          <td style="padding:5px 6px;"><span class="cad-tag" style="color:var(--accent-rose); border-color:var(--accent-rose); font-size:9.5px; padding:1px 4px;">NIV. 2</span></td>
         </tr>
         <tr style="border-bottom:1px solid rgba(38,60,112,0.3);">
-          <td style="padding:5px 6px; font-weight:700; color:#fff;">C</td>
-          <td style="padding:5px 6px; color:var(--accent-blue);">178.128.246.0/24</td>
-          <td style="padding:5px 6px;">AS14061 DigitalOcean</td>
-          <td style="padding:5px 6px;">SG</td>
-          <td style="padding:5px 6px; color:var(--text-secondary);">Go-http-client/1.1</td>
-          <td style="padding:5px 6px; text-align:right; font-weight:700; color:var(--accent-amber);">46</td>
-          <td style="padding:5px 6px; text-align:right;">22,22 %</td>
-          <td style="padding:5px 6px;"><span class="cad-tag" style="color:var(--accent-rose); border-color:var(--accent-rose); font-size:9.5px; padding:1px 4px;">N2 + N3</span></td>
+          <td style="padding:5px 6px; font-weight:700; color:#fff;">A1</td>
+          <td style="padding:5px 6px; color:var(--accent-blue);">154.28.229.0/24</td>
+          <td style="padding:5px 6px;">IAD (Ashburn)</td>
+          <td style="padding:5px 6px;">US</td>
+          <td style="padding:5px 6px; color:var(--accent-rose);">Chrome/131 Linux en-US</td>
+          <td style="padding:5px 6px; text-align:right; font-weight:700; color:var(--accent-amber);">43</td>
+          <td style="padding:5px 6px; text-align:right;">20,77 %</td>
+          <td style="padding:5px 6px;"><span class="cad-tag" style="color:var(--accent-rose); border-color:var(--accent-rose); font-size:9.5px; padding:1px 4px;">NIV. 2</span></td>
         </tr>
         <tr style="border-bottom:1px solid rgba(38,60,112,0.3);">
-          <td style="padding:5px 6px; font-weight:700; color:#fff;">B1</td>
-          <td style="padding:5px 6px; color:var(--accent-blue);">43.134.225.0/24</td>
-          <td style="padding:5px 6px;">AS132203 Tencent</td>
-          <td style="padding:5px 6px;">HK</td>
-          <td style="padding:5px 6px; color:var(--accent-rose);">Chrome/126.0 (Spoofed)</td>
-          <td style="padding:5px 6px; text-align:right; font-weight:700; color:var(--accent-amber);">34</td>
-          <td style="padding:5px 6px; text-align:right;">16,43 %</td>
-          <td style="padding:5px 6px;"><span class="cad-tag" style="color:var(--accent-rose); border-color:var(--accent-rose); font-size:9.5px; padding:1px 4px;">N2 + N3</span></td>
+          <td style="padding:5px 6px; font-weight:700; color:#fff;">D</td>
+          <td style="padding:5px 6px; color:var(--accent-blue);">45.138.12.0/24</td>
+          <td style="padding:5px 6px;">WAW (Varsovia)</td>
+          <td style="padding:5px 6px;">PL</td>
+          <td style="padding:5px 6px; color:var(--accent-rose);">Chrome/133, 7 días aislados</td>
+          <td style="padding:5px 6px; text-align:right; font-weight:700; color:var(--accent-amber);">5</td>
+          <td style="padding:5px 6px; text-align:right;">2,42 %</td>
+          <td style="padding:5px 6px;"><span class="cad-tag" style="color:var(--accent-rose); border-color:var(--accent-rose); font-size:9.5px; padding:1px 4px;">NIV. 1</span></td>
         </tr>
         <tr style="border-bottom:1px solid rgba(38,60,112,0.3);">
           <td style="padding:5px 6px; font-weight:700; color:#fff;">B2</td>
-          <td style="padding:5px 6px; color:var(--accent-blue);">43.153.181.0/24</td>
-          <td style="padding:5px 6px;">AS132203 Tencent</td>
-          <td style="padding:5px 6px;">HK</td>
-          <td style="padding:5px 6px; color:var(--accent-rose);">Chrome/126.0 (Spoofed)</td>
-          <td style="padding:5px 6px; text-align:right; font-weight:700; color:var(--accent-amber);">19</td>
-          <td style="padding:5px 6px; text-align:right;">9,18 %</td>
-          <td style="padding:5px 6px;"><span class="cad-tag" style="color:var(--accent-rose); border-color:var(--accent-rose); font-size:9.5px; padding:1px 4px;">N2 + N3</span></td>
+          <td style="padding:5px 6px; color:var(--accent-blue);">45.138.12.0/24</td>
+          <td style="padding:5px 6px;">WAW (Varsovia)</td>
+          <td style="padding:5px 6px;">PL</td>
+          <td style="padding:5px 6px; color:var(--accent-rose);">Chrome/150 Win10 fr-FR</td>
+          <td style="padding:5px 6px; text-align:right; font-weight:700; color:var(--accent-amber);">4</td>
+          <td style="padding:5px 6px; text-align:right;">1,93 %</td>
+          <td style="padding:5px 6px;"><span class="cad-tag" style="color:var(--accent-rose); border-color:var(--accent-rose); font-size:9.5px; padding:1px 4px;">NIV. 1</span></td>
         </tr>
         <tr style="background:rgba(244,63,94,0.08);">
-          <td style="padding:5px 6px; font-weight:700; color:#fff;">D</td>
-          <td style="padding:5px 6px; color:var(--accent-blue);">37.19.221.0/24</td>
-          <td style="padding:5px 6px;">AS9009 M247 Europe</td>
-          <td style="padding:5px 6px;">IT</td>
-          <td style="padding:5px 6px; color:var(--accent-rose);">Chrome/150.0 (Datacenter)</td>
-          <td style="padding:5px 6px; text-align:right; font-weight:700; color:var(--accent-amber);">1</td>
-          <td style="padding:5px 6px; text-align:right;">0,48 %</td>
-          <td style="padding:5px 6px;"><span class="cad-tag" style="color:var(--accent-rose); border-color:var(--accent-rose); font-size:9.5px; padding:1px 4px;">N2 + N3</span></td>
+          <td style="padding:5px 6px; font-weight:700; color:#fff;">B1</td>
+          <td style="padding:5px 6px; color:var(--accent-blue);">93.123.109.0/24</td>
+          <td style="padding:5px 6px;">AMS (Ámsterdam)</td>
+          <td style="padding:5px 6px;">NL</td>
+          <td style="padding:5px 6px; color:var(--accent-rose);">Chrome/150 fr-FR · sondeo .git</td>
+          <td style="padding:5px 6px; text-align:right; font-weight:700; color:var(--accent-amber);">4</td>
+          <td style="padding:5px 6px; text-align:right;">1,93 %</td>
+          <td style="padding:5px 6px;"><span class="cad-tag" style="color:var(--accent-rose); border-color:var(--accent-rose); font-size:9.5px; padding:1px 4px;">NIV. 1</span></td>
         </tr>
       </tbody>
     </table>
@@ -106,13 +106,13 @@ window.PRESENTATION_SLIDES.push(`
 
       <ul class="cad-item-list" style="font-size:12.5px;">
         <li>
-          <strong>Scraping Distribuido en la Nube:</strong> El 73,9 % del tráfico hostil provino de DigitalOcean (grupos A y C en US, NL y SG) mediante librerías de automatización básica (Python y Go).
+          <strong>Servidores Alquilados, no Hogares:</strong> Los 6 orígenes salieron de centros de datos de Canadá, EE. UU., Polonia y Países Bajos. C cortó en dos sesiones de exactamente 100 peticiones.
         </li>
         <li>
-          <strong>Falsificación de Navegadores (Spoofing):</strong> Los actores B1, B2 y D simularon cabeceras completas de Google Chrome pero operaron desde centros de datos (Tencent Hong Kong y M247 Italia).
+          <strong>Dos Firmas de Herramienta:</strong> A1 y A2 comparten perfil y cadencia (barrido en segundos); B1 y B2 comparten diccionario <code>fr-FR</code> y buscaban carpetas <code>.git</code> (600 respuestas 404).
         </li>
         <li>
-          <strong>Contexto de Chrome 150:</strong> Versión oficial estable lanzada el 30 de junio de 2026; la petición provino de proxy datacenter sin consulta de robots.txt ni solicitud de favicon.
+          <strong>Chrome Desactualizado:</strong> Declararon Chrome 124 a 150 (la 150 salió el 30/06/2026) cuando las vigentes en el experimento eran la 155 y la 156: cabeceras fijas de un script.
         </li>
       </ul>
     </div>
@@ -126,13 +126,13 @@ window.PRESENTATION_SLIDES.push(`
 
       <ul class="cad-item-list" style="font-size:12.5px;">
         <li>
-          <strong>Control Positivo de Favicon:</strong> 0 de las 207 peticiones solicitó <code>/favicon.ico</code>; las pruebas de control humano desde <code>181.4.69.0/24</code> (Argentina) sí la solicitaron inmediatamente.
+          <strong>Control Positivo de Favicon:</strong> Ninguno de los 6 orígenes pidió <code>/favicon.ico</code>; nuestras pruebas desde <code>181.4.69.0/24</code> (Argentina) sí. Es un indicio, no una prueba: GPTBot lo pidió una vez.
         </li>
         <li>
           <strong>Protección de Datos Personales:</strong> En cumplimiento estricto de la <strong>Ley 25.326</strong>, todas las IPs se publican enmascaradas a <code>/24</code> para impedir re-identificación de personas físicas.
         </li>
         <li>
-          <strong>Conservación de Evidencia:</strong> Logs crudos preservados bajo hash criptográfico en entorno aislado sin exposición a internet.
+          <strong>Conservación de Evidencia:</strong> Los registros originales se conservan cifrados y solo con fines académicos.
         </li>
       </ul>
     </div>

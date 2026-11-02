@@ -17,7 +17,7 @@ window.PRESENTATION_SLIDES.push(`
       <svg class="cad-vector-svg" viewBox="0 0 620 320" xmlns="http://www.w3.org/2000/svg">
         <!-- NODO RAÍZ (NIVEL 0) -->
         <rect x="230" y="10" width="160" height="36" rx="3" fill="#152244" stroke="#38bdf8" stroke-width="1.5"/>
-        <text x="310" y="32" fill="#38bdf8" font-family="'JetBrains Mono', monospace" font-size="11.5" font-weight="700" text-anchor="middle">RAÍZ: Profundidad 0</text>
+        <text x="310" y="32" fill="#38bdf8" font-family="'JetBrains Mono', monospace" font-size="11.5" font-weight="700" text-anchor="middle">PORTADA: Nivel 1</text>
 
         <!-- RAMIFICACIÓN A NIVEL 1 (b = 5) -->
         <line x1="310" y1="46" x2="110" y2="105" stroke="#263c70" stroke-width="1.8"/>
@@ -31,7 +31,7 @@ window.PRESENTATION_SLIDES.push(`
         <circle cx="310" cy="105" r="11" fill="#162444" stroke="#10b981" stroke-width="1.5"/>
         <circle cx="410" cy="105" r="11" fill="#162444" stroke="#10b981" stroke-width="1.5"/>
         <circle cx="510" cy="105" r="11" fill="#162444" stroke="#10b981" stroke-width="1.5"/>
-        <text x="310" y="135" fill="#94a3b8" font-family="'JetBrains Mono', monospace" font-size="10.5" font-weight="600" text-anchor="middle">NIVEL 1: 5 Enlaces Públicos + 5 Trampas</text>
+        <text x="310" y="135" fill="#94a3b8" font-family="'JetBrains Mono', monospace" font-size="10.5" font-weight="600" text-anchor="middle">CADA PÁGINA: 5 Enlaces Públicos + 5 Trampas</text>
 
         <!-- RECURSIÓN DETERMINISTA -->
         <path d="M 110 117 L 70 185 M 110 117 L 150 185" stroke="#1d2e57" stroke-width="1.2" stroke-dasharray="3 3"/>
@@ -49,26 +49,26 @@ window.PRESENTATION_SLIDES.push(`
       <div class="cad-caption-bar">
         <span class="cad-caption-tag"><strong>Factor de ramificación:</strong> b = 5</span>
         <span class="cad-caption-tag"><strong>Profundidad máxima:</strong> 10</span>
-        <span class="cad-caption-tag"><strong>Hojas terminales:</strong> Nivel 11 (68% al 72% peticiones)</span>
+        <span class="cad-caption-tag"><strong>Hojas terminales:</strong> Nivel 11 (68–72 % de ClaudeBot y GPTBot)</span>
       </div>
     </div>
 
     <!-- COLUMNA DERECHA: RECURSIÓN Y ANÁLISIS DE GRAFOS -->
     <div class="cad-box-panel">
       <div class="cad-box-title">
-        <span>BFS VS DFS EN CRAWLERS DE GRAN ESCALA</span>
+        <span>CÓMO RECORRIERON EL ÁRBOL</span>
         <span class="cad-tag">EXPLOSIÓN COMBINATORIA</span>
       </div>
 
       <ul class="cad-item-list">
         <li>
-          <strong>Exploración en Anchura (BFS):</strong> Típica de GPTBot. Procesa todas las URLs de nivel <em>d</em> antes de descender al nivel <em>d+1</em>, demandando gran memoria para la cola de URLs.
+          <strong>Colas de URLs distintas:</strong> GPTBot pide cada enlace ~9 s después de verlo (75 % en menos de un minuto); ClaudeBot los encola y los pide ~5 h después, en ráfagas.
         </li>
         <li>
-          <strong>Exploración en Profundidad (DFS):</strong> Observada en scripts agresivos que siguen enlaces verticalmente hasta topar con la cota.
+          <strong>Infractores, poco profundos:</strong> Ninguno pasó del nivel 3 (C llegó al 3; A1 y A2 al 2; el resto al 1).
         </li>
         <li>
-          <strong>Concentración en Hojas ($d = 11$):</strong> Debido a la expansión geométrica ($5^d$), entre el <strong>68 % y el 72 %</strong> del tráfico total recayó sobre nodos hoja terminales sin enlaces.
+          <strong>Concentración en Hojas ($L = 11$):</strong> Debido a la expansión geométrica ($5^d$), entre el <strong>68 % y el 72 %</strong> de las peticiones de ClaudeBot y GPTBot recayó sobre nodos hoja terminales sin enlaces.
         </li>
         <li>
           <strong>Protección del Servidor:</strong> Sin cota, un árbol con <code>b = 5</code> a profundidad 10 demandaría <code>5¹⁰ ≈ 9,76 millones</code> de páginas. <span class="cad-tag">HONEYPOT_MAX_DEPTH=10</span> salvaguardó CPU y ancho de banda.

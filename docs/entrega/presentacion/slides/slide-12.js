@@ -39,7 +39,7 @@ window.PRESENTATION_SLIDES.push(`
             <li><strong>Latencia (tok_age):</strong> Mediana de <strong>5,0 horas</strong> (cola batch desacoplada).</li>
             <li><strong>Cabecera Referer:</strong> Omitida en el <strong>100 % de los casos (0 % Referer)</strong>.</li>
             <li><strong>Ráfagas:</strong> Picos agresivos de hasta <strong>38.787 req/h (~10,8 req/s)</strong>.</li>
-            <li><strong>Validación Red:</strong> <strong>99,9998 %</strong> verificado en bloque ARIN RDAP AS16509 (4 en GCP sin verificar).</li>
+            <li><strong>Validación Red:</strong> <strong>99,9998 %</strong> verificado en el bloque ARIN de Anthropic (anunciado por AS16509, AWS; 4 en GCP sin verificar).</li>
           </ul>
         </div>
 
@@ -52,8 +52,8 @@ window.PRESENTATION_SLIDES.push(`
           <ul class="cad-item-list" style="font-size:13px; gap:4px;">
             <li><strong>Latencia (tok_age):</strong> Mediana de <strong>8,9 segundos</strong> (seguimiento en caliente).</li>
             <li><strong>Cabecera Referer:</strong> Enviada en el <strong>100 % de las peticiones</strong>.</li>
-            <li><strong>Cadencia:</strong> Tasa constante de <strong>2,00 req/s</strong> (7.184 req/h mediana; token bucket).</li>
-            <li><strong>Validación Red:</strong> <strong>100,00 %</strong> en prefijos oficiales JSON de Azure (AS8075).</li>
+            <li><strong>Cadencia:</strong> Tasa constante de <strong>2,00 req/s</strong> (7.184 req/h mediana, casi sin variación).</li>
+            <li><strong>Validación Red:</strong> <strong>100,00 %</strong> en listas JSON oficiales de OpenAI (Azure, AS8075).</li>
           </ul>
         </div>
       </div>

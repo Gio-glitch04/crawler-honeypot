@@ -38,7 +38,7 @@ window.PRESENTATION_SLIDES.push(`
       </svg>
 
       <ul class="cad-item-list">
-        <li><strong>Ruptura del acuerdo web:</strong> Los buscadores indexaban a cambio de derivar visitas; los LLMs extraen contenido textual para preentrenamiento y RAG sin retorno de tráfico (Steinacker et al., 2025).</li>
+        <li><strong>Ruptura del acuerdo web:</strong> Los buscadores indexaban a cambio de derivar visitas; los LLMs extraen contenido textual para preentrenamiento y RAG sin devolver visitas al sitio de origen.</li>
         <li><strong>Carga asimétrica:</strong> Mediciones de Imperva (Bad Bot Report 2025) señalan que el tráfico automatizado supera el 51 % en la web; ráfagas masivas consumen CPU y ancho de banda en servidores independientes.</li>
         <li><strong>Externalización de costos:</strong> El servidor de origen asume la factura de infraestructura mientras el operador comercial monetiza el modelo sin reciprocidad.</li>
       </ul>
@@ -65,19 +65,19 @@ window.PRESENTATION_SLIDES.push(`
         <text x="170" y="40" fill="#38bdf8" font-family="'JetBrains Mono', monospace" font-size="10.5" font-weight="700" text-anchor="middle">EVASIÓN</text>
 
         <rect x="210" y="15" width="195" height="70" rx="4" fill="#0f1932" stroke="#38bdf8" stroke-width="1.5"/>
-        <text x="307" y="40" fill="#38bdf8" font-family="'JetBrains Mono', monospace" font-size="12" font-weight="700" text-anchor="middle">PROXIES RESIDENCIALES</text>
-        <text x="307" y="58" fill="#cbd5e1" font-family="'Space Grotesk', sans-serif" font-size="11" text-anchor="middle">Rotación de IP masiva</text>
+        <text x="307" y="40" fill="#38bdf8" font-family="'JetBrains Mono', monospace" font-size="12" font-weight="700" text-anchor="middle">SERVIDORES ALQUILADOS</text>
+        <text x="307" y="58" fill="#cbd5e1" font-family="'Space Grotesk', sans-serif" font-size="11" text-anchor="middle">Centros de datos, no hogares</text>
         <text x="307" y="74" fill="#10b981" font-family="'JetBrains Mono', monospace" font-size="10.5" text-anchor="middle">Falso User-Agent Chrome</text>
       </svg>
 
       <ul class="cad-item-list">
         <li><strong>RFC 9309 no es un firewall:</strong> Es un protocolo consultivo; cualquier cliente HTTP puede ignorarlo deliberadamente sin bloqueo a nivel L4.</li>
-        <li><strong>Evasión de listas negras:</strong> Scrapers no declarados rotan direcciones IP residenciales y fingen firmas de navegadores de escritorio (Kim et al., IMC 2025).</li>
-        <li><strong>Vacío en la literatura:</strong> Auditorías como Liu et al. (IMC 2025) miden robots.txt convencional pero no evalúan trampas señuelo ni ofuscación CSSOM.</li>
+        <li><strong>Disfraz de navegador:</strong> Scrapers no declarados fingen ser un Chrome común; los 6 infractores de este experimento salían de centros de datos, nunca de conexiones hogareñas.</li>
+        <li><strong>Aporte del trabajo:</strong> Además de medir el cumplimiento de robots.txt, como Liu et al. (IMC 2025), sumamos trampas señuelo con distintas técnicas de ocultamiento CSS.</li>
       </ul>
 
       <div class="cad-callout-card">
-        <span style="color:var(--accent-rose); font-weight:700;">Falla Estructural:</span> La reputación de IP y las cabeceras HTTP son fácilmente falseables por actores no declarados.
+        <span style="color:var(--accent-rose); font-weight:700;">Falla Estructural:</span> El User-Agent y demás cabeceras HTTP son texto libre: cualquier actor no declarado puede falsearlas.
       </div>
     </div>
   </div>

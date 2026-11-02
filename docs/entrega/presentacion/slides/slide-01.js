@@ -22,7 +22,7 @@ window.PRESENTATION_SLIDES.push(`
     </div>
     <div class="cad-stat-unit emerald">
       <div class="cad-stat-number">100 %</div>
-      <div class="cad-stat-label">Cumplimiento Bots IA (0 / 5,36M)</div>
+      <div class="cad-stat-label">Bots Declarados (0 / 5,36M)</div>
     </div>
     <div class="cad-stat-unit coral">
       <div class="cad-stat-number">207</div>
@@ -47,7 +47,7 @@ window.PRESENTATION_SLIDES.push(`
         </div>
         <div class="cad-spec-pill">
           <div class="cad-spec-pill-title">Infraestructura</div>
-          <div class="cad-spec-pill-val">Windows 10 Pro (22H2) + Docker WSL 2</div>
+          <div class="cad-spec-pill-val">Windows 10 (22H2) + Docker WSL 2</div>
         </div>
         <div class="cad-spec-pill">
           <div class="cad-spec-pill-title">Perímetro L4</div>

@@ -62,7 +62,7 @@ window.PRESENTATION_SLIDES.push(`
       </p>
 
       <div class="cad-callout-card">
-        <span style="color:var(--accent-amber); font-weight:700;">Trazabilidad L3/L7:</span> La atribución sólida requiere correlación IP, PTR y ASN.
+        <span style="color:var(--accent-amber); font-weight:700;">Trazabilidad L3/L7:</span> La atribución sólida cruza la IP con listas oficiales y registros RDAP.
       </div>
     </div>
 
@@ -76,7 +76,7 @@ window.PRESENTATION_SLIDES.push(`
       <svg class="box-mini-svg" viewBox="0 0 280 80" xmlns="http://www.w3.org/2000/svg">
         <rect x="20" y="18" width="105" height="44" rx="3" fill="#0f281e" stroke="#10b981" stroke-width="1.5"/>
         <text x="72" y="36" fill="#10b981" font-family="'JetBrains Mono', monospace" font-size="11" font-weight="700" text-anchor="middle">HMAC RAM</text>
-        <text x="72" y="50" fill="#cbd5e1" font-family="'Space Grotesk', sans-serif" font-size="10" text-anchor="middle">Cero I/O Disco</text>
+        <text x="72" y="50" fill="#cbd5e1" font-family="'Space Grotesk', sans-serif" font-size="10" text-anchor="middle">Sin base de datos</text>
 
         <path d="M 125 40 L 165 40" stroke="#10b981" stroke-width="2"/>
 
@@ -89,7 +89,7 @@ window.PRESENTATION_SLIDES.push(`
       </p>
 
       <div class="cad-callout-card">
-        <span style="color:var(--accent-emerald); font-weight:700;">Blindaje Físico:</span> Cero escrituras a disco garantizan estabilidad ante ráfagas extremas.
+        <span style="color:var(--accent-emerald); font-weight:700;">Sin Estado:</span> Validar firmas en memoria sostiene ráfagas de miles de pedidos por hora.
       </div>
     </div>
   </div>
@@ -102,7 +102,7 @@ window.PRESENTATION_SLIDES.push(`
           CONCLUSIÓN GENERAL DE LA INVESTIGACIÓN:
         </div>
         <div style="font-size:13.5px; color:#f1f5f9; line-height:1.45;">
-          Los modelos fundacionales de IA (OpenAI, Anthropic) y los buscadores tradicionales (Google) respetan estrictamente las exclusiones de <strong>RFC 9309</strong> (0 violaciones sobre 5,36M enlaces). Por el contrario, los recolectores encubiertos y escáneres hostiles ignoran las directivas pero resultan vulnerables al filtrado por renderizado <strong>DOM/CSSOM</strong> (79,2 % capturados en CSS, 0 % con favicon), permitiendo su neutralización mediante arquitecturas criptográficas sin estado.
+          Los modelos fundacionales de IA (OpenAI, Anthropic) y los buscadores tradicionales (Google) respetan estrictamente las exclusiones de <strong>RFC 9309</strong> (0 violaciones sobre 5,36M enlaces). Por el contrario, los recolectores encubiertos y escáneres hostiles ignoran las directivas pero resultan vulnerables al filtrado por renderizado <strong>DOM/CSSOM</strong> (79,2 % entró por enlaces ocultos; ningún origen pidió favicon). Límites: una regla permisiva, un dominio, 12 días y 3 operadores (cota del 63,2 %).
         </div>
       </div>
       <div style="text-align:right; min-width:210px; padding-left:20px; border-left:1px solid var(--border-card); flex-shrink:0;">
