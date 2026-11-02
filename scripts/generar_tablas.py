@@ -1,8 +1,10 @@
-"""Genera, desde los CSV de data/, las tablas del informe y la Figura 2.
+"""Genera, desde los CSV de data/, las tablas del informe y la Figura 3.
 
 Entradas : data/serie_temporal_diaria.csv, data/verificacion_rangos.csv
 Salidas  : data/tablas_generadas.md  (Tabla 2 y Anexo A, listas para pegar)
-           graficos/serie-diaria.png (Figura 2, mismas cifras que el Anexo A)
+           docs/entrega/graficos/serie-diaria.png (Figura 3, mismas cifras que el Anexo A)
+Las citas de la Tabla 2 van en el texto del informe ([30], [32]-[35] en IEEE),
+no dentro de la tabla, para que la tabla no dependa de la numeración.
 Uso: python scripts/generar_tablas.py   (correr antes verificar_rangos_ip.py)
 """
 import csv
@@ -15,7 +17,7 @@ import matplotlib.pyplot as plt
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 D = os.path.join(ROOT, "data")
-FIG_DIRS = [os.path.join(ROOT, "docs", "entrega", "graficos"), os.path.join(ROOT, "..", "graficos")]
+FIG_DIRS = [os.path.join(ROOT, "docs", "entrega", "graficos")]
 
 
 def fmt(n):
@@ -53,26 +55,35 @@ print(f"GPTBot 30/10: {gpt30} en {horas30:.2f} h = {gpt30/horas30:,.0f} req/h = 
 print("Comprobaciones internas OK; total =", tot_all)
 
 # ---- Tabla 2 ----
-FUENTE = {"Anthropic": "Registro ARIN `216.73.216.0/22` [23] (Anthropic no publica lista de prefijos)",
-          "OpenAI": "`gptbot.json` [21] y `searchbot.json` [22]",
-          "Google": "`googlebot.json` y `special-crawlers.json` [20]"}
-lines = ["| Operador | Subredes observadas (peticiones) | AS (BGP) | Fuente de verificación | Verificadas / total | Cobertura |",
+AS_NOMBRE = {"AS16509": "Amazon AWS", "AS396982": "Google Cloud", "AS8075": "Microsoft Azure", "AS15169": "Google"}
+FUENTE = {"Anthropic": "Bloque ARIN `NET-216-73-216-0-1` (`216.73.216.0/22`)",
+          "OpenAI": "`gptbot.json` y `searchbot.json`",
+          "Google": "Listas JSON de crawlers de Google"}
+lines = ["| Operador | Subredes observadas (peticiones) | AS de origen (BGP) | Fuente de verificación | Verificadas / total | Cobertura |",
          "|---|---|---|---|---:|---:|"]
 for op in ["Anthropic", "OpenAI", "Google"]:
     rows = [r for r in ver if r["operador"] == op]
-    subn = []
-    for r in rows:
-        n = fmt(r["peticiones"])
-        if r["familia"] == "OAI-SearchBot":
-            subn.append(f"`{r['cidr']}` ({n}, OAI-SearchBot)")
-        elif r["verificable"] == "si":
-            subn.append(f"`{r['cidr']}` ({n})")
-        else:
-            subn.append(f"{r['cidr']} ({n})")
-    asns = sorted({a for r in rows for a in r["asn"].split(",") if a})
+    if op == "OpenAI":  # la mayor subred y el resto agregado
+        rows_s = sorted(rows, key=lambda r: -int(r["peticiones"]))
+        resto = rows_s[1:]
+        subn = [f"`{rows_s[0]['cidr']}` ({fmt(rows_s[0]['peticiones'])})",
+                f"otros {len(resto)} `/24` ({fmt(sum(int(r['peticiones']) for r in resto))})"]
+    else:
+        subn = []
+        for r in rows:
+            n = fmt(r["peticiones"])
+            if r["verificable"] == "si":
+                subn.append(f"`{r['cidr']}` ({n})")
+            else:
+                subn.append(f"otros `/24` de `66.249.x` ({n})")
+    asns = sorted({a for r in rows for a in r["asn"].split(",") if a}, key=lambda a: int(a[2:]))
     v = sum(int(r["peticiones"]) for r in rows if r["verificado"] == "si")
     t = sum(int(r["peticiones"]) for r in rows)
-    lines.append(f"| **{op}** | {'; '.join(subn)} | {', '.join(asns) or 's/d'} | {FUENTE[op]} | {fmt(v)} / {fmt(t)} | **{pct(v, t)}** |")
+    cob = pct(v, t)
+    if op == "Google":
+        cob = f"{100 * v / t:.2f} %".replace(".", ",")
+    as_txt = "; ".join(f"{a} ({AS_NOMBRE.get(a, 's/d')})" for a in asns) or "s/d"
+    lines.append(f"| **{op}** | {'; '.join(subn)} | {as_txt} | {FUENTE[op]} | {fmt(v)} / {fmt(t)} | **{cob}** |")
 tabla2 = "\n".join(lines)
 
 # ---- Anexo A ----
@@ -88,7 +99,7 @@ anexoA = "\n".join(a)
 with open(os.path.join(D, "tablas_generadas.md"), "w", encoding="utf-8") as f:
     f.write("<!-- TABLA2 -->\n" + tabla2 + "\n<!-- /TABLA2 -->\n\n<!-- ANEXOA -->\n" + anexoA + "\n<!-- /ANEXOA -->\n")
 
-# ---- Figura 2 (desde el mismo CSV) ----
+# ---- Figura 3 (desde el mismo CSV) ----
 dias = [r["fecha"][8:10] + "/" + r["fecha"][5:7] for r in serie]
 claude = [int(r["claudebot"]) for r in serie]
 gpt = [int(r["gptbot"]) for r in serie]

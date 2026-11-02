@@ -225,7 +225,7 @@ EE. UU. concentra 3.562.568 peticiones (99,84 %), por los crawlers de IA. Fuera 
 | Primera petición | 2026-10-21 05:30:31.243 UTC, `GET /` |
 | Última | 2026-10-30 17:57:05 UTC (sigue activo) |
 | Redes | 74.7.242.0/24 (1.557.329), 132.196.86.0/24 (751), 172.182.207.0/24 (410), 172.182.202.0/24 (385) |
-| Concentración | 74.7.242.x (1.223.640) y 74.7.242.x (333.689) suman el 99,9 % |
+| Concentración | dos IP de 74.7.242.x (1.223.640 y 333.689) suman el 99,9 % |
 | PoP de Cloudflare | ATL 98,3 %, CDG 0,7 %, MIA 0,7 %, GRU, LAX |
 | Cabeceras | `Accept: */*`, `gzip, br`, sin `Accept-Language`, **`Referer` en el 100 %** (página padre exacta) |
 | Rutas | public 1.558.872, home 2, `/favicon.ico` 1 |
@@ -253,7 +253,7 @@ OAI-SearchBot pidió `robots.txt` 49 veces desde 13 IPs (74.7.175.0/24, 74.7.230
 | Peticiones | 1.532 | 10.702 |
 | Ventana | 19/10 18:44 → 30/10 09:04 | 19/10 20:25 → 22/10 06:01 |
 | Redes | 66.249.73.0/24 (1.423), 192.178.6.0/24 (94), 66.249.69/70 | 66.249.73.0/24 (10.696), otras 66.249.x |
-| IPs compartidas | 66.249.73.x y .164 son las principales de **ambos** | |
+| IPs compartidas | dos IP de 66.249.73.x son las principales de **ambos** | |
 | robots.txt | 297 (13 IPs, `Accept: text/plain,text/html,*/*`) | 0 |
 | Entre llegadas | p50 42 s, p95 381 s | p50 6,6 s, p95 34 s |
 | Edad del enlace | p50 3,5 h | p50 3,0 h, p99 10,5 h |
@@ -374,7 +374,7 @@ Cada página servida con enlaces expone 5 enlaces trampa. Las páginas con enlac
 - **Exactamente 100 peticiones por sesión** (49 trampa y 50 públicas + home en ambas): tope fijo de páginas por trabajo.
 - Arranca la primera sesión 2 min después de que termina la de 154.28.229.x (21/10 03:51 → 03:53) y la segunda 4 min después de la de 103.196.9.x (24/10 06:36 → 06:40). Esa correlación temporal en dos ocasiones independientes sugiere un **orquestador común que lanza trabajos con distinta configuración de cliente**. Que dos coincidencias de menos de 5 minutos ocurran por azar, con apenas unas 10 sesiones de scrapers en 12 días, es poco probable. Aun así, es una hipótesis sin verificar.
 
-**Actor D: 45.138.12.x (Polonia, mismo /24 que 45.138.12.x)**
+**Actor D: 45.138.12.x (Polonia, mismo /24 que el actor B2)**
 - 4 visitas en 6 días, una sola con exploración (11 peticiones, 5 trampas). Rota entre 3 UAs Chrome/133.
 - Comparte /24 con el escáner B, pero no la huella de cabeceras. Puede ser un proveedor de VPS o proxy compartido.
 
@@ -484,7 +484,7 @@ Fisher: p = 1,0. La tasa de violación de las IPs camufladas es baja (1,4 %), po
 ## 10. Amenazas a la validez
 
 1. **Muestra de familias.** Solo llegaron los crawlers con descubrimiento propio por Certificate Transparency y DNS. Faltan CCBot, Bytespider, PerplexityBot, Amazonbot, Meta-ExternalAgent y scrapers de datasets, que son justamente los que la literatura señala como menos cumplidores.
-2. **Siembra pendiente.** Referers externos: 51 de Google y 1 de Hacker News en todo el período. Sin enlaces en GitHub, Reddit o HN, la población de crawlers queda sesgada hacia los grandes operadores.
+2. **Siembra sin efecto observable.** Las URL semilla se publicaron el 18/10 en GitHub y Hacker News, pero ningún token de semilla registró accesos. Referers externos: 51 de Google y 1 de Hacker News en todo el período. La población de crawlers queda sesgada hacia los grandes operadores.
 3. **Suplantación de UA no verificada.** Falta contrastar las IPs con las listas oficiales (`openai.com/gptbot.json`, rangos de Anthropic, DNS inverso de Googlebot) y no hay huella TLS (JA3/JA4 vacíos). Los rangos observados (216.73.216.0/22 para ClaudeBot, 74.7.0.0/16 para OpenAI, 66.249.64.0/19 para Google) coinciden con los operadores esperados, pero eso no reemplaza la verificación formal.
 4. **Atribución de violadores.** No hay ASN porque el batch de enriquecimiento está caído (§11). No se puede saber si los actores A, B, C y D trabajan para empresas de IA.
 5. **Ruta "trap" visible en el HTML.** El enlace `visible` dice "Archivo histórico". Un crawler muy sofisticado podría inferir el honeypot por la estructura repetitiva, aunque los nombres de clase aleatorios lo dificultan.
@@ -511,7 +511,7 @@ Fisher: p = 1,0. La tasa de violación de las IPs camufladas es baja (1,4 %), po
 ### 12.1 Metodológicas
 
 1. **Reformular o ampliar la hipótesis:** H₂, "los agentes con UA camuflado violan robots.txt con más frecuencia que los declarados". Los datos actuales ya la apoyan con fuerza a nivel enlace (0 de 5,4 millones contra 207 de 5.555).
-2. **Sembrar las URLs** (GitHub con `config.json` falso, Reddit r/datasets, HN) para ampliar la población de familias. Es la única forma de que el test de Fisher a nivel familia tenga poder.
+2. **Ampliar la siembra** a otros canales (Reddit r/datasets, Hugging Face, `config.json` falso en GitHub) para ampliar la población de familias. Es la única forma de que el test de Fisher a nivel familia tenga poder.
 3. **Verificar identidades:** DNS inverso más directo para Googlebot y Applebot, y listas JSON publicadas para OpenAI y Anthropic. Agregar una columna `verified` al dataset.
 4. **Enriquecer por ASN** a los 6 violadores y a las 427 IPs con UA de navegador (MaxMind GeoLite2-ASN ya está en el compose).
 5. **Agregar trampas de segundo orden:** un enlace en un comentario HTML (`<!-- -->`), un enlace solo en JavaScript (`onclick`/`fetch`) y otro solo en `sitemap.xml`. Permiten separar mejor parsers de regex, parsers DOM y navegadores headless.

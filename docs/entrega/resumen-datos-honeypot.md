@@ -111,7 +111,7 @@ El reparto es casi uniforme: estos bots **no renderizan la página**, leen el HT
 
 - **Países (según Cloudflare):** EE. UU. concentra el 99,8 % por los crawlers de IA. Fuera de eso: Países Bajos (1.317), Alemania (1.293), Italia (715), Polonia (441), Francia (364).
 - **Rutas inexistentes más pedidas:** `/favicon.ico` (231), `/sitemap.xml` (116), `/.env` (64), `/.git/config` (60) y decenas de variantes de `.env`.
-- **De dónde llegó la gente:** casi nadie trae referer externo. Aparecen 51 desde Google y 1 desde Hacker News. Todavía no se sembraron los enlaces en GitHub ni en Reddit.
+- **De dónde llegó la gente:** casi nadie trae referer externo. Aparecen 51 desde Google y 1 desde Hacker News. Las URL semilla publicadas el 18/10 en GitHub y Hacker News no registraron accesos con su token.
 - **Cloudflare:** según lo visto el 26/10 en su panel, bloqueó 53 escáneres de exploits antes de que llegaran al honeypot. Esos no figuran en este log.
 
 ---
@@ -119,7 +119,7 @@ El reparto es casi uniforme: estos bots **no renderizan la página**, leen el HT
 ## 5. Limitaciones y próximos pasos
 
 1. **Muestra chica para comparar grupos:** solo 4 familias de IA y 2 de buscadores, y ninguna entró a la trampa. Un test de Fisher no tiene sentido con 0 contra 0.
-2. **Siembra pendiente:** sin enlaces en GitHub, Reddit o Hacker News, casi no llegan crawlers "independientes" ni scrapers de datasets, que son los más interesantes.
+2. **Siembra sin efecto observable:** la siembra en GitHub y Hacker News no atrajo crawlers por esos enlaces; casi no llegan crawlers "independientes" ni scrapers de datasets. Conviene ampliarla a otros canales (Reddit, Hugging Face).
 3. **El análisis diario automático dejó de correr el 21/10** (el último archivo en `data/enriched` es del 20/10). Hay que revisar el contenedor `analytics`; sin él no hay enriquecimiento por ASN.
 4. **Verificar identidades:** contrastar las IPs de ClaudeBot y GPTBot con las listas oficiales de cada empresa, y averiguar el ASN de las 6 IPs que entraron a la trampa.
 5. **El log ocupa 3,4 GB** y, al ritmo actual de GPTBot, crece unos 165 MB por día. Conviene rotarlo o comprimirlo.
